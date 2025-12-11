@@ -35,14 +35,15 @@ public class PreviewLauncher {
     /**
      * プレビュー可能なコンポーネントを登録する。
      * コンポーネントは {@link Previewable} インターフェースを実装している必要がある。
+     * プレビュー名はクラス名から自動的に取得される。
      *
      * @param supplier コンポーネントのサプライヤー
      * @param <T> Previewableを実装したJComponentのサブタイプ
      */
     public static <T extends JComponent & Previewable> void registerComponent(Supplier<T> supplier) {
-        // 一度インスタンスを作成して名前を取得（登録時のみ）
+        // 一度インスタンスを作成してクラス名を取得（登録時のみ）
         T instance = supplier.get();
-        String name = instance.getPreviewName();
+        String name = instance.getClass().getSimpleName();
         PREVIEWABLE_COMPONENTS.put(name.toLowerCase(), supplier::get);
     }
     
@@ -81,7 +82,7 @@ public class PreviewLauncher {
      * @param previewable プレビューするコンポーネント
      */
     private static void showPreviewWindow(Previewable previewable) {
-        JFrame frame = new JFrame("Preview: " + previewable.getPreviewName());
+        JFrame frame = new JFrame("Preview: " + previewable.getClass().getSimpleName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // ヘッダーパネル
@@ -107,7 +108,7 @@ public class PreviewLauncher {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(50, 50, 50));
         
-        JLabel titleLabel = new JLabel("  Preview: " + previewable.getPreviewName());
+        JLabel titleLabel = new JLabel("  Preview: " + previewable.getClass().getSimpleName());
         titleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         titleLabel.setForeground(Color.WHITE);
         
@@ -131,7 +132,7 @@ public class PreviewLauncher {
         
         PREVIEWABLE_COMPONENTS.forEach((key, supplier) -> {
             Previewable previewable = supplier.get();
-            System.out.println("  " + previewable.getPreviewName() + " - " + previewable.getPreviewDescription());
+            System.out.println("  " + previewable.getClass().getSimpleName() + " - " + previewable.getPreviewDescription());
         });
         
         System.out.println();
