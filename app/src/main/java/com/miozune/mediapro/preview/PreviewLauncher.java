@@ -1,5 +1,6 @@
 package com.miozune.mediapro.preview;
 
+import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.game.GamePanel;
 import com.miozune.mediapro.util.SwingUtils;
 
@@ -27,6 +28,7 @@ public class PreviewLauncher {
     static {
         // プレビュー可能なコンポーネントを登録
         registerComponent(GamePanel::new);
+        registerComponent(CardView::new);
         
         // 新しいコンポーネントを追加する場合はここに登録
         // registerComponent(YourComponent::new);
