@@ -112,11 +112,6 @@ public class GamePanel extends JPanel implements Previewable {
     // Previewable インターフェースの実装
     
     @Override
-    public String getPreviewName() {
-        return "GamePanel";
-    }
-    
-    @Override
     public String getPreviewDescription() {
         return "ゲームの描画を行う黒い背景のパネル";
     }

@@ -8,13 +8,6 @@ package com.miozune.mediapro.preview;
 public interface Previewable {
     
     /**
-     * プレビュー時に表示される名前を取得する。
-     *
-     * @return コンポーネントの名前
-     */
-    String getPreviewName();
-    
-    /**
      * プレビュー時に表示される説明を取得する。
      *
      * @return コンポーネントの説明
