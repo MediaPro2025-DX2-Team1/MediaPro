@@ -3,24 +3,22 @@ package com.miozune.mediapro.stage_select;
 import javax.swing.*;
 import java.awt.*;
 
-public class SelectView extends JFrame {
+public class SelectView extends JPanel {
 
     private RoundButton stageButton1;
     private RoundButton stageButton2;
     private RoundButton stageButton3;
 
     public SelectView() {
-        setupFrame();
+        setupPanel();
         initComponents();
         layoutComponents();
     }
 
-    private void setupFrame() {
-        setTitle("Stage Select Screen");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
-        setLocationRelativeTo(null);
-        setResizable(false);
+    private void setupPanel() {
+        setPreferredSize(new Dimension(600, 400));
+        setOpaque(true);
+        setBackground(new Color(240, 240, 240));
     }
 
     private void initComponents() {
@@ -42,8 +40,10 @@ public class SelectView extends JFrame {
         titleLabel.setFont(new Font("Serif", Font.BOLD, 56));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        setLayout(new BorderLayout());
+        setBackground(new Color(240, 240, 240));
         JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(240, 240, 240));
+        titlePanel.setOpaque(false);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         titlePanel.add(titleLabel);
 
@@ -62,7 +62,6 @@ public class SelectView extends JFrame {
         gbc.gridx = 2;
         buttonPanel.add(stageButton3, gbc);
 
-        setLayout(new BorderLayout());
         add(titlePanel, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
     }
@@ -70,4 +69,5 @@ public class SelectView extends JFrame {
     public RoundButton getStageButton1() { return stageButton1; }
     public RoundButton getStageButton2() { return stageButton2; }
     public RoundButton getStageButton3() { return stageButton3; }
+    
 }

@@ -1,40 +1,46 @@
 package com.miozune.mediapro.title;
 
 import com.miozune.mediapro.stage_select.SelectController;
-import com.miozune.mediapro.stage_select.SelectModel;
 import com.miozune.mediapro.stage_select.SelectView;
 import javax.swing.*;
 
 public class TitleController {
 
-    private TitleModel model;
     private TitleView view;
+    private JFrame frame;
 
-    public TitleController(TitleModel model, TitleView view) {
-        this.model = model;
+    public TitleController(TitleView view) {
         this.view  = view;
 
         view.getStartButton().addActionListener(e -> openSelectScreen());
     }
 
     public void showView() {
-        view.setVisible(true);
+        if (frame == null) {
+            frame = new JFrame("Title Screen");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setResizable(false);
+            frame.add(view);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+        }
+        frame.setVisible(true);
     }
 
     private void openSelectScreen() {
-        view.dispose();
+        if (frame != null) {
+            frame.dispose();
+        }
 
-        SelectModel selectModel = new SelectModel();
         SelectView selectView = new SelectView();
-        SelectController selectController = new SelectController(selectModel, selectView);
+        SelectController selectController = new SelectController(selectView);
         selectController.showView();
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            TitleModel model = new TitleModel();
             TitleView view = new TitleView();
-            TitleController controller = new TitleController(model, view);
+            TitleController controller = new TitleController(view);
             controller.showView();
         });
     }
