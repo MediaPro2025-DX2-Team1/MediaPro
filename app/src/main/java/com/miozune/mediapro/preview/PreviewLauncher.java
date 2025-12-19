@@ -1,6 +1,6 @@
 package com.miozune.mediapro.preview;
 
-import com.miozune.mediapro.game.GamePanel;
+import com.miozune.mediapro.core.GamePanel;
 import com.miozune.mediapro.util.SwingUtils;
 
 import javax.swing.JComponent;
