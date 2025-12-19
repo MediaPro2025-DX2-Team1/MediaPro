@@ -1,10 +1,12 @@
-package com.miozune.mediapro.model_base;
+package com.miozune.mediapro.deckrecipe;
 
 import java.util.List;
 
+import com.miozune.mediapro.card.CardModel;
+
 public class DeckRecipeModel {
     private String name;
-    private List<Card> cards;
+    private List<CardModel> cards;
 
     public DeckRecipeModel() {
         

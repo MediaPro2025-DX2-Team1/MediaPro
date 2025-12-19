@@ -1,4 +1,4 @@
-package com.miozune.mediapro.model_base;
+package com.miozune.mediapro.card;
 
 public class CardModel {
     private String name;
@@ -11,10 +11,10 @@ public class CardModel {
     }
 
     public int getCost() {
-     
+        throw new UnsupportedOperationException();
     }
 
     public void applyEffect() {
-        
+        throw new UnsupportedOperationException();
     }
 }

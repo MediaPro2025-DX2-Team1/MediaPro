@@ -1,4 +1,4 @@
-package com.miozune.mediapro.model_base;
+package com.miozune.mediapro.Effect;
 
 public class EffectModel {
     private String name;
@@ -8,6 +8,6 @@ public class EffectModel {
     }
 
     public void execute() {
-        
+        throw new UnsupportedOperationException();
     }
 }

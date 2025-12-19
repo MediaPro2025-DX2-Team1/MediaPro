@@ -1,5 +1,6 @@
 package com.miozune.mediapro.game;
 
+import com.miozune.mediapro.core.GameModel;
 import com.miozune.mediapro.core.GameState;
 import org.junit.Test;
 
