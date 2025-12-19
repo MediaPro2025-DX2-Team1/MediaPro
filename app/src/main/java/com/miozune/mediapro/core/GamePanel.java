@@ -1,4 +1,4 @@
-package com.miozune.mediapro.game;
+package com.miozune.mediapro.core;
 
 import com.miozune.mediapro.preview.Previewable;
 

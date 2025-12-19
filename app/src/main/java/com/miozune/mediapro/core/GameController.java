@@ -1,7 +1,4 @@
-package com.miozune.mediapro.game;
-
-import com.miozune.mediapro.core.GameLoop;
-import com.miozune.mediapro.core.GameState;
+package com.miozune.mediapro.core;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

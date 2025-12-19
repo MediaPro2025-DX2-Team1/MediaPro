@@ -1,8 +1,8 @@
 package com.miozune.mediapro;
 
-import com.miozune.mediapro.game.GameController;
-import com.miozune.mediapro.game.GameModel;
-import com.miozune.mediapro.game.GameWindow;
+import com.miozune.mediapro.core.GameController;
+import com.miozune.mediapro.core.GameModel;
+import com.miozune.mediapro.core.GameWindow;
 import com.miozune.mediapro.preview.PreviewLauncher;
 import com.miozune.mediapro.util.SwingUtils;
 
