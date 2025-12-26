@@ -58,7 +58,7 @@ public class CardController {
      * @param e マウスイベント
      */
     private void handleClick(MouseEvent e) {
-        System.out.println("Card clicked: " + view.getCardData().name());
+        System.out.println("Card clicked: " + view.getCardModel().name());
         
         if (clickListener != null) {
             clickListener.onCardClicked(view, e);
@@ -73,7 +73,7 @@ public class CardController {
     private void handleMouseEnter(MouseEvent e) {
         hovering = true;
         // TODO: ホバーエフェクト（拡大、ハイライトなど）を実装
-        System.out.println("Mouse entered card: " + view.getCardData().name());
+        System.out.println("Mouse entered card: " + view.getCardModel().name());
     }
     
     /**
@@ -84,7 +84,7 @@ public class CardController {
     private void handleMouseExit(MouseEvent e) {
         hovering = false;
         // TODO: ホバーエフェクト解除
-        System.out.println("Mouse exited card: " + view.getCardData().name());
+        System.out.println("Mouse exited card: " + view.getCardModel().name());
     }
     
     /**

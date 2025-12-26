@@ -1,9 +1,5 @@
 package com.miozune.mediapro.card;
 
-import com.miozune.mediapro.preview.Previewable;
-import com.miozune.mediapro.util.ImageLoader;
-
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,6 +8,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
+
+import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.util.ImageLoader;
 
 /**
  * カード単体を表示するViewコンポーネント。
@@ -48,7 +49,7 @@ public class CardView extends JPanel implements Previewable {
     private static final Color COST_TEXT_COLOR = Color.WHITE;
     
     /** カードデータ */
-    private CardData cardData;
+    private CardModel cardModel;
     
     /** 読み込まれた画像 */
     private BufferedImage cardImage;
@@ -57,16 +58,16 @@ public class CardView extends JPanel implements Previewable {
      * 空のCardViewを作成する。
      */
     public CardView() {
-        this(CardData.empty());
+        this(CardModel.createSample());
     }
     
     /**
-     * CardDataを指定してCardViewを作成する。
+     * CardModelを指定してCardViewを作成する。
      *
-     * @param cardData カードデータ
+     * @param cardModel カードデータ
      */
-    public CardView(CardData cardData) {
-        this.cardData = cardData;
+    public CardView(CardModel cardModel) {
+        this.cardModel = cardModel;
         
         setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
         setMinimumSize(new Dimension(80, 112));
@@ -79,7 +80,7 @@ public class CardView extends JPanel implements Previewable {
      * 画像を読み込む。
      */
     private void loadImage() {
-        String imageName = cardData.imageName();
+        String imageName = cardModel.imageName();
         if (imageName != null && !imageName.isEmpty()) {
             cardImage = ImageLoader.loadCardImage(imageName);
         } else {
@@ -94,17 +95,17 @@ public class CardView extends JPanel implements Previewable {
      *
      * @return カードデータ
      */
-    public CardData getCardData() {
-        return cardData;
+    public CardModel getCardModel() {
+        return cardModel;
     }
     
     /**
      * カードデータを設定する。
      *
-     * @param cardData カードデータ
+     * @param cardModel カードデータ
      */
-    public void setCardData(CardData cardData) {
-        this.cardData = cardData;
+    public void setCardModel(CardModel cardModel) {
+        this.cardModel = cardModel;
         loadImage();
         repaint();
     }
@@ -241,7 +242,7 @@ public class CardView extends JPanel implements Previewable {
         g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
         
         FontMetrics fm = g2d.getFontMetrics();
-        String name = cardData.name() != null ? cardData.name() : "";
+        String name = cardModel.name() != null ? cardModel.name() : "";
         
         // テキストが幅を超える場合は省略
         if (fm.stringWidth(name) > width) {
@@ -265,7 +266,7 @@ public class CardView extends JPanel implements Previewable {
         g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
         
         FontMetrics fm = g2d.getFontMetrics();
-        String desc = cardData.description() != null ? cardData.description() : "";
+        String desc = cardModel.description() != null ? cardModel.description() : "";
         
         // 複数行に分割して描画
         int lineHeight = fm.getHeight();
@@ -326,7 +327,7 @@ public class CardView extends JPanel implements Previewable {
         int fontSize = Math.max(10, size * 2 / 3);
         g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
         
-        String costStr = String.valueOf(cardData.cost());
+        String costStr = String.valueOf(cardModel.cost());
         FontMetrics fm = g2d.getFontMetrics();
         int textX = x + (size - fm.stringWidth(costStr)) / 2;
         int textY = y + (size + fm.getAscent()) / 2 - fm.getDescent() / 2;
@@ -342,6 +343,6 @@ public class CardView extends JPanel implements Previewable {
     
     @Override
     public void setupPreview() {
-        setCardData(CardData.createSample());
+        setCardModel(CardModel.createSample());
     }
 }

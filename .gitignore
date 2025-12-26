@@ -11,3 +11,6 @@ build
 .classpath
 .project
 .settings/
+
+# Others
+.DS_Store
