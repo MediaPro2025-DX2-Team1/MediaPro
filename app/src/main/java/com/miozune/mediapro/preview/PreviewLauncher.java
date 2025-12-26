@@ -1,20 +1,21 @@
 package com.miozune.mediapro.preview;
 
-import com.miozune.mediapro.card.CardView;
-import com.miozune.mediapro.game.GamePanel;
-import com.miozune.mediapro.util.SwingUtils;
-
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.core.GamePanel;
+import com.miozune.mediapro.util.SwingUtils;
 
 /**
  * コンポーネントを単体でプレビューするためのランチャー。
