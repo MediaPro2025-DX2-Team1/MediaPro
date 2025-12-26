@@ -1,7 +1,5 @@
 package com.miozune.mediapro.title;
 
-import com.miozune.mediapro.stage_select.SelectController;
-import com.miozune.mediapro.stage_select.SelectView;
 import javax.swing.*;
 
 public class TitleController {
@@ -28,13 +26,7 @@ public class TitleController {
     }
 
     private void openSelectScreen() {
-        if (frame != null) {
-            frame.dispose();
-        }
-
-        SelectView selectView = new SelectView();
-        SelectController selectController = new SelectController(selectView);
-        selectController.showView();
+        System.out.println("ステージ選択画面に遷移");
     }
 
     public static void main(String[] args) {

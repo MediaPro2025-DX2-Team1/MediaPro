@@ -2,10 +2,9 @@ package com.miozune.mediapro.title;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import com.miozune.mediapro.preview.Previewable;
 
-public class TitleView extends JPanel {
+public class TitleView extends JPanel implements Previewable {
 
     private JButton startButton;
 
@@ -32,22 +31,6 @@ public class TitleView extends JPanel {
         startButton.setContentAreaFilled(true);
         startButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         startButton.setFocusPainted(false);
-        
-        addMouseHoverEffect(startButton);
-    }
-
-    private void addMouseHoverEffect(JButton button) {
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(220, 220, 220));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(Color.WHITE);
-            }
-        });
     }
 
     private void layoutComponents() {
@@ -70,5 +53,15 @@ public class TitleView extends JPanel {
 
     public JButton getStartButton() {
         return startButton;
+    }
+
+    @Override
+    public String getPreviewDescription() {
+        return "タイトル画面のプレビュー";
+    }
+
+    @Override
+    public void setupPreview() {
+        startButton.addActionListener(e -> System.out.println("Start clicked"));
     }
 }
