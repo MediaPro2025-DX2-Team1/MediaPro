@@ -1,4 +1,4 @@
-package com.miozune.mediapro.game;
+package com.miozune.mediapro.core;
 
 import com.miozune.mediapro.preview.Previewable;
 
@@ -110,11 +110,6 @@ public class GamePanel extends JPanel implements Previewable {
     }
     
     // Previewable インターフェースの実装
-    
-    @Override
-    public String getPreviewName() {
-        return "GamePanel";
-    }
     
     @Override
     public String getPreviewDescription() {

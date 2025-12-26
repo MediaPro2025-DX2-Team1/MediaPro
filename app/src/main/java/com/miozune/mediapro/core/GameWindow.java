@@ -1,6 +1,4 @@
-package com.miozune.mediapro.game;
-
-import com.miozune.mediapro.core.GameState;
+package com.miozune.mediapro.core;
 
 import javax.swing.JFrame;
 import java.beans.PropertyChangeEvent;
