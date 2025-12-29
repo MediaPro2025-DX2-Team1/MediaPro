@@ -1,10 +1,23 @@
 package com.miozune.mediapro.world;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import com.miozune.mediapro.preview.Previewable;
 
-public class WorldView extends JPanel implements Previewable {
+@Previewable(description = "ステージ選択画面のプレビュー")
+public class WorldView extends JPanel {
 
     private JButton stageButton1;
     private JButton stageButton2;
@@ -75,15 +88,17 @@ public class WorldView extends JPanel implements Previewable {
     public JButton getStageButton2() { return stageButton2; }
     public JButton getStageButton3() { return stageButton3; }
 
-    @Override
-    public String getPreviewDescription() {
-        return "ステージ選択画面のプレビュー";
-    }
-
-    @Override
-    public void setupPreview() {
-        stageButton1.addActionListener(e -> System.out.println("[Preview] Stage 1 clicked"));
-        stageButton2.addActionListener(e -> System.out.println("[Preview] Stage 2 clicked"));
-        stageButton3.addActionListener(e -> System.out.println("[Preview] Stage 3 clicked"));
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * ダミーのイベントリスナーを追加して動作確認ができるようにする。
+     *
+     * @return プレビュー用のWorldViewインスタンス
+     */
+    public static WorldView createPreview() {
+        WorldView view = new WorldView();
+        view.stageButton1.addActionListener(e -> System.out.println("[Preview] Stage 1 clicked"));
+        view.stageButton2.addActionListener(e -> System.out.println("[Preview] Stage 2 clicked"));
+        view.stageButton3.addActionListener(e -> System.out.println("[Preview] Stage 3 clicked"));
+        return view;
     }
 }

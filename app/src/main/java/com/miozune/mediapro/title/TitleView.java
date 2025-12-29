@@ -1,10 +1,21 @@
 package com.miozune.mediapro.title;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import com.miozune.mediapro.preview.Previewable;
 
-public class TitleView extends JPanel implements Previewable {
+@Previewable(description = "タイトル画面のプレビュー")
+public class TitleView extends JPanel {
 
     private JButton startButton;
 
@@ -55,13 +66,15 @@ public class TitleView extends JPanel implements Previewable {
         return startButton;
     }
 
-    @Override
-    public String getPreviewDescription() {
-        return "タイトル画面のプレビュー";
-    }
-
-    @Override
-    public void setupPreview() {
-        startButton.addActionListener(e -> System.out.println("Start clicked"));
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * ダミーのイベントリスナーを追加して動作確認ができるようにする。
+     *
+     * @return プレビュー用のTitleViewインスタンス
+     */
+    public static TitleView createPreview() {
+        TitleView view = new TitleView();
+        view.startButton.addActionListener(e -> System.out.println("[Preview] Start clicked"));
+        return view;
     }
 }

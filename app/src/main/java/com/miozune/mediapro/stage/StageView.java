@@ -1,10 +1,24 @@
 package com.miozune.mediapro.stage;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
 import com.miozune.mediapro.preview.Previewable;
 
-public class StageView extends JPanel implements Previewable {
+@Previewable(description = "戦闘画面のテストビューです。")
+public class StageView extends JPanel {
 
     private JPanel topPanel;
     private JPanel bottomPanel;
@@ -136,17 +150,17 @@ public class StageView extends JPanel implements Previewable {
         enemyHpBar.setValue(hp);
     }
 
-    /* Previewableインターフェースの実装 */
-    @Override
-    public String getPreviewDescription() {
-        return "戦闘画面のテストビューです。";
-    }
-
-    @Override
-    public void setupPreview() {
-        // プレビュー表示用にダミーのHPを設定
-        updatePlayerHP(80);
-        updateEnemyHP(50);
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * ダミーのHPを設定して表示確認ができるようにする。
+     *
+     * @return プレビュー用のStageViewインスタンス
+     */
+    public static StageView createPreview() {
+        StageView view = new StageView();
+        view.updatePlayerHP(80);
+        view.updateEnemyHP(50);
+        return view;
     }
 
     // Getter

@@ -1,19 +1,21 @@
 package com.miozune.mediapro.core;
 
-import com.miozune.mediapro.preview.Previewable;
-
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import javax.swing.JPanel;
+
+import com.miozune.mediapro.preview.Previewable;
+
 /**
  * ゲームの描画を行うパネルコンポーネント。
  * ダブルバッファリングを使用してちらつきを防止する。
  */
-public class GamePanel extends JPanel implements Previewable {
+@Previewable(description = "ゲームの描画を行う黒い背景のパネル")
+public class GamePanel extends JPanel {
     
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 600;
@@ -109,17 +111,13 @@ public class GamePanel extends JPanel implements Previewable {
         return getHeight();
     }
     
-    // Previewable インターフェースの実装
-    
-    @Override
-    public String getPreviewDescription() {
-        return "ゲームの描画を行う黒い背景のパネル";
-    }
-    
-    @Override
-    public void setupPreview() {
-        // プレビュー用のセットアップ
-        // 必要に応じてダミーデータを設定
-        setModel(new GameModel());
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * GameModelを初期化してプレビュー表示する。
+     *
+     * @return プレビュー用のGamePanelインスタンス
+     */
+    public static GamePanel createPreview() {
+        return new GamePanel(new GameModel());
     }
 }

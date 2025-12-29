@@ -65,11 +65,11 @@ com.miozune.mediapro.title/
 └── TitleController.java  # タイトル画面の入力処理
 ```
 
-## Previewableの実装
+## プレビューシステム
 
-新しいViewコンポーネントを作成する際は、**必ず`Previewable`インターフェースを実装**してください。これにより、ゲーム全体を起動せずにコンポーネント単体でプレビューできます。
+新しいViewコンポーネントを作成する際は、**必ず`@Previewable`アノテーションを付与**してください。これにより、ゲーム全体を起動せずにコンポーネント単体でプレビューできます。
 
-### 1. Previewableインターフェースの実装
+### 1. @Previewableアノテーションの付与
 
 ```java
 package com.miozune.mediapro.example;
@@ -77,30 +77,43 @@ package com.miozune.mediapro.example;
 import com.miozune.mediapro.preview.Previewable;
 import javax.swing.JPanel;
 
-public class ExampleView extends JPanel implements Previewable {
+@Previewable(description = "サンプルビューの説明")
+public class ExampleView extends JPanel {
     
-    // no-argコンストラクタが必須
     public ExampleView() {
         // 初期化処理
     }
     
-    @Override
-    public String getPreviewDescription() {
-        return "サンプルビューの説明";
-    }
-    
-    @Override
-    public void setupPreview() {
-        // プレビュー用のダミーデータをセットアップ
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * ダミーデータの設定やイベントリスナーの追加を行う。
+     */
+    public static ExampleView createPreview() {
+        ExampleView view = new ExampleView();
+        // ダミーデータの設定
+        // イベントリスナーの追加
+        return view;
     }
 }
 ```
 
-**重要**: `Previewable`を実装した`JComponent`のサブクラスは、**no-argコンストラクタ（引数なしのコンストラクタ）を持つ必要があります**。これにより、クラスパススキャンによって自動的に検出・登録されます。
+**重要ポイント:**
+
+1. **@Previewableアノテーション**: クラスに`@Previewable`アノテーションを付与します。`description`パラメータはオプションで、省略するとクラス名が使用されます。
+
+2. **createPreview()静的メソッド（推奨）**: プレビュー用のインスタンスを生成する`public static [Type] createPreview()`メソッドを実装します。このメソッド内で:
+   - インスタンスを生成
+   - プレビュー用のダミーデータを設定
+   - プレビュー用のイベントリスナーを追加
+   - 完全に初期化されたインスタンスを返す
+
+3. **no-argコンストラクタ（フォールバック）**: `createPreview()`メソッドが実装されていない場合、引数なしコンストラクタが使用されます（ただしWARNログが出力されます）。シンプルなViewでは引数なしコンストラクタのみでも動作しますが、`createPreview()`の実装を推奨します。
+
+4. **実運用コンストラクタ**: Viewが依存関係（ModelやController）を必要とする場合、それらを引数に取る別のコンストラクタを自由に作成できます。プレビューはあくまで`createPreview()`を通じて行われるため、実運用のコンストラクタ設計に制約はありません。
 
 ### 2. 自動登録
 
-`Previewable`を実装し、no-argコンストラクタを持つコンポーネントは、`com.miozune.mediapro`パッケージ配下に配置することで**自動的に登録されます**。手動での登録は不要です。
+`@Previewable`アノテーションを持つコンポーネントは、`com.miozune.mediapro`パッケージ配下に配置することで**自動的に検出・登録されます**。手動での登録は不要です。
 
 ### 3. プレビューの実行
 
@@ -110,4 +123,70 @@ public class ExampleView extends JPanel implements Previewable {
 
 # 特定のコンポーネントをプレビュー
 ./preview.sh ExampleView
+```
+
+### 4. 設計パターン例
+
+#### パターンA: 依存関係なしのシンプルなView
+
+```java
+@Previewable(description = "タイトル画面")
+public class TitleView extends JPanel {
+    private JButton startButton;
+    
+    public TitleView() {
+        // UI初期化
+    }
+    
+    public static TitleView createPreview() {
+        TitleView view = new TitleView();
+        // プレビュー用のダミーリスナー追加
+        view.startButton.addActionListener(e -> 
+            System.out.println("[Preview] Start clicked"));
+        return view;
+    }
+}
+```
+
+#### パターンB: Modelを必要とするView
+
+```java
+@Previewable(description = "カード表示コンポーネント")
+public class CardView extends JPanel {
+    private final CardModel model;
+    
+    // 実運用用コンストラクタ
+    public CardView(CardModel model) {
+        this.model = model;
+        initUI();
+    }
+    
+    // プレビュー用ファクトリーメソッド
+    public static CardView createPreview() {
+        return new CardView(CardModel.createSample());
+    }
+}
+```
+
+#### パターンC: 複雑な初期化が必要なView
+
+```java
+@Previewable(description = "戦闘画面")
+public class BattleView extends JPanel {
+    
+    public BattleView() {
+        initUI();
+    }
+    
+    public static BattleView createPreview() {
+        BattleView view = new BattleView();
+        // プレビュー用のダミーデータを設定
+        view.updatePlayerHP(80);
+        view.updateEnemyHP(50);
+        // プレビュー用のイベントリスナー追加
+        view.getAttackButton().addActionListener(e -> 
+            System.out.println("[Preview] Attack clicked"));
+        return view;
+    }
+}
 ```

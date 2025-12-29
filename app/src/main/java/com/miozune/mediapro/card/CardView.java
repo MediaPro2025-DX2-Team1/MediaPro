@@ -19,7 +19,8 @@ import com.miozune.mediapro.util.ImageLoader;
  * カード名、コスト、画像、説明文を表示する。
  * サイズは親コンテナに応じて可変。
  */
-public class CardView extends JPanel implements Previewable {
+@Previewable(description = "カード単体を表示するコンポーネント。カード名、コスト、画像、説明文を表示する。")
+public class CardView extends JPanel {
 
     /** カードのデフォルト幅 */
     private static final int DEFAULT_WIDTH = 150;
@@ -97,18 +98,6 @@ public class CardView extends JPanel implements Previewable {
      */
     public CardModel getCardModel() {
         return cardModel;
-    }
-
-    /**
-     * カードデータを設定する。
-     * プレビュー専用であり、publicには提供しない。
-     *
-     * @param cardModel カードデータ
-     */
-    private void setCardModel(CardModel cardModel) {
-        this.cardModel = cardModel;
-        loadImage();
-        repaint();
     }
 
     @Override
@@ -335,15 +324,13 @@ public class CardView extends JPanel implements Previewable {
         g2d.drawString(costStr, textX, textY);
     }
 
-    // --- Previewable実装 ---
-
-    @Override
-    public String getPreviewDescription() {
-        return "カード単体を表示するコンポーネント。カード名、コスト、画像、説明文を表示する。";
-    }
-
-    @Override
-    public void setupPreview() {
-        setCardModel(CardModel.createSample());
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * サンプルカードデータを使用してプレビュー表示する。
+     *
+     * @return プレビュー用のCardViewインスタンス
+     */
+    public static CardView createPreview() {
+        return new CardView(CardModel.createSample());
     }
 }

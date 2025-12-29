@@ -26,14 +26,31 @@ import com.miozune.mediapro.util.SwingUtils;
 public class PreviewLauncher {
 
     // LinkedHashMapで登録順を保持
-    private static final Map<String, Previewable> PREVIEWABLE_COMPONENTS = new LinkedHashMap<>();
+    private static final Map<String, PreviewableComponent> PREVIEWABLE_COMPONENTS = new LinkedHashMap<>();
     private static boolean componentsScanned = false;
+    
+    /**
+     * プレビュー可能なコンポーネントとその説明を保持するクラス。
+     */
+    private static class PreviewableComponent {
+        final JComponent component;
+        final String description;
+        
+        PreviewableComponent(JComponent component, String description) {
+            this.component = component;
+            this.description = description;
+        }
+    }
 
     /**
-     * クラスパスをスキャンしてPreviewableを実装したコンポーネントを自動登録する。
+     * クラスパスをスキャンして@Previewableアノテーションを持つコンポーネントを自動登録する。
      * com.miozune.mediaproパッケージ配下のすべてのクラスを検査し、
-     * Previewableを実装しJComponentを継承した具象クラスを検出する。
-     * no-argコンストラクタがない場合は警告を出力してスキップする。
+     * @PreviewableアノテーションとJComponentを継承した具象クラスを検出する。
+     * 
+     * インスタンス化の優先順位:
+     * 1. public static [Type] createPreview() メソッド（推奨）
+     * 2. public no-arg constructor（フォールバック、WARNログ出力）
+     * 
      * 検出されたコンポーネントはアルファベット順にソートして登録される。
      */
     @SuppressWarnings("UseSpecificCatch")
@@ -51,18 +68,11 @@ public class PreviewLauncher {
             for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive("com.miozune.mediapro")) {
                 try {
                     Class<?> clazz = classInfo.load();
-                    // Previewableを実装し、JComponentを継承し、抽象クラスでないことをチェック
-                    if (Previewable.class.isAssignableFrom(clazz) &&
+                    // @Previewableアノテーションを持ち、JComponentを継承し、抽象クラスでないことをチェック
+                    if (clazz.isAnnotationPresent(Previewable.class) &&
                         JComponent.class.isAssignableFrom(clazz) &&
                         !Modifier.isAbstract(clazz.getModifiers())) {
-                        // 引数なしコンストラクタの存在をチェック
-                        try {
-                            clazz.getDeclaredConstructor();
-                            previewableClasses.add(clazz);
-                        } catch (NoSuchMethodException e) {
-                            System.err.println("WARN: " + clazz.getSimpleName() + 
-                                " implements Previewable but does not have a no-arg constructor. Skipping.");
-                        }
+                        previewableClasses.add(clazz);
                     }
                 } catch (Throwable t) {
                     // 無視
@@ -72,10 +82,18 @@ public class PreviewLauncher {
             previewableClasses.sort((a, b) -> a.getSimpleName().compareTo(b.getSimpleName()));
             for (Class<?> clazz : previewableClasses) {
                 try {
-                    @SuppressWarnings("unchecked")
-                    JComponent component = (JComponent) clazz.getDeclaredConstructor().newInstance();
+                    JComponent component = createPreviewInstance(clazz);
                     String name = component.getClass().getSimpleName().toLowerCase();
-                    PREVIEWABLE_COMPONENTS.put(name, (Previewable) component);
+                    
+                    // Descriptionを取得
+                    Previewable annotation = clazz.getAnnotation(Previewable.class);
+                    String description = annotation.description();
+                    if (description.isEmpty()) {
+                        description = clazz.getSimpleName();
+                    }
+                    
+                    PreviewableComponent previewableComponent = new PreviewableComponent(component, description);
+                    PREVIEWABLE_COMPONENTS.put(name, previewableComponent);
                 } catch (Exception e) {
                     System.err.println("ERROR: Failed to register " + clazz.getSimpleName() + ": " + e.getMessage());
                 }
@@ -83,6 +101,41 @@ public class PreviewLauncher {
 
         } catch (IOException e) {
             System.err.println("ERROR: Failed to scan classpath: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * プレビュー用のインスタンスを生成する。
+     * 
+     * 1. createPreview() staticメソッドを探して実行
+     * 2. なければno-arg constructorを使用（ERRORログ出力）
+     * 3. どちらもなければ例外をスロー
+     *
+     * @param clazz コンポーネントクラス
+     * @return プレビュー用インスタンス
+     * @throws Exception インスタンス化に失敗した場合
+     */
+    @SuppressWarnings("unchecked")
+    private static JComponent createPreviewInstance(Class<?> clazz) throws Exception {
+        // Step 1: createPreview() staticメソッドを探す
+        try {
+            java.lang.reflect.Method method = clazz.getMethod("createPreview");
+            if (java.lang.reflect.Modifier.isStatic(method.getModifiers()) &&
+                JComponent.class.isAssignableFrom(method.getReturnType())) {
+                return (JComponent) method.invoke(null);
+            }
+        } catch (NoSuchMethodException e) {
+            // createPreview()が見つからない場合はno-arg constructorにフォールバック
+        }
+        
+        // Step 2: No-arg constructor にフォールバック（WARNログ出力）
+        try {
+            System.err.println("WARN: " + clazz.getSimpleName() + " does not have createPreview() static method.");
+            System.err.println("       Falling back to no-arg constructor. Consider adding:");
+            System.err.println("       public static " + clazz.getSimpleName() + " createPreview() { ... }");
+            return (JComponent) clazz.getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException e) {
+            throw new Exception("No createPreview() method or no-arg constructor found in " + clazz.getSimpleName());
         }
     }
 
@@ -99,9 +152,9 @@ public class PreviewLauncher {
             return;
         }
 
-        Previewable previewable = PREVIEWABLE_COMPONENTS.get(componentName.toLowerCase());
+        PreviewableComponent previewableComponent = PREVIEWABLE_COMPONENTS.get(componentName.toLowerCase());
 
-        if (previewable == null) {
+        if (previewableComponent == null) {
             System.err.println("Error: Unknown component '" + componentName + "'");
             System.err.println();
             printAvailableComponents();
@@ -110,27 +163,26 @@ public class PreviewLauncher {
         }
 
         SwingUtils.invokeLater(() -> {
-            previewable.setupPreview();
-            showPreviewWindow(previewable);
+            showPreviewWindow(previewableComponent);
         });
     }
 
     /**
      * プレビューウィンドウを表示する。
      *
-     * @param previewable プレビューするコンポーネント
+     * @param previewableComponent プレビューするコンポーネント
      */
-    private static void showPreviewWindow(Previewable previewable) {
-        JFrame frame = new JFrame("Preview: " + previewable.getClass().getSimpleName());
+    private static void showPreviewWindow(PreviewableComponent previewableComponent) {
+        JFrame frame = new JFrame("Preview: " + previewableComponent.component.getClass().getSimpleName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // ヘッダーパネル
-        JPanel headerPanel = createHeaderPanel(previewable);
+        JPanel headerPanel = createHeaderPanel(previewableComponent);
 
         // メインレイアウト
         frame.setLayout(new BorderLayout());
         frame.add(headerPanel, BorderLayout.NORTH);
-        frame.add((JComponent) previewable, BorderLayout.CENTER);
+        frame.add(previewableComponent.component, BorderLayout.CENTER);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -140,19 +192,19 @@ public class PreviewLauncher {
     /**
      * ヘッダーパネルを作成する。
      *
-     * @param previewable プレビューするコンポーネント
+     * @param previewableComponent プレビューするコンポーネント
      * @return ヘッダーパネル
      */
-    private static JPanel createHeaderPanel(Previewable previewable) {
+    private static JPanel createHeaderPanel(PreviewableComponent previewableComponent) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(50, 50, 50));
 
-        JLabel titleLabel = new JLabel("  Preview: " + previewable.getClass().getSimpleName());
+        JLabel titleLabel = new JLabel("  Preview: " + previewableComponent.component.getClass().getSimpleName());
 
         titleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         titleLabel.setForeground(Color.WHITE);
 
-        JLabel descLabel = new JLabel(previewable.getPreviewDescription() + "  ");
+        JLabel descLabel = new JLabel(previewableComponent.description + "  ");
         descLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         descLabel.setForeground(Color.LIGHT_GRAY);
         descLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -170,9 +222,9 @@ public class PreviewLauncher {
         System.out.println("Available components for preview:");
         System.out.println();
 
-        PREVIEWABLE_COMPONENTS.forEach((key, previewable) -> {
+        PREVIEWABLE_COMPONENTS.forEach((key, previewableComponent) -> {
             System.out.println(
-                    "  " + previewable.getClass().getSimpleName() + " - " + previewable.getPreviewDescription());
+                    "  " + previewableComponent.component.getClass().getSimpleName() + " - " + previewableComponent.description);
         });
 
         System.out.println();

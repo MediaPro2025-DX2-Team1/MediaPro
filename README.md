@@ -26,8 +26,35 @@
 
 ### プレビューの登録
 
-- プレビューしたいコンポーネントで`com.miozune.mediapro.preview.Previewable`インターフェースを実装する
-- `Previewable`を実装した`JComponent`は、引数なしコンストラクタを持つことで**自動的に検出・登録される**
+1. プレビューしたいコンポーネントに`@Previewable`アノテーションを付与する
+2. `public static [Type] createPreview()`メソッドを実装する（推奨）
+   - このメソッド内でダミーデータの設定やイベントリスナーの追加を行う
+   - 実装しない場合は引数なしコンストラクタが使用される
+3. `@Previewable`を付与した`JComponent`は自動的に検出・登録される
+
+#### 実装例
+
+```java
+import com.miozune.mediapro.preview.Previewable;
+import javax.swing.JPanel;
+
+@Previewable(description = "タイトル画面のプレビュー")
+public class TitleView extends JPanel {
+    
+    public TitleView() {
+        // UI初期化
+    }
+    
+    public static TitleView createPreview() {
+        TitleView view = new TitleView();
+        // プレビュー用のダミーリスナー追加
+        view.getStartButton().addActionListener(
+            e -> System.out.println("[Preview] Start clicked")
+        );
+        return view;
+    }
+}
+```
 
 ### プレビューの閲覧
 
