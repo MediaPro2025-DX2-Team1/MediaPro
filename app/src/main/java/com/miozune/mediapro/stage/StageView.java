@@ -2,8 +2,9 @@ package com.miozune.mediapro.stage;
 
 import javax.swing.*;
 import java.awt.*;
+import com.miozune.mediapro.preview.Previewable;
 
-public class StageView extends JPanel {
+public class StageView extends JPanel implements Previewable {
 
     private JPanel topPanel;
     private JPanel bottomPanel;
@@ -133,6 +134,19 @@ public class StageView extends JPanel {
     public void updateEnemyHP(int hp) {
         enemyHpLabel.setText("HP: " + hp);
         enemyHpBar.setValue(hp);
+    }
+
+    /* Previewableインターフェースの実装 */
+    @Override
+    public String getPreviewDescription() {
+        return "戦闘画面のテストビューです。";
+    }
+
+    @Override
+    public void setupPreview() {
+        // プレビュー表示用にダミーのHPを設定
+        updatePlayerHP(80);
+        updateEnemyHP(50);
     }
 
     // Getter
