@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import com.miozune.mediapro.preview.Previewable;
 
-
-
 public class WorldView extends JPanel implements Previewable {
 
     private JButton stageButton1;
