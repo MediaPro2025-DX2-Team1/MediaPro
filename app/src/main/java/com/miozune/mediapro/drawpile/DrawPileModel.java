@@ -8,7 +8,7 @@ public class DrawPileModel {
     private List<CardModel> cards;
 
     public DrawPileModel() {
-        
+
     }
 
     public void shuffle() {
@@ -19,11 +19,15 @@ public class DrawPileModel {
         throw new UnsupportedOperationException();
     }
 
+    public CardModel drawCard() {
+        throw new UnsupportedOperationException();
+    }
+
     public int getSize() {
         throw new UnsupportedOperationException();
     }
 
     public void reset() {
         throw new UnsupportedOperationException();
-    }   
+    }
 }

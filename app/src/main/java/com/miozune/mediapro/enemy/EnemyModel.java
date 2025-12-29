@@ -12,9 +12,13 @@ public class EnemyModel {
     private List<EffectModel> effects;
 
     public EnemyModel() {
-        
+
     }
-    
+
+    public int getHp() {
+        return hp;
+    }
+
     public String getName() {
         throw new UnsupportedOperationException();
     }
