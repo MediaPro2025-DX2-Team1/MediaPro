@@ -79,6 +79,11 @@ import javax.swing.JPanel;
 
 public class ExampleView extends JPanel implements Previewable {
     
+    // no-argコンストラクタが必須
+    public ExampleView() {
+        // 初期化処理
+    }
+    
     @Override
     public String getPreviewDescription() {
         return "サンプルビューの説明";
@@ -91,19 +96,11 @@ public class ExampleView extends JPanel implements Previewable {
 }
 ```
 
-### 2. PreviewLauncherへの登録
+**重要**: `Previewable`を実装した`JComponent`のサブクラスは、**no-argコンストラクタ（引数なしのコンストラクタ）を持つ必要があります**。これにより、クラスパススキャンによって自動的に検出・登録されます。
 
-`PreviewLauncher.java`のstaticブロックにコンポーネントを登録してください。
+### 2. 自動登録
 
-```java
-static {
-    // 既存の登録
-    registerComponent(GamePanel::new);
-    
-    // 新しいコンポーネントを追加
-    registerComponent(ExampleView::new);
-}
-```
+`Previewable`を実装し、no-argコンストラクタを持つコンポーネントは、`com.miozune.mediapro`パッケージ配下に配置することで**自動的に登録されます**。手動での登録は不要です。
 
 ### 3. プレビューの実行
 

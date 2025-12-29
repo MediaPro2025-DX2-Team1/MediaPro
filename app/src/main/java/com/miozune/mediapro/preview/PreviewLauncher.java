@@ -3,9 +3,12 @@ package com.miozune.mediapro.preview;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -13,12 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.miozune.mediapro.card.CardView;
-import com.miozune.mediapro.core.GamePanel;
-import com.miozune.mediapro.stage.StageView;
-import com.miozune.mediapro.title.TitleView;
+import com.google.common.reflect.ClassPath;
 import com.miozune.mediapro.util.SwingUtils;
-import com.miozune.mediapro.world.WorldView;
 
 /**
  * コンポーネントを単体でプレビューするためのランチャー。
@@ -27,30 +26,76 @@ import com.miozune.mediapro.world.WorldView;
 public class PreviewLauncher {
 
     // LinkedHashMapで登録順を保持
-    private static final Map<String, Supplier<? extends Previewable>> PREVIEWABLE_COMPONENTS = new LinkedHashMap<>();
-
-    static {
-        // プレビュー可能なコンポーネントを登録
-        registerComponent(GamePanel::new);
-        registerComponent(CardView::new);
-        registerComponent(WorldView::new);
-        registerComponent(TitleView::new);
-        registerComponent(StageView::new);
-    }
+    private static final Map<String, Previewable> PREVIEWABLE_COMPONENTS = new LinkedHashMap<>();
+    private static boolean componentsScanned = false;
 
     /**
      * プレビュー可能なコンポーネントを登録する。
      * コンポーネントは {@link Previewable} インターフェースを実装している必要がある。
      * プレビュー名はクラス名から自動的に取得される。
      *
-     * @param supplier コンポーネントのサプライヤー
+     * @param instance コンポーネントのインスタンス
      * @param <T>      Previewableを実装したJComponentのサブタイプ
      */
-    public static <T extends JComponent & Previewable> void registerComponent(Supplier<T> supplier) {
-        // 一度インスタンスを作成してクラス名を取得（登録時のみ）
-        T instance = supplier.get();
+    public static <T extends JComponent & Previewable> void registerComponent(T instance) {
         String name = instance.getClass().getSimpleName();
-        PREVIEWABLE_COMPONENTS.put(name.toLowerCase(), supplier::get);
+        PREVIEWABLE_COMPONENTS.put(name.toLowerCase(), instance);
+    }
+
+    /**
+     * クラスパスをスキャンしてPreviewableを実装したコンポーネントを自動登録する。
+     * com.miozune.mediaproパッケージ配下のすべてのクラスを検査し、
+     * Previewableを実装しJComponentを継承した具象クラスを検出する。
+     * no-argコンストラクタがない場合は警告を出力してスキップする。
+     * 検出されたコンポーネントはアルファベット順にソートして登録される。
+     */
+    @SuppressWarnings("UseSpecificCatch")
+    private static void scanAndRegisterComponents() {
+        if (componentsScanned) {
+            return;
+        }
+        componentsScanned = true;
+
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            ClassPath classPath = ClassPath.from(classLoader);
+            List<Class<?>> previewableClasses = new ArrayList<>();
+
+            for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive("com.miozune.mediapro")) {
+                try {
+                    Class<?> clazz = classInfo.load();
+                    // Previewableを実装し、JComponentを継承し、抽象クラスでないことをチェック
+                    if (Previewable.class.isAssignableFrom(clazz) &&
+                        JComponent.class.isAssignableFrom(clazz) &&
+                        !Modifier.isAbstract(clazz.getModifiers())) {
+                        // 引数なしコンストラクタの存在をチェック
+                        try {
+                            clazz.getDeclaredConstructor();
+                            previewableClasses.add(clazz);
+                        } catch (NoSuchMethodException e) {
+                            System.err.println("WARN: " + clazz.getSimpleName() + 
+                                " implements Previewable but does not have a no-arg constructor. Skipping.");
+                        }
+                    }
+                } catch (Throwable t) {
+                    // 無視
+                }
+            }
+
+            previewableClasses.sort((a, b) -> a.getSimpleName().compareTo(b.getSimpleName()));
+            for (Class<?> clazz : previewableClasses) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    JComponent component = (JComponent) clazz.getDeclaredConstructor().newInstance();
+                    registerComponent((JComponent & Previewable) component);
+                } catch (Exception e) {
+                    System.err.println("ERROR: Failed to register " + clazz.getSimpleName() + ": " + e.getMessage());
+                }
+            }
+
+        } catch (IOException e) {
+            System.err.println("ERROR: Failed to scan classpath: " + e.getMessage());
+        }
     }
 
     /**
@@ -59,14 +104,16 @@ public class PreviewLauncher {
      * @param componentName コンポーネント名、または "list" で一覧表示
      */
     public static void launch(String componentName) {
+        scanAndRegisterComponents();
+
         if (componentName.equalsIgnoreCase("list")) {
             printAvailableComponents();
             return;
         }
 
-        Supplier<? extends Previewable> supplier = PREVIEWABLE_COMPONENTS.get(componentName.toLowerCase());
+        Previewable previewable = PREVIEWABLE_COMPONENTS.get(componentName.toLowerCase());
 
-        if (supplier == null) {
+        if (previewable == null) {
             System.err.println("Error: Unknown component '" + componentName + "'");
             System.err.println();
             printAvailableComponents();
@@ -75,9 +122,7 @@ public class PreviewLauncher {
         }
 
         SwingUtils.invokeLater(() -> {
-            Previewable previewable = supplier.get();
             previewable.setupPreview();
-
             showPreviewWindow(previewable);
         });
     }
@@ -137,8 +182,7 @@ public class PreviewLauncher {
         System.out.println("Available components for preview:");
         System.out.println();
 
-        PREVIEWABLE_COMPONENTS.forEach((key, supplier) -> {
-            Previewable previewable = supplier.get();
+        PREVIEWABLE_COMPONENTS.forEach((key, previewable) -> {
             System.out.println(
                     "  " + previewable.getClass().getSimpleName() + " - " + previewable.getPreviewDescription());
         });
