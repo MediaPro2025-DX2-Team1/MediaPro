@@ -30,19 +30,6 @@ public class PreviewLauncher {
     private static boolean componentsScanned = false;
 
     /**
-     * プレビュー可能なコンポーネントを登録する。
-     * コンポーネントは {@link Previewable} インターフェースを実装している必要がある。
-     * プレビュー名はクラス名から自動的に取得される。
-     *
-     * @param instance コンポーネントのインスタンス
-     * @param <T>      Previewableを実装したJComponentのサブタイプ
-     */
-    public static <T extends JComponent & Previewable> void registerComponent(T instance) {
-        String name = instance.getClass().getSimpleName();
-        PREVIEWABLE_COMPONENTS.put(name.toLowerCase(), instance);
-    }
-
-    /**
      * クラスパスをスキャンしてPreviewableを実装したコンポーネントを自動登録する。
      * com.miozune.mediaproパッケージ配下のすべてのクラスを検査し、
      * Previewableを実装しJComponentを継承した具象クラスを検出する。
@@ -87,7 +74,8 @@ public class PreviewLauncher {
                 try {
                     @SuppressWarnings("unchecked")
                     JComponent component = (JComponent) clazz.getDeclaredConstructor().newInstance();
-                    registerComponent((JComponent & Previewable) component);
+                    String name = component.getClass().getSimpleName().toLowerCase();
+                    PREVIEWABLE_COMPONENTS.put(name, (Previewable) component);
                 } catch (Exception e) {
                     System.err.println("ERROR: Failed to register " + clazz.getSimpleName() + ": " + e.getMessage());
                 }
