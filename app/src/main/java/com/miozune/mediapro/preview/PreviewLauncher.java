@@ -1,21 +1,23 @@
 package com.miozune.mediapro.preview;
 
-import com.miozune.mediapro.core.GamePanel;
-import com.miozune.mediapro.util.SwingUtils;
-import com.miozune.mediapro.world.WorldView;
-import com.miozune.mediapro.title.TitleView;
-
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.core.GamePanel;
+import com.miozune.mediapro.title.TitleView;
+import com.miozune.mediapro.util.SwingUtils;
+import com.miozune.mediapro.world.WorldView;
 
 /**
  * コンポーネントを単体でプレビューするためのランチャー。
@@ -29,6 +31,7 @@ public class PreviewLauncher {
     static {
         // プレビュー可能なコンポーネントを登録
         registerComponent(GamePanel::new);
+        registerComponent(CardView::new);
         
         // 新しいコンポーネントを追加する場合はここに登録
         // registerComponent(YourComponent::new);
