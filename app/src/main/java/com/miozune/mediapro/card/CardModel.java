@@ -1,20 +1,33 @@
 package com.miozune.mediapro.card;
 
-public class CardModel {
-    private String name;
-    private int cost;
-    private String image;
-    private String description; 
-    
-    public CardModel() {
-        
-    }
+/**
+ * カードのデータを保持するイミュータブルなレコード。
+ * カード名、コスト、画像ファイル名、説明文を持つ。
+ *
+ * @param name カード名
+ * @param cost コスト
+ * @param imageName 画像ファイル名（例: "card_001.jpg"）
+ * @param description 説明文
+ */
+public record CardModel(
+    String name,
+    int cost,
+    String imageName,
+    String description
+) {
 
-    public int getCost() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void applyEffect() {
-        throw new UnsupportedOperationException();
+    /**
+     * サンプルのCardModelを作成する。
+     * プレビューやテスト用途に使用。
+     *
+     * @return サンプルのCardModel
+     */
+    public static CardModel createSample() {
+        return new CardModel(
+            "サンプルカード",
+            3,
+            "sample.jpg",
+            "これはサンプルカードの説明文です。カードの効果や特徴などを記載します。"
+        );
     }
 }
