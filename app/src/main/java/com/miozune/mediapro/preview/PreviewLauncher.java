@@ -2,7 +2,6 @@ package com.miozune.mediapro.preview;
 
 import com.miozune.mediapro.core.GamePanel;
 import com.miozune.mediapro.util.SwingUtils;
-import com.miozune.mediapro.world.WorldView;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -31,7 +30,6 @@ public class PreviewLauncher {
 
         // 新しいコンポーネントを追加する場合はここに登録
         // registerComponent(YourComponent::new);
-        registerComponent(WorldView::new);
     }
 
     /**
