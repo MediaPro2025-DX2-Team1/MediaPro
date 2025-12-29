@@ -1,11 +1,12 @@
 package com.miozune.mediapro.util;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 /**
  * 画像リソースの読み込みを行うユーティリティクラス。
@@ -25,7 +26,7 @@ public final class ImageLoader {
      * 指定されたパスから画像を読み込む。
      * 読み込んだ画像はキャッシュされる。
      *
-     * @param path リソースパス（例: "/images/cards/card.png"）
+     * @param path リソースパス（例: "/images/cards/card.jpg"）
      * @return 読み込んだ画像、読み込みに失敗した場合はnull
      */
     public static BufferedImage loadImage(String path) {
@@ -54,7 +55,7 @@ public final class ImageLoader {
      * カード画像を読み込む。
      * "/images/cards/" をベースパスとして、指定されたファイル名の画像を読み込む。
      *
-     * @param fileName カード画像のファイル名（例: "card_001.png"）
+     * @param fileName カード画像のファイル名（例: "card_001.jpg"）
      * @return 読み込んだ画像、読み込みに失敗した場合はnull
      */
     public static BufferedImage loadCardImage(String fileName) {

@@ -6,7 +6,7 @@ package com.miozune.mediapro.card;
  *
  * @param name カード名
  * @param cost コスト
- * @param imageName 画像ファイル名（例: "card_001.png"）
+ * @param imageName 画像ファイル名（例: "card_001.jpg"）
  * @param description 説明文
  */
 public record CardModel(
