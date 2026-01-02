@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
+import javax.swing.plaf.basic.BasicProgressBarUI;
 
 import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
@@ -21,9 +22,37 @@ import com.miozune.mediapro.preview.Previewable;
 
 /**
  * プレイヤーの状態（HP、マナ、名前）を表示するViewコンポーネント。
- * PlayerModelの変更を監視し、UIを自動更新する。
  */
 public class PlayerView extends JPanel implements Previewable {
+
+    // --- カスタムProgressBarUI ---
+
+    /**
+     * JProgressBarの色を動的に変更するためのカスタムUI。
+     */
+    private static class ColoredProgressBarUI extends BasicProgressBarUI {
+        private final Color barColor;
+
+        public ColoredProgressBarUI(Color barColor) {
+            this.barColor = barColor;
+        }
+
+        @Override
+        protected Color getSelectionForeground() {
+            return Color.BLACK;
+        }
+
+        @Override
+        protected Color getSelectionBackground() {
+            return Color.BLACK;
+        }
+
+        @Override
+        protected void paintDeterminate(java.awt.Graphics g, javax.swing.JComponent c) {
+            progressBar.setForeground(barColor);
+            super.paintDeterminate(g, c);
+        }
+    }
 
     // --- UIコンポーネント ---
 
@@ -84,6 +113,7 @@ public class PlayerView extends JPanel implements Previewable {
         hpBar.setStringPainted(true);
         hpBar.setForeground(new Color(220, 50, 50));
         hpBar.setPreferredSize(new Dimension(300, 30));
+        // hpBarの色は動的に変更される
 
         hpLabel = new JLabel();
         hpLabel.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -93,6 +123,7 @@ public class PlayerView extends JPanel implements Previewable {
         manaBar.setStringPainted(true);
         manaBar.setForeground(new Color(50, 150, 220));
         manaBar.setPreferredSize(new Dimension(300, 30));
+        manaBar.setUI(new ColoredProgressBarUI(new Color(50, 150, 220))); // 青
 
         manaLabel = new JLabel();
         manaLabel.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -187,13 +218,15 @@ public class PlayerView extends JPanel implements Previewable {
         hpLabel.setText(String.format("HP: %d / %d", hp, maxHp));
 
         // HPに応じて色を変更
+        Color barColor;
         if (hp < maxHp * 0.3) {
-            hpBar.setForeground(new Color(180, 30, 30)); // 暗い赤
-        } else if (hp < maxHp * 0.6) {
-            hpBar.setForeground(new Color(220, 180, 50)); // 黄色
+            barColor = new Color(180, 30, 30); // 暗い赤
+        } else if (hp < maxHp * 0.5) {
+            barColor = new Color(220, 180, 50); // 黄色
         } else {
-            hpBar.setForeground(new Color(220, 50, 50)); // 通常の赤
+            barColor = new Color(50, 180, 50); // 緑
         }
+        hpBar.setUI(new ColoredProgressBarUI(barColor));
     }
 
     /**
