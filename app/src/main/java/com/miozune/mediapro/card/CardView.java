@@ -49,7 +49,7 @@ public class CardView extends JPanel implements Previewable {
     private static final Color COST_TEXT_COLOR = Color.WHITE;
 
     /** カードデータ */
-    private CardModel cardModel;
+    private final CardModel cardModel;
 
     /** 読み込まれた画像 */
     private BufferedImage cardImage;
@@ -97,18 +97,6 @@ public class CardView extends JPanel implements Previewable {
      */
     public CardModel getCardModel() {
         return cardModel;
-    }
-
-    /**
-     * カードデータを設定する。
-     * プレビュー専用であり、publicには提供しない。
-     *
-     * @param cardModel カードデータ
-     */
-    private void setCardModel(CardModel cardModel) {
-        this.cardModel = cardModel;
-        loadImage();
-        repaint();
     }
 
     @Override
@@ -343,7 +331,5 @@ public class CardView extends JPanel implements Previewable {
     }
 
     @Override
-    public void setupPreview() {
-        setCardModel(CardModel.createSample());
-    }
+    public void setupPreview() {}
 }
