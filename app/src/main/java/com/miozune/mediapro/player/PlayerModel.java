@@ -6,6 +6,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.miozune.mediapro.Effect.EffectModel;
 import com.miozune.mediapro.hand.HandModel;
+import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
+import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
+import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
+import com.miozune.mediapro.player.events.PlayerPropertyChangeEvent;
 
 /**
  * プレイヤーの状態を管理するModel。

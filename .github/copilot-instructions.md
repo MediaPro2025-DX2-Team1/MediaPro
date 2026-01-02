@@ -57,13 +57,20 @@ com.miozune.mediapro/
 - **Controller**: ユーザー入力を処理し、ModelとViewを仲介
   - **注意**: まだ完成していない他のViewへの遷移処理は、ダミーのログ出力にとどめる。無理にダミーコンポーネントを作成しないこと
 
-### 例: title機能のパッケージ構成
+### 例: プレイヤー機能のパッケージ構成
+
+イベントクラスは、**機能パッケージ内の`events`サブパッケージ**に配置します。
 
 ```
-com.miozune.mediapro.title/
-├── TitleModel.java       # タイトル画面の状態管理
-├── TitleView.java        # タイトル画面の描画（Previewable実装）
-└── TitleController.java  # タイトル画面の入力処理
+com.miozune.mediapro.player/
+├── PlayerModel.java                    # プレイヤーの状態管理
+├── PlayerView.java                     # プレイヤーの描画（Previewable実装）
+├── PlayerController.java               # プレイヤーの入力処理
+└── events/                             # イベント専用サブパッケージ
+    ├── PlayerPropertyChangeEvent.java  # sealed interface（基底）
+    ├── PlayerHpChangedEvent.java       # record（HP変更）
+    ├── PlayerManaChangedEvent.java     # record（マナ変更）
+    └── PlayerNameChangedEvent.java     # record（名前変更）
 ```
 
 ## イベント駆動パターン
@@ -85,7 +92,9 @@ Modelからの変更通知には、**型安全なイベント駆動パターン*
 #### 1. sealed interfaceで基底イベントを定義
 
 ```java
-// [Feature]PropertyChangeEvent.java
+// events/[Feature]PropertyChangeEvent.java
+package com.miozune.mediapro.player.events;
+
 public sealed interface PlayerPropertyChangeEvent 
     permits PlayerHpChangedEvent, PlayerManaChangedEvent, PlayerNameChangedEvent {
     
@@ -96,7 +105,9 @@ public sealed interface PlayerPropertyChangeEvent
 #### 2. recordで具体的なイベントを定義
 
 ```java
-// PlayerHpChangedEvent.java
+// events/PlayerHpChangedEvent.java
+package com.miozune.mediapro.player.events;
+
 public record PlayerHpChangedEvent(
     PlayerModel player,
     int oldHp,

@@ -1,4 +1,6 @@
-package com.miozune.mediapro.player;
+package com.miozune.mediapro.player.events;
+
+import com.miozune.mediapro.player.PlayerModel;
 
 /**
  * プレイヤーのプロパティ変更を表すイベントの基底インターフェース。

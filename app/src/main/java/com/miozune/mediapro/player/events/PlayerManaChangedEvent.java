@@ -1,4 +1,6 @@
-package com.miozune.mediapro.player;
+package com.miozune.mediapro.player.events;
+
+import com.miozune.mediapro.player.PlayerModel;
 
 /**
  * プレイヤーのマナ変更イベント。

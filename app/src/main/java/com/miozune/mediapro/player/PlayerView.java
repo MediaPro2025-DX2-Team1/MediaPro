@@ -14,6 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
+import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
+import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
+import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 
 /**
