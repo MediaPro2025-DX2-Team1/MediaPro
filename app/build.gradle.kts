@@ -32,5 +32,6 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "com.miozune.mediapro.Main"
+    // コマンドラインからの上書きを許可: ./gradlew run -PmainClass=com.example.Main
+    mainClass = providers.gradleProperty("mainClass").orElse("com.miozune.mediapro.Main")
 }

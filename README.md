@@ -26,8 +26,8 @@
 
 ### プレビューの登録
 
-1. プレビューしたいコンポーネントで`com.miozune.mediapro.preview.Previewable`インターフェースを実装する
-2. `com.miozune.mediapro.preview.PreviewLauncher`で`registerComponent`を呼び出して登録する
+- プレビューしたいコンポーネントで`com.miozune.mediapro.preview.Previewable`インターフェースを実装する
+- `Previewable`を実装した`JComponent`は、引数なしコンストラクタを持つことで**自動的に検出・登録される**
 
 ### プレビューの閲覧
 
