@@ -19,7 +19,7 @@ public class DeckView extends JPanel implements Previewable {
     private JButton addButton;
     private JButton removeButton;
 
-    // no-argコンストラクタ（Previewable要件）
+    // コンストラクタ（Previewable要件）
     public DeckView() {
         this(new DeckModel("デフォルトデッキ"));
     }
