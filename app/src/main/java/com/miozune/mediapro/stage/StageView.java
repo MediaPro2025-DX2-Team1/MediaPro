@@ -2,6 +2,11 @@ package com.miozune.mediapro.stage;
 
 import javax.swing.*;
 import java.awt.*;
+
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.hand.HandController;
+import com.miozune.mediapro.hand.HandModel;
+import com.miozune.mediapro.hand.HandView;
 import com.miozune.mediapro.preview.Previewable;
 
 public class StageView extends JPanel implements Previewable {
@@ -12,7 +17,7 @@ public class StageView extends JPanel implements Previewable {
     private JPanel playerPanel;
     private JPanel enemyPanel;
 
-    private JPanel handPanel;
+    private JPanel handPanel; 
     private JPanel actionPanel;
 
     private JButton drawButton;
@@ -43,14 +48,13 @@ public class StageView extends JPanel implements Previewable {
 
         /* --- 下部：操作エリア --- */
         bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setPreferredSize(new Dimension(0, 200));
+        bottomPanel.setPreferredSize(new Dimension(0, 200)); 
         bottomPanel.setOpaque(false);
 
-        // 左側：手札（仮）
-        handPanel = new JPanel();
+        // 左側：手札表示エリア
+        handPanel = new JPanel(new BorderLayout());
         handPanel.setBackground(new Color(45, 45, 45));
         handPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        handPanel.add(new JLabel("<html><font color='white'>手札パネル（未実装）</font></html>"));
 
         // 右側：アクションボタン（3分割して埋める）
         actionPanel = new JPanel(new GridLayout(3, 1, 0, 5)); // 縦に3つ並べる
@@ -75,6 +79,14 @@ public class StageView extends JPanel implements Previewable {
 
         add(topPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+    }
+
+    // 外部からHandViewをセットするメソッド
+    public void setHandView(JPanel handViewComponent) {
+        handPanel.removeAll();
+        handPanel.add(handViewComponent, BorderLayout.CENTER);
+        handPanel.revalidate();
+        handPanel.repaint();
     }
 
     private JPanel createCharacterPanel(String name, boolean isPlayer) {
@@ -147,6 +159,15 @@ public class StageView extends JPanel implements Previewable {
         // プレビュー表示用にダミーのHPを設定
         updatePlayerHP(80);
         updateEnemyHP(50);
+
+        // 手札表示用にダミーを設定
+        HandModel handModel = new HandModel();
+        for (int i = 0; i < 8; i++) {
+            handModel.addCard(CardModel.createSample());
+        }
+        HandView handView = new HandView();
+        new HandController(handModel, handView);
+        setHandView(handView);
     }
 
     // Getter
