@@ -20,13 +20,6 @@ public class DiscardController {
                 onCardClick((CardModel) source);
             }
         });
-        
-        // 初期表示更新
-        refreshView();
-    }
-
-    public void refreshView() {
-        view.updateView(model.getCards());
     }
 
     private void closeDiscardView() {
@@ -35,7 +28,6 @@ public class DiscardController {
     }
 
     public void onCardClick(CardModel cardModel) {
-        System.out.println("カード拡大表示: " + cardModel.name());
         view.showCardDetail(cardModel);
     }
 }
