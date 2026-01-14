@@ -3,7 +3,9 @@ package com.miozune.mediapro.deck;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List; // 追加: Listのimport
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class DeckController {
     private final DeckModel model;
@@ -29,9 +31,10 @@ public class DeckController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 選択されたカードを削除（実際はリスト選択から）
-                List<CardRecipeModel> sortedCards = model.getSortedCards();
-                if (!sortedCards.isEmpty()) {
-                    model.removeCard(sortedCards.get(0)); // 最初のカードを削除
+                List<CardRecipeModel> cards = new ArrayList<>(model.getCards().keySet());
+                cards.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
+                if (!cards.isEmpty()) {
+                    model.removeCard(cards.get(0)); // 最初のカードを削除
                 }
             }
         });

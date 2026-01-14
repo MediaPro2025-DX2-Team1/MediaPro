@@ -2,8 +2,7 @@ package com.miozune.mediapro.deck;
 
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.events.DeckPropertyChangeEvent;
-import com.miozune.mediapro.deck.events.DeckCardAddedEvent;
-import com.miozune.mediapro.deck.events.DeckCardRemovedEvent;
+import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,7 +43,7 @@ public class DeckModel {
     public void addCard(CardRecipeModel card) {
         int current = cards.getOrDefault(card, 0);
         cards.put(card, current + 1);
-        fireEvent(new DeckCardAddedEvent(this, card, current + 1));
+        fireEvent(new DeckCardChangedEvent(this, card, current, current + 1));
     }
 
     /* カードを1枚減らす */
@@ -55,22 +54,11 @@ public class DeckModel {
         int current = cards.get(card);
         if (current <= 1) {
             cards.remove(card); // 0枚になるなら行ごと消す
-            fireEvent(new DeckCardRemovedEvent(this, card, 0));
+            fireEvent(new DeckCardChangedEvent(this, card, current, 0));
         } else {
             cards.put(card, current - 1);
-            fireEvent(new DeckCardRemovedEvent(this, card, current - 1));
+            fireEvent(new DeckCardChangedEvent(this, card, current, current - 1));
         }
-    }
-
-    /* 【重要】カードをコスト順（同じなら名前順）に並び替えたリストを返す。Viewの直前にこれを呼び出す。 */
-    public List<CardRecipeModel> getSortedCards() {
-        // 1.今のMapにあるカードの種類（Key）だけをコピーしてリストにする
-        List<CardRecipeModel> sortedList = new ArrayList<>(cards.keySet());
-
-        // 2.コストで並び替え、同じなら名前で並び替える
-        sortedList.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
-
-        return sortedList;
     }
 
     /* 特定のカードが今何枚あるかを取得する */

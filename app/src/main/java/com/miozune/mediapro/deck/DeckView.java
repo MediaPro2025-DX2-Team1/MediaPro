@@ -2,12 +2,13 @@ package com.miozune.mediapro.deck;
 
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
-import com.miozune.mediapro.deck.events.DeckCardAddedEvent;
-import com.miozune.mediapro.deck.events.DeckCardRemovedEvent;
+import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class DeckView extends JPanel implements Previewable {
     private final DeckModel model;
@@ -78,8 +79,7 @@ public class DeckView extends JPanel implements Previewable {
         model.addPropertyChangeListener(event -> {
             switch (event) {
                 case DeckNameChangedEvent e -> updateNameDisplay(e.newName());
-                case DeckCardAddedEvent e -> updateCardList();
-                case DeckCardRemovedEvent e -> updateCardList();
+                case DeckCardChangedEvent e -> updateCardList();
             }
         });
     }
@@ -95,8 +95,9 @@ public class DeckView extends JPanel implements Previewable {
 
     private void updateCardList() {
         listModel.clear();
-        List<CardRecipeModel> sortedCards = model.getSortedCards();
-        for (CardRecipeModel card : sortedCards) {
+        List<CardRecipeModel> cards = new ArrayList<>(model.getCards().keySet());
+        cards.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
+        for (CardRecipeModel card : cards) {
             int count = model.getCount(card);
             listModel.addElement(card.name() + " (コスト: " + card.cost() + ") x" + count);
         }
