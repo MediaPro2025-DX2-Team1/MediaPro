@@ -2,38 +2,67 @@ package com.miozune.mediapro.hand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.hand.events.HandPropertyChangeEvent;
+import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 
 public class HandModel {
-    private List<CardModel> cards = new ArrayList<>();
+    private final List<CardModel> cards;
 
     public HandModel() {
-
+        this.cards = new ArrayList<>(); 
     }
+
+    // リスナー管理用のインターフェースとメソッド
+    @FunctionalInterface
+    public interface PropertyChangeListener {
+        void onPropertyChanged(HandPropertyChangeEvent event);
+    }
+
+    private final List<PropertyChangeListener> listeners = new CopyOnWriteArrayList<>();
     
-    /** 手札にカードを追加する */
-    public void addCard(CardModel card) {
-        if (card != null) {
-            cards.add(card);
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (listener != null) {
+            listeners.add(listener);
         }
     }
 
-    /** 手札から特定のカードを削除する */
-    public void removeCard(CardModel card) {
-        cards.remove(card);
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        listeners.remove(listener);
     }
 
-    /** 手札のリストを取得する */
+    private void fireEvent(HandPropertyChangeEvent event) {
+        for (PropertyChangeListener listener : listeners) {
+            listener.onPropertyChanged(event);
+        }
+    }
+
+    // カード操作メソッド
     public List<CardModel> getCards() {
-        return cards; 
+        return this.cards; 
+    }
+    
+    public void addCard(CardModel card) {
+        List<CardModel> oldcards = new ArrayList<>(this.cards);
+        this.cards.add(card);
+        fireEvent(new HandCardChangedEvent(this, oldcards, new ArrayList<>(this.cards)));
+        
     }
 
-    public void clear() {
-        throw new UnsupportedOperationException();
+    public void removeCard(CardModel card) {
+        List<CardModel> oldcards = new ArrayList<>(this.cards);
+        this.cards.remove(card);
+        fireEvent(new HandCardChangedEvent(this, oldcards, new ArrayList<>(this.cards)));
     }
 
-    public int getHandValue() {
-        throw new UnsupportedOperationException();
+    public static HandModel createDefaultHand() {
+        HandModel model = new HandModel();
+        for(int i = 0; i < 8; i++) {
+            CardModel sample = CardModel.createSample();
+            model.addCard(sample);
+        }
+        return model;
     }
 }

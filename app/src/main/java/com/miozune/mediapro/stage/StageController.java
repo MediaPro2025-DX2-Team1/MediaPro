@@ -3,9 +3,6 @@ package com.miozune.mediapro.stage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.miozune.mediapro.hand.HandController;
-import com.miozune.mediapro.hand.HandView;
-
 public class StageController {
 
     private StageModel model;
@@ -14,11 +11,6 @@ public class StageController {
     public StageController(StageModel model, StageView view) {
         this.model = model;
         this.view = view;
-
-        // ★追加: Hand機能の初期化と統合
-        HandView handView = new HandView();
-        new HandController(model.getHand(), handView);
-        this.view.setHandView(handView);
 
         // バトル終了リスナー登録
         model.setBattleListener(playerWon -> handleBattleEnd(playerWon));
