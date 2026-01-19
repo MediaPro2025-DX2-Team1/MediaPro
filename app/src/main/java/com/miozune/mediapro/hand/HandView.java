@@ -26,8 +26,8 @@ public class HandView extends JPanel implements Previewable {
     private static final int HOVER_OFFSET = 20;
 
     // カード配置計算用の定数
-    private static final int CARD_WIDTH = 100;  // カードの幅 (CardViewに合わせて調整してください)
-    private static final int CARD_HEIGHT = 140; // カードの高さ
+    private static final int CARD_WIDTH = CardView.DEFAULT_WIDTH;  // カードの幅 (CardViewに合わせて調整してください)
+    private static final int CARD_HEIGHT = CardView.DEFAULT_HEIGHT; // カードの高さ
     private static final int CARD_GAP = 10;     // 重ならない場合のカード間の隙間
     private static final int BASE_Y = 20;       // カード配置の基準Y座標（上からの距離）
 
@@ -163,7 +163,7 @@ public class HandView extends JPanel implements Previewable {
             JPanel wrapper = cardComponentList.get(i);
             int x = startX + (i * stepX);
             
-            wrapper.setBounds(x, BASE_Y, panelWidth, panelHeight);
+            wrapper.setBounds(x, BASE_Y, CARD_WIDTH, panelHeight);
             cardListPanel.setComponentZOrder(wrapper, cardCount - 1 - i);
         }
     
