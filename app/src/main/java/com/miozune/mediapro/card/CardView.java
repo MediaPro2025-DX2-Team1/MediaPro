@@ -22,10 +22,10 @@ import com.miozune.mediapro.util.ImageLoader;
 public class CardView extends JPanel implements Previewable {
 
     /** カードのデフォルト幅 */
-    private static final int DEFAULT_WIDTH = 150;
+    public static final int DEFAULT_WIDTH = 150;
 
     /** カードのデフォルト高さ */
-    private static final int DEFAULT_HEIGHT = 210;
+    public static final int DEFAULT_HEIGHT = 210;
 
     /** カードのアスペクト比（幅:高さ = 5:7） */
     private static final double ASPECT_RATIO = 5.0 / 7.0;
