@@ -1,6 +1,7 @@
 package com.miozune.mediapro.stage;
 
 import java.util.List;
+
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyModel;
@@ -8,14 +9,13 @@ import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
 
 public class StageModel {
-    // importしてきたものたち
-    private PlayerModel player;
-    private List<EnemyModel> enemies;
-    private DrawPileModel drawpile;
-    private HandModel hand;
-    private DiscardModel discard;
+    private final PlayerModel player;
+    private final List<EnemyModel> enemies;
+    private final DrawPileModel drawpile;
+    private final HandModel hand;
+    private final DiscardModel discard;
 
-    private enum Turn {
+    public enum Turn {
         PLAYER, ENEMY
     }
 

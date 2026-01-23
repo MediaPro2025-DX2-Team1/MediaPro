@@ -1,17 +1,32 @@
 package com.miozune.mediapro.world;
 
-import javax.swing.*;
+import java.util.Objects;
+
+import javax.swing.JButton;
+
+import com.miozune.mediapro.game.GameModel;
 
 public class WorldController {
     
-    public WorldController(WorldModel model, WorldView view) {
-        view.getStageButton1().addActionListener(e -> selectStage(1));
-        view.getStageButton2().addActionListener(e -> selectStage(2));
-        view.getStageButton3().addActionListener(e -> selectStage(3));
-    }    
+    private final WorldModel worldModel;
+    private final WorldView view;
+    private final GameModel gameModel;
 
-    private void selectStage(int stage_number) {
-        System.out.println("STAGE " + stage_number + " に遷移");
+    public WorldController(WorldModel worldModel, WorldView view, GameModel gameModel) {
+        this.worldModel = Objects.requireNonNull(worldModel, "worldModel");
+        this.view = Objects.requireNonNull(view, "view");
+        this.gameModel = Objects.requireNonNull(gameModel, "gameModel");
+
+        wireStageButton(view.getStageButton1(), 1);
+        wireStageButton(view.getStageButton2(), 2);
+        wireStageButton(view.getStageButton3(), 3);
     }
 
+    private void wireStageButton(JButton button, int stageNumber) {
+        button.addActionListener(e -> gameModel.startStage(stageNumber));
+    }
+
+    public WorldModel getModel() {
+        return worldModel;
+    }
 }
