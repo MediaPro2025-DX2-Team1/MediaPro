@@ -1,15 +1,21 @@
 package com.miozune.mediapro.title;
 
-import javax.swing.*;
+import java.util.Objects;
+
+import javax.swing.JButton;
+
+import com.miozune.mediapro.game.GameModel;
 
 public class TitleController {
 
-    public TitleController(TitleView view) {
-        view.getStartButton().addActionListener(e -> openSelectScreen());
-    }
+    private final TitleView view;
 
-    private void openSelectScreen() {
-        System.out.println("ステージ選択画面に遷移");
-    }
+    private final GameModel gameModel;
 
+    public TitleController(TitleView view, GameModel gameModel) {
+        this.view = Objects.requireNonNull(view, "view");
+        this.gameModel = Objects.requireNonNull(gameModel, "gameModel");
+        JButton startButton = this.view.getStartButton();
+        startButton.addActionListener(e -> this.gameModel.goToWorld());
+    }
 }

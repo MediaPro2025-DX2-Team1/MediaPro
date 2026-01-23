@@ -19,8 +19,12 @@
 
 | パッケージ | 説明 |
 |-----------|------|
-| `core/` | ゲームの基盤となるクラス（GameLoop, GameState等） |
-| `game/` | ゲーム本体のMVCクラス |
+| `game/` | ゲーム全体の統括（Application, Model, Scene） |
+| `title/` | タイトル画面機能 |
+| `world/` | ワールドマップ画面機能 |
+| `stage/` | ステージ（バトル）画面機能 |
+| `player/` | プレイヤー機能 |
+| `card/` | カード機能 |
 | `preview/` | コンポーネントプレビュー機能 |
 | `util/` | ユーティリティクラス |
 
@@ -31,9 +35,11 @@
 ```
 com.miozune.mediapro/
 ├── title/           # タイトル画面機能
-├── battle/          # バトル機能
-├── inventory/       # インベントリ機能
-└── settings/        # 設定画面機能
+├── world/           # ワールドマップ機能
+├── stage/           # ステージ（バトル）機能
+├── player/          # プレイヤー機能
+├── deck/            # デッキ機能
+└── ...
 ```
 
 ## MVCモデル
@@ -228,6 +234,48 @@ public class ExampleView extends JPanel implements Previewable {
 - **no-argコンストラクタ**ではデフォルトまたはダミーのModelを作成
 - **setupPreview()** ではModelの値を変更してプレビュー状態を設定
 - Modelがfinalでも、**Modelの中身（プロパティ）は変更可能**
+
+
+## Controllerの設計指針
+
+### Modelを直接操作する（コールバックの禁止）
+
+Controllerは、操作対象となるModel（`GameModel`を含む）への参照をフィールドとして保持し、メソッドを直接呼び出して状態を変更してください。
+
+`Runnable` や `Consumer` などのコールバックを使用して、処理を親クラス（`GameApplication`等）に委譲することは**禁止**します。これはMVCの「ControllerがModelを操作する」という原則に反し、フローを複雑にするためです。
+
+#### 悪い例（コールバック使用）
+
+```java
+public class TitleController {
+    // ❌ コールバックで処理を外部に逃している
+    public TitleController(TitleView view, Runnable onStart) {
+        view.getStartButton().addActionListener(e -> onStart.run());
+    }
+}
+```
+
+#### 良い例（Model直接操作）
+
+```java
+public class TitleController {
+    private final GameModel gameModel;
+
+    // ✅ Modelを受け取り、直接操作する
+    public TitleController(TitleView view, GameModel gameModel) {
+        this.gameModel = gameModel;
+        view.getStartButton().addActionListener(e -> gameModel.goToWorld());
+    }
+}
+```
+
+### 画面遷移のフロー
+
+画面遷移もModelの状態変更の一種として扱います。
+
+1. **Controller**: ユーザー操作を受け、`GameModel` のメソッド（例: `goToWorld()`）を呼ぶ
+2. **Model**: 状態を更新し、イベント（例: `GameSceneChangedEvent`）を発行する
+3. **Application**: イベントを検知し、`CardLayout` 等を切り替える
 
 ## Previewableの実装
 
