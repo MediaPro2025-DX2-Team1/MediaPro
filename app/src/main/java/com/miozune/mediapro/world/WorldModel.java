@@ -11,14 +11,18 @@ import com.miozune.mediapro.stage.StageFactory;
 import com.miozune.mediapro.stage.StageModel;
 
 public class WorldModel {
-    private final List<StageDefinition> definitions;
+    private final List<StageDefinition> stageDefinitions;
     private final StageFactory stageFactory;
-    private StageDefinition selectedDefinition;
+    private StageDefinition selectedStageDefinition;
     private StageModel currentStage;
 
-    public WorldModel(List<StageDefinition> definitions, StageFactory stageFactory) {
-        this.definitions = Collections.unmodifiableList(new ArrayList<>(definitions));
+    public WorldModel(List<StageDefinition> stageDefinitions, StageFactory stageFactory) {
+        this.stageDefinitions = Collections.unmodifiableList(new ArrayList<>(stageDefinitions));
         this.stageFactory = Objects.requireNonNull(stageFactory, "stageFactory");
+
+        if (this.stageDefinitions.isEmpty()) {
+            throw new IllegalArgumentException("Stage definitions must not be empty");
+        }
     }
 
     public static WorldModel createDefault(StageFactory stageFactory) {
@@ -31,24 +35,24 @@ public class WorldModel {
     }
 
     public List<StageDefinition> getDefinitions() {
-        return definitions;
+        return stageDefinitions;
     }
 
     public int getStageCount() {
-        return definitions.size();
+        return stageDefinitions.size();
     }
 
     public StageDefinition getDefinitionByIndex(int indexOneBased) {
         int idx = Math.max(1, indexOneBased) - 1;
-        if (idx >= definitions.size()) {
-            idx = definitions.size() - 1;
+        if (idx >= stageDefinitions.size()) {
+            idx = stageDefinitions.size() - 1;
         }
-        return definitions.get(idx);
+        return stageDefinitions.get(idx);
     }
 
     public StageModel createStageFor(PlayerModel player, com.miozune.mediapro.deck.DeckModel deck, int stageIndex) {
-        selectedDefinition = getDefinitionByIndex(stageIndex);
-        currentStage = stageFactory.create(selectedDefinition, player, deck);
+        selectedStageDefinition = getDefinitionByIndex(stageIndex);
+        currentStage = stageFactory.create(selectedStageDefinition, player, deck);
         return currentStage;
     }
 
