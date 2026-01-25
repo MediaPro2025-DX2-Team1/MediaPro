@@ -1,7 +1,6 @@
 package com.miozune.mediapro.drawpile;
 
 import com.miozune.mediapro.card.CardModel;
-
 import java.util.List;
 
 public class DrawPileController {

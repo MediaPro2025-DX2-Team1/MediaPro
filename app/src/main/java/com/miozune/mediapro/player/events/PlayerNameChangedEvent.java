@@ -4,7 +4,7 @@ import com.miozune.mediapro.player.PlayerModel;
 
 /**
  * プレイヤー名変更イベント。
- * 
+ *
  * @param player イベント発生源のPlayerModel
  * @param oldName 変更前の名前
  * @param newName 変更後の名前

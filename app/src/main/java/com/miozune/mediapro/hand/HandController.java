@@ -3,7 +3,7 @@ package com.miozune.mediapro.hand;
 import com.miozune.mediapro.card.CardModel;
 
 public class HandController {
-    
+
     private HandModel model;
     private HandView view;
 
@@ -22,13 +22,13 @@ public class HandController {
                 showCard(card);
             }
         });
-    } 
+    }
 
     public void useCard(CardModel card) {
         System.out.println("カードを使用する");
         // カードの効果を適用するコードをここに追加
     }
-    
+
     public void showCard(CardModel card) {
         this.view.showCardDetail(card);
     }

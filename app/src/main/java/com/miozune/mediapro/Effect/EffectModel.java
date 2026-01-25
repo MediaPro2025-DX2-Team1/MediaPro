@@ -4,7 +4,7 @@ public class EffectModel {
     private String name;
 
     public EffectModel() {
-        
+
     }
 
     public void execute() {

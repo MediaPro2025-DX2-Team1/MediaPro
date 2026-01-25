@@ -6,14 +6,14 @@ package com.miozune.mediapro.preview;
  * PreviewLauncherで単体プレビューが可能になる。
  */
 public interface Previewable {
-    
+
     /**
      * プレビュー時に表示される説明を取得する。
      *
      * @return コンポーネントの説明
      */
     String getPreviewDescription();
-    
+
     /**
      * プレビュー用のセットアップを行う。
      * ダミーデータの設定などを行う。

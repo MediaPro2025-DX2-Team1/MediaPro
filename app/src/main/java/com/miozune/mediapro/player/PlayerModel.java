@@ -1,15 +1,14 @@
 package com.miozune.mediapro.player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.miozune.mediapro.Effect.EffectModel;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
 import com.miozune.mediapro.player.events.PlayerPropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * プレイヤーの状態を管理するModel。
@@ -24,7 +23,7 @@ public class PlayerModel {
     public interface PropertyChangeListener {
         /**
          * プロパティが変更された時に呼び出される。
-         * 
+         *
          * @param event 変更イベント（sealed interfaceによりパターンマッチング可能）
          */
         void onPropertyChanged(PlayerPropertyChangeEvent event);
@@ -61,7 +60,7 @@ public class PlayerModel {
 
     /**
      * プロパティ変更リスナーを追加する。
-     * 
+     *
      * @param listener リスナー
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -72,7 +71,7 @@ public class PlayerModel {
 
     /**
      * プロパティ変更リスナーを削除する。
-     * 
+     *
      * @param listener リスナー
      */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
@@ -81,7 +80,7 @@ public class PlayerModel {
 
     /**
      * イベントをすべてのリスナーに通知する。
-     * 
+     *
      * @param event 発火するイベント
      */
     private void fireEvent(PlayerPropertyChangeEvent event) {
@@ -91,7 +90,7 @@ public class PlayerModel {
     }
 
     // --- Getter/Setter ---
-    
+
     public String getName() {
         return name;
     }
@@ -158,7 +157,7 @@ public class PlayerModel {
 
     /**
      * マナを追加する（ターン開始時など）。
-     * 
+     *
      * @return 追加後のマナ値
      */
     public int addMana() {
@@ -168,7 +167,7 @@ public class PlayerModel {
 
     /**
      * マナをリセットする（戦闘終了時など）。
-     * 
+     *
      * @return リセット後のマナ値（0）
      */
     public int resetMana() {
@@ -178,7 +177,7 @@ public class PlayerModel {
 
     /**
      * ダメージを受ける。
-     * 
+     *
      * @param damage ダメージ量
      * @return 残りHP
      */
@@ -189,7 +188,7 @@ public class PlayerModel {
 
     /**
      * 回復する。
-     * 
+     *
      * @param amount 回復量
      * @return 回復後のHP
      */
@@ -200,7 +199,7 @@ public class PlayerModel {
 
     /**
      * マナを消費する。
-     * 
+     *
      * @param cost 消費マナ
      * @return 消費可能だった場合true
      */
@@ -214,7 +213,7 @@ public class PlayerModel {
 
     /**
      * プレイヤーが生存しているか判定する。
-     * 
+     *
      * @return HP > 0の場合true
      */
     public boolean isAlive() {

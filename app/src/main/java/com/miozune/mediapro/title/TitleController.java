@@ -1,10 +1,8 @@
 package com.miozune.mediapro.title;
 
-import java.util.Objects;
-
-import javax.swing.JButton;
-
 import com.miozune.mediapro.game.GameModel;
+import java.util.Objects;
+import javax.swing.JButton;
 
 public class TitleController {
 

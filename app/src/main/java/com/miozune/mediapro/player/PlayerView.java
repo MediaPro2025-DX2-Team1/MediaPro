@@ -1,11 +1,14 @@
 package com.miozune.mediapro.player;
 
+import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
+import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
+import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
+import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Objects;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -14,11 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicProgressBarUI;
-
-import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
-import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
-import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
-import com.miozune.mediapro.preview.Previewable;
 
 /**
  * プレイヤーの状態（HP、マナ、名前）を表示するViewコンポーネント。
@@ -79,7 +77,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     /**
      * PlayerModelを指定するコンストラクタ。
-     * 
+     *
      * @param model 表示するPlayerModel
      */
     public PlayerView(PlayerModel model) {
@@ -189,7 +187,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     /**
      * PlayerModelを取得する。
-     * 
+     *
      * @return PlayerModel
      */
     public PlayerModel getPlayerModel() {
@@ -198,7 +196,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     /**
      * 名前表示を更新する。
-     * 
+     *
      * @param name 新しい名前
      */
     private void updateNameDisplay(String name) {
@@ -207,7 +205,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     /**
      * HP表示を更新する。
-     * 
+     *
      * @param hp 新しいHP
      */
     private void updateHpDisplay(int hp) {
@@ -231,7 +229,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     /**
      * マナ表示を更新する。
-     * 
+     *
      * @param mana 新しいマナ
      */
     private void updateManaDisplay(int mana) {
@@ -243,7 +241,7 @@ public class PlayerView extends JPanel implements Previewable {
     }
 
     // --- Previewable実装 ---
-    
+
     @Override
     public String getPreviewDescription() {
         return "プレイヤー情報（HP、マナ、名前）を表示するコンポーネント。" +

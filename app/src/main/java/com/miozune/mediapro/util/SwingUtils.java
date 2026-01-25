@@ -8,9 +8,9 @@ import javax.swing.UnsupportedLookAndFeelException;
  * Swing関連のユーティリティメソッドを提供するクラス。
  */
 public final class SwingUtils {
-    
+
     private SwingUtils() {}
-    
+
     /**
      * EDTでRunnableを実行する。
      * システムのルック&フィールを設定してから実行する。
@@ -23,20 +23,20 @@ public final class SwingUtils {
             runnable.run();
         });
     }
-    
+
     /**
      * システムのルック&フィールを設定する。
      */
     public static void setupLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | 
+        } catch (ClassNotFoundException | InstantiationException |
                  IllegalAccessException | UnsupportedLookAndFeelException e) {
             // システムのルック&フィールが使用できない場合は、デフォルトを使用
             System.err.println("Warning: Could not set system look and feel: " + e.getMessage());
         }
     }
-    
+
     /**
      * EDTで実行中かどうかを確認する。
      *
@@ -45,7 +45,7 @@ public final class SwingUtils {
     public static boolean isEventDispatchThread() {
         return SwingUtilities.isEventDispatchThread();
     }
-    
+
     /**
      * EDTでなければ例外をスローする。
      *

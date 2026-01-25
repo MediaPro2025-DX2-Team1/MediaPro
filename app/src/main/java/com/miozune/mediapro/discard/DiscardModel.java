@@ -1,12 +1,11 @@
 package com.miozune.mediapro.discard;
 
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.discard.events.DiscardCardChangedEvent;
+import com.miozune.mediapro.discard.events.DiscardPropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.discard.events.DiscardPropertyChangeEvent;
-import com.miozune.mediapro.discard.events.DiscardCardChangedEvent;
 
 public class DiscardModel {
     private final List<CardModel> cards;
@@ -14,7 +13,7 @@ public class DiscardModel {
     public DiscardModel() {
         this.cards = new ArrayList<>();
     }
-    
+
     // リスナー管理用のインターフェースとメソッド
     @FunctionalInterface
     public interface PropertyChangeListener{
@@ -22,13 +21,13 @@ public class DiscardModel {
     }
 
     private final List<PropertyChangeListener> listeners = new CopyOnWriteArrayList<>();
-  
+
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         if (listener != null) {
             listeners.add(listener);
         }
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         listeners.remove(listener);
     }
@@ -38,7 +37,7 @@ public class DiscardModel {
             listener.onPropertyChanged(event);
         }
     }
-    
+
     // カード操作メソッド
     public List<CardModel> getCards() {
         return this.cards;
@@ -51,7 +50,7 @@ public class DiscardModel {
     }
 
     public void removeCard(CardModel card) {
-        List<CardModel> oldCards = new ArrayList<>(this.cards); 
+        List<CardModel> oldCards = new ArrayList<>(this.cards);
         this.cards.remove(card);
         fireEvent(new DiscardCardChangedEvent(this, oldCards, new ArrayList<>(this.cards)));
     }

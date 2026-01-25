@@ -1,7 +1,6 @@
 package com.miozune.mediapro.player;
 
 import java.awt.GridLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -18,7 +17,7 @@ public class PlayerController {
 
     /**
      * コンストラクタ。
-     * 
+     *
      * @param model PlayerModel
      * @param view PlayerView
      */
@@ -34,10 +33,10 @@ public class PlayerController {
             );
         }
 }
-    
+
     /**
      * 制御対象のModelを取得する。
-     * 
+     *
      * @return PlayerModel
      */
     public PlayerModel getModel() {
@@ -46,7 +45,7 @@ public class PlayerController {
 
     /**
      * 制御対象のViewを取得する。
-     * 
+     *
      * @return PlayerView
      */
     public PlayerView getView() {
@@ -56,7 +55,7 @@ public class PlayerController {
     /**
      * デバッグ用のテストパネルを作成する。
      * HPやマナを操作するボタンを配置したパネルを返す。
-     * 
+     *
      * @return テスト用パネル
      */
     public JPanel createDebugPanel() {

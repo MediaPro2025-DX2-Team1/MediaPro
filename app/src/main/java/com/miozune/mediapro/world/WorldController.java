@@ -1,13 +1,11 @@
 package com.miozune.mediapro.world;
 
+import com.miozune.mediapro.game.GameModel;
 import java.util.Objects;
-
 import javax.swing.JButton;
 
-import com.miozune.mediapro.game.GameModel;
-
 public class WorldController {
-    
+
     private final WorldModel worldModel;
     private final WorldView view;
     private final GameModel gameModel;

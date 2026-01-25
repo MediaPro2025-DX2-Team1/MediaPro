@@ -8,16 +8,16 @@ import java.awt.event.MouseEvent;
  * クリック、ホバーなどのイベントを処理する。
  */
 public class CardController {
-    
+
     /** 制御対象のView */
     private final CardView view;
-    
+
     /** カードがホバー中かどうか */
     private boolean hovering;
-    
+
     /** カードクリック時のリスナー */
     private CardClickListener clickListener;
-    
+
     /**
      * CardControllerを作成する。
      *
@@ -26,10 +26,10 @@ public class CardController {
     public CardController(CardView view) {
         this.view = view;
         this.hovering = false;
-        
+
         setupInputHandlers();
     }
-    
+
     /**
      * 入力ハンドラーを設定する。
      */
@@ -39,19 +39,19 @@ public class CardController {
             public void mouseClicked(MouseEvent e) {
                 handleClick(e);
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 handleMouseEnter(e);
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
                 handleMouseExit(e);
             }
         });
     }
-    
+
     /**
      * クリックイベントを処理する。
      *
@@ -59,12 +59,12 @@ public class CardController {
      */
     private void handleClick(MouseEvent e) {
         System.out.println("Card clicked: " + view.getCardModel().name());
-        
+
         if (clickListener != null) {
             clickListener.onCardClicked(view, e);
         }
     }
-    
+
     /**
      * マウスエンターイベントを処理する。
      *
@@ -75,7 +75,7 @@ public class CardController {
         // TODO: ホバーエフェクト（拡大、ハイライトなど）を実装
         System.out.println("Mouse entered card: " + view.getCardModel().name());
     }
-    
+
     /**
      * マウスエグジットイベントを処理する。
      *
@@ -86,7 +86,7 @@ public class CardController {
         // TODO: ホバーエフェクト解除
         System.out.println("Mouse exited card: " + view.getCardModel().name());
     }
-    
+
     /**
      * カードがホバー中かどうかを取得する。
      *
@@ -95,7 +95,7 @@ public class CardController {
     public boolean isHovering() {
         return hovering;
     }
-    
+
     /**
      * カードクリック時のリスナーを設定する。
      *
@@ -104,7 +104,7 @@ public class CardController {
     public void setClickListener(CardClickListener listener) {
         this.clickListener = listener;
     }
-    
+
     /**
      * 制御対象のViewを取得する。
      *
@@ -113,7 +113,7 @@ public class CardController {
     public CardView getView() {
         return view;
     }
-    
+
     /**
      * カードクリック時のリスナーインターフェース。
      */

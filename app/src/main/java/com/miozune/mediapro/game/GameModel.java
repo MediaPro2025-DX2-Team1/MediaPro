@@ -1,8 +1,5 @@
 package com.miozune.mediapro.game;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.game.events.GamePropertyChangeEvent;
@@ -11,6 +8,8 @@ import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.stage.StageFactory;
 import com.miozune.mediapro.stage.StageModel;
 import com.miozune.mediapro.world.WorldModel;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameModel {
 

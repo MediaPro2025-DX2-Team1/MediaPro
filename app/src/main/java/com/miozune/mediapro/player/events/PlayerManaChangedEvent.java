@@ -4,7 +4,7 @@ import com.miozune.mediapro.player.PlayerModel;
 
 /**
  * プレイヤーのマナ変更イベント。
- * 
+ *
  * @param player イベント発生源のPlayerModel
  * @param oldMana 変更前のマナ
  * @param newMana 変更後のマナ
@@ -22,7 +22,7 @@ public record PlayerManaChangedEvent(
 
     /**
      * マナ変更量を取得する。
-     * 
+     *
      * @return マナ変更量
      */
     public int getDelta() {

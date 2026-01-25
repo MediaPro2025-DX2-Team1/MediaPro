@@ -1,8 +1,8 @@
 package com.miozune.mediapro.world;
 
-import javax.swing.*;
-import java.awt.*;
 import com.miozune.mediapro.preview.Previewable;
+import java.awt.*;
+import javax.swing.*;
 
 public class WorldView extends JPanel implements Previewable {
 
@@ -10,7 +10,7 @@ public class WorldView extends JPanel implements Previewable {
     private JButton stageButton2;
     private JButton stageButton3;
 
-    public WorldView() { 
+    public WorldView() {
         setupPanel();
         initComponents();
         layoutComponents();
@@ -55,7 +55,7 @@ public class WorldView extends JPanel implements Previewable {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 20, 10, 20); // ボタン間の余白
 
-        gbc.gridx = 0; 
+        gbc.gridx = 0;
         gbc.gridy = 0;
         buttonPanel.add(stageButton1, gbc);
 
