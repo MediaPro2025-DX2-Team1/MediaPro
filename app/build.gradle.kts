@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("com.diffplug.spotless") version "8.2.0"
 }
 
 repositories {
@@ -34,4 +35,14 @@ application {
     // Define the main class for the application.
     // コマンドラインからの上書きを許可: ./gradlew run -PmainClass=com.example.Main
     mainClass = providers.gradleProperty("mainClass").orElse("com.miozune.mediapro.Main")
+}
+
+spotless {
+    java {
+        toggleOffOn()
+        importOrder()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
