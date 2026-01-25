@@ -1,5 +1,7 @@
 package com.miozune.mediapro.preview;
 
+import com.google.common.reflect.ClassPath;
+import com.miozune.mediapro.util.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -9,15 +11,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import com.google.common.reflect.ClassPath;
-import com.miozune.mediapro.util.SwingUtils;
 
 /**
  * コンポーネントを単体でプレビューするためのランチャー。
@@ -60,7 +58,7 @@ public class PreviewLauncher {
                             clazz.getDeclaredConstructor();
                             previewableClasses.add(clazz);
                         } catch (NoSuchMethodException e) {
-                            System.err.println("WARN: " + clazz.getSimpleName() + 
+                            System.err.println("WARN: " + clazz.getSimpleName() +
                                 " implements Previewable but does not have a no-arg constructor. Skipping.");
                         }
                     }

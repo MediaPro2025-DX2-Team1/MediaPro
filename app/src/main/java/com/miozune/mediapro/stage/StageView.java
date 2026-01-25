@@ -1,8 +1,8 @@
 package com.miozune.mediapro.stage;
 
-import javax.swing.*;
-import java.awt.*;
 import com.miozune.mediapro.preview.Previewable;
+import java.awt.*;
+import javax.swing.*;
 
 public class StageView extends JPanel implements Previewable {
 

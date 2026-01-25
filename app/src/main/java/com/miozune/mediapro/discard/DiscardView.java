@@ -4,17 +4,16 @@ import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.discard.events.DiscardCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.*;
 
 public class DiscardView extends JPanel implements Previewable {
-    
+
     private final DiscardModel model;
     private JLayeredPane layeredPane;
     private JPanel contentPanel;
@@ -23,20 +22,20 @@ public class DiscardView extends JPanel implements Previewable {
     private JButton closeButton;
     private ActionListener cardClickListener;
     private DiscardModel.PropertyChangeListener modelListener;
-    
+
     public DiscardView() {
         this(DiscardModel.createDefaultDiscard());
     }
 
     public DiscardView(DiscardModel model) {
         this.model = model;
-        setupPanels();  
+        setupPanels();
         createContentPanel();
         createDetailPanel();
         setupModelListener();
         updateDiscard(model.getCards());
     }
-    
+
     private void setupPanels() {
         setPreferredSize(new Dimension(800, 600));
         setOpaque(false);
@@ -72,7 +71,7 @@ public class DiscardView extends JPanel implements Previewable {
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnPanel.setOpaque(false);
         btnPanel.add(closeButton);
-    
+
         JLabel titleLabel = new JLabel("捨て札一覧", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Meiryo", Font.BOLD, 32));
         titleLabel.setForeground(Color.WHITE);
@@ -84,11 +83,11 @@ public class DiscardView extends JPanel implements Previewable {
         cardListPanel = new JPanel(new GridLayout(0, 4, 20, 20));
         cardListPanel.setOpaque(false);
         cardListPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-        
+
         JPanel gridWrapper = new JPanel(new BorderLayout());
         gridWrapper.setOpaque(false);
         gridWrapper.add(cardListPanel, BorderLayout.NORTH);
- 
+
         JScrollPane scrollPane = new JScrollPane(gridWrapper);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
@@ -123,7 +122,7 @@ public class DiscardView extends JPanel implements Previewable {
             }
         });
 
-        detailPanel.setVisible(false); 
+        detailPanel.setVisible(false);
         detailPanel.setBounds(0, 0, 800, 600);
         layeredPane.add(detailPanel, JLayeredPane.MODAL_LAYER);
     }
@@ -132,7 +131,7 @@ public class DiscardView extends JPanel implements Previewable {
     public void showCardDetail(CardModel cardModel) {
         detailPanel.removeAll();
         CardView bigCardView = new CardView(cardModel);
-        bigCardView.setPreferredSize(new Dimension(300, 420)); 
+        bigCardView.setPreferredSize(new Dimension(300, 420));
 
         bigCardView.addMouseListener(new MouseAdapter() {
              @Override
@@ -140,7 +139,7 @@ public class DiscardView extends JPanel implements Previewable {
                  e.consume();
              }
         });
-        
+
         detailPanel.add(bigCardView);
         detailPanel.setVisible(true);
         detailPanel.revalidate();
@@ -150,11 +149,11 @@ public class DiscardView extends JPanel implements Previewable {
     /** 拡大表示を隠す */
     public void hideCardDetail() {
         detailPanel.setVisible(false);
-        detailPanel.removeAll(); 
+        detailPanel.removeAll();
     }
 
     // --- イベントリスナー設定メソッド ---
-    
+
     public void setCloseButtonListener(ActionListener listener) {
         this.closeButton.addActionListener(listener);
     }
@@ -162,7 +161,7 @@ public class DiscardView extends JPanel implements Previewable {
     public void setCardClickListener(ActionListener listener) {
         this.cardClickListener = listener;
     }
-    
+
     // --- Model連携 ---
 
     private void setupModelListener() {
@@ -195,7 +194,7 @@ public class DiscardView extends JPanel implements Previewable {
         cardListPanel.revalidate();
         cardListPanel.repaint();
     }
-    
+
     // --- Previewable実装 ---
 
     @Override

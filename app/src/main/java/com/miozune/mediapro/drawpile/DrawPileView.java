@@ -1,12 +1,11 @@
 package com.miozune.mediapro.drawpile;
 
 import com.miozune.mediapro.drawpile.events.DrawPileCardDrawnEvent;
-import com.miozune.mediapro.drawpile.events.DrawPileShuffledEvent;
 import com.miozune.mediapro.drawpile.events.DrawPileResetEvent;
+import com.miozune.mediapro.drawpile.events.DrawPileShuffledEvent;
 import com.miozune.mediapro.preview.Previewable;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class DrawPileView extends JPanel implements Previewable {
 

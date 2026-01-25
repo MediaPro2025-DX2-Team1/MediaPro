@@ -9,10 +9,10 @@ public class DiscardController {
     public DiscardController(DiscardModel model, DiscardView view) {
         this.model = model;
         this.view = view;
-        
+
         // 閉じるボタンの処理
         this.view.setCloseButtonListener(e -> closeDiscardView());
-        
+
         // カードクリック時の処理
         this.view.setCardClickListener(e -> {
             Object source = e.getSource();

@@ -1,14 +1,13 @@
 package com.miozune.mediapro.world;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.stage.StageDefinition;
 import com.miozune.mediapro.stage.StageFactory;
 import com.miozune.mediapro.stage.StageModel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class WorldModel {
     private final List<StageDefinition> stageDefinitions;

@@ -1,16 +1,14 @@
 package com.miozune.mediapro.player;
 
+import com.miozune.mediapro.util.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.miozune.mediapro.util.SwingUtils;
 
 /**
  * PlayerView + PlayerController の動作確認用テストプログラム。
@@ -95,7 +93,7 @@ public class PlayerViewTest {
     /**
      * テスト用のコントロールパネルを作成する。
      * より多様なテストケースを提供する。
-     * 
+     *
      * @param model 操作対象のPlayerModel
      * @return コントロールパネル
      */

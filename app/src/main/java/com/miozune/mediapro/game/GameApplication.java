@@ -1,11 +1,5 @@
 package com.miozune.mediapro.game;
 
-import java.awt.CardLayout;
-import java.util.Objects;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 import com.miozune.mediapro.game.events.GameSceneChangedEvent;
 import com.miozune.mediapro.stage.StageController;
 import com.miozune.mediapro.stage.StageModel;
@@ -14,6 +8,10 @@ import com.miozune.mediapro.title.TitleController;
 import com.miozune.mediapro.title.TitleView;
 import com.miozune.mediapro.world.WorldController;
 import com.miozune.mediapro.world.WorldView;
+import java.awt.CardLayout;
+import java.util.Objects;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class GameApplication {
 

@@ -7,10 +7,10 @@ import com.miozune.mediapro.enemy.EnemyModel;
  */
 public sealed interface EnemyPropertyChangeEvent
     permits EnemyHpChangedEvent, EnemyNameChangedEvent {
-    
+
     /**
      * このイベントの発生元となった Enemy を取得
-     * 
+     *
      * @return イベント発生元の EnemyModel
      */
     EnemyModel getEnemy();

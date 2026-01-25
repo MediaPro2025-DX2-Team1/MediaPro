@@ -4,8 +4,6 @@ import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -13,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 public class HandView extends JPanel implements Previewable {
 
@@ -68,7 +67,7 @@ public class HandView extends JPanel implements Previewable {
         // カード一覧エリア
         cardListPanel = new JPanel(null);
         cardListPanel.setOpaque(false);
-        
+
         layeredPane.add(cardListPanel, JLayeredPane.DEFAULT_LAYER);
 
         // リサイズ時にレイヤーサイズ調整とカード再配置を行う
@@ -93,7 +92,7 @@ public class HandView extends JPanel implements Previewable {
         revalidate();
         repaint();
     }
-    
+
     // 拡大表示用のパネル作成
     private void createDetailPanel() {
         detailPanel = new JPanel(new GridBagLayout()) {
@@ -138,7 +137,7 @@ public class HandView extends JPanel implements Previewable {
         // --- 分岐ロジック ---
         if (totalWidthNeeded <= panelWidth) { // パネルにカードが収まる場合
             stepX = CARD_WIDTH + CARD_GAP;
-        
+
             // コンテンツの実幅を計算
             int actualContentWidth;
             if (cardCount > 1) {
@@ -154,7 +153,7 @@ public class HandView extends JPanel implements Previewable {
             } else {
                 stepX = 0;
             }
-            
+
             startX = 0;
         }
 
@@ -162,11 +161,11 @@ public class HandView extends JPanel implements Previewable {
         for (int i = 0; i < cardCount; i++) {
             JPanel wrapper = cardComponentList.get(i);
             int x = startX + (i * stepX);
-            
+
             wrapper.setBounds(x, BASE_Y, CARD_WIDTH, panelHeight);
             cardListPanel.setComponentZOrder(wrapper, cardCount - 1 - i);
         }
-    
+
         cardListPanel.revalidate();
         cardListPanel.repaint();
     }
@@ -174,17 +173,17 @@ public class HandView extends JPanel implements Previewable {
     // --- カード生成と更新 ---
     public void updateHand(List<CardModel> cards) {
         cardListPanel.removeAll();
-        cardComponentList.clear(); 
-        
+        cardComponentList.clear();
+
         for (CardModel cardModel : cards) {
             CardView cardView = new CardView(cardModel);
 
             // 1. ラッパーパネルの作成
             JPanel wrapper = new JPanel(null);
             wrapper.setOpaque(false);
-            
+
             Dimension cardSize = cardView.getPreferredSize();
-            if (cardSize.width == 0) cardSize = new Dimension(CARD_WIDTH, CARD_HEIGHT); 
+            if (cardSize.width == 0) cardSize = new Dimension(CARD_WIDTH, CARD_HEIGHT);
 
             wrapper.setPreferredSize(new Dimension(cardSize.width, cardSize.height + HOVER_OFFSET));
             wrapper.setSize(wrapper.getPreferredSize());
@@ -224,7 +223,7 @@ public class HandView extends JPanel implements Previewable {
             cardListPanel.add(wrapper);
             cardComponentList.add(wrapper);
         }
-        
+
         // 最後に配置計算を実行
         layoutCards();
     }
@@ -233,7 +232,7 @@ public class HandView extends JPanel implements Previewable {
     public void showCardDetail(CardModel cardModel) {
         detailPanel.removeAll();
         CardView bigCardView = new CardView(cardModel);
-        bigCardView.setPreferredSize(new Dimension(300, 420)); 
+        bigCardView.setPreferredSize(new Dimension(300, 420));
 
         // 詳細カードクリック時はイベントを消費（背後のカードをクリックしないように）
         bigCardView.addMouseListener(new MouseAdapter() {
@@ -242,16 +241,16 @@ public class HandView extends JPanel implements Previewable {
                  e.consume();
              }
         });
-        
+
         detailPanel.add(bigCardView);
         detailPanel.setVisible(true);
         detailPanel.revalidate();
         detailPanel.repaint();
     }
-    
+
     public void hideCardDetail() {
         detailPanel.setVisible(false);
-        detailPanel.removeAll(); 
+        detailPanel.removeAll();
     }
 
     // --- リスナー設定 ---

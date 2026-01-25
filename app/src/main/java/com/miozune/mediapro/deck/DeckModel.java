@@ -1,9 +1,9 @@
 package com.miozune.mediapro.deck;
 
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
-import com.miozune.mediapro.deck.events.DeckPropertyChangeEvent;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
+import com.miozune.mediapro.deck.events.DeckPropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 

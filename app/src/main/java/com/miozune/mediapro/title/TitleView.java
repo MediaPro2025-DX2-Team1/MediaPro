@@ -1,8 +1,8 @@
 package com.miozune.mediapro.title;
 
-import javax.swing.*;
-import java.awt.*;
 import com.miozune.mediapro.preview.Previewable;
+import java.awt.*;
+import javax.swing.*;
 
 public class TitleView extends JPanel implements Previewable {
 
@@ -44,7 +44,7 @@ public class TitleView extends JPanel implements Previewable {
         add(titleLabel, BorderLayout.CENTER);
 
         JPanel buttonpanel = new JPanel(new GridBagLayout());
-        buttonpanel.setBackground(new Color(240, 240, 240)); 
+        buttonpanel.setBackground(new Color(240, 240, 240));
         buttonpanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 60, 0));
         buttonpanel.add(startButton);
 
