@@ -15,6 +15,7 @@ import com.miozune.mediapro.title.TitleView;
 import com.miozune.mediapro.world.WorldController;
 import com.miozune.mediapro.world.WorldView;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -65,6 +66,9 @@ public class GameApplication {
     private void initFrame() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(root);
+        Dimension baseSize = new Dimension(1200, 800);
+        frame.setPreferredSize(baseSize);
+        frame.setMinimumSize(baseSize);
     }
 
     private void initScenes() {
@@ -112,7 +116,7 @@ public class GameApplication {
         if (deckEditViewHolder != null) {
             root.remove(deckEditViewHolder.view());
         }
-        deckEditViewHolder = new DeckViewHolder(model.getActiveDeck());
+        deckEditViewHolder = new DeckViewHolder(model, model.getActiveDeck());
         root.add(deckEditViewHolder.view(), DECK_EDIT_CARD);
         layout.show(root, DECK_EDIT_CARD);
         root.revalidate();
@@ -138,8 +142,12 @@ public class GameApplication {
     }
 
     private void packToView(JPanel view) {
-        frame.pack();
-        frame.setLocationRelativeTo(null);
+        if (!frame.isVisible()) {
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+        } else {
+            frame.revalidate();
+        }
         view.requestFocusInWindow();
     }
 
@@ -152,9 +160,9 @@ public class GameApplication {
         private final DeckView view;
         private final DeckController controller;
 
-        DeckViewHolder(DeckModel model) {
+        DeckViewHolder(GameModel gameModel, DeckModel model) {
             this.view = new DeckView(model);
-            this.controller = new DeckController(model, view);
+            this.controller = new DeckController(gameModel, model, view);
         }
 
         public DeckView view() {

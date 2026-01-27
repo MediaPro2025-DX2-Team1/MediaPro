@@ -1,6 +1,8 @@
 package com.miozune.mediapro.decklist;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JOptionPane;
@@ -14,6 +16,9 @@ public class DeckListController {
     private final DeckListModel model;
     private final DeckListView view;
     private final AtomicInteger deckCounter = new AtomicInteger(1);
+    private final Set<DeckModel> observedDecks = new HashSet<>();
+
+    private final DeckModel.PropertyChangeListener deckChangeListener = event -> refresh();
 
     public DeckListController(GameModel gameModel, DeckListModel model, DeckListView view) {
         this.gameModel = gameModel;
@@ -62,9 +67,18 @@ public class DeckListController {
     }
 
     private void refresh() {
+        attachDeckListeners();
         List<DeckModel> decks = model.getDecks();
         DeckModel selected = model.getSelected();
         view.setDecks(decks, selected);
         view.showDeckCards(selected);
+    }
+
+    private void attachDeckListeners() {
+        for (DeckModel deck : model.getDecks()) {
+            if (observedDecks.add(deck)) {
+                deck.addPropertyChangeListener(deckChangeListener);
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.miozune.mediapro.deck;
 
 import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
+import com.miozune.mediapro.game.GameModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -11,8 +12,10 @@ import java.util.List;
 public class DeckController {
     private final DeckModel model;
     private final DeckView view;
+    private final GameModel gameModel;
 
-    public DeckController(DeckModel model, DeckView view) {
+    public DeckController(GameModel gameModel, DeckModel model, DeckView view) {
+        this.gameModel = gameModel;
         this.model = model;
         this.view = view;
         setupViewListeners();
@@ -42,6 +45,13 @@ public class DeckController {
                 if (!cards.isEmpty()) {
                     model.removeCard(cards.get(0)); // 最初のカードを削除
                 }
+            }
+        });
+
+        view.getBackButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameModel.goToDeckList();
             }
         });
     }
