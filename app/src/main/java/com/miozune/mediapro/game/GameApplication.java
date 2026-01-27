@@ -55,7 +55,7 @@ public class GameApplication {
         this.worldController = new WorldController(model.getWorld(), worldView, model);
 
         this.deckListView = new DeckListView();
-        DeckListModel deckListModel = new DeckListModel(model);
+        DeckListModel deckListModel = model.getDeckListModel();
         this.deckListController = new DeckListController(model, deckListModel, deckListView);
 
         initFrame();

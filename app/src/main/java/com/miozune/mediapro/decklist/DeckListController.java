@@ -2,6 +2,7 @@ package com.miozune.mediapro.decklist;
 
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.game.GameModel;
+import com.miozune.mediapro.decklist.events.DeckListPropertyChangeEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class DeckListController {
         this.model = model;
         this.view = view;
 
-        model.addListener(this::refresh);
+        model.addListener(this::handleModelEvent);
         wireView();
         refresh();
     }
@@ -32,7 +33,7 @@ public class DeckListController {
         view.getDeckList().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 DeckModel selected = view.getDeckList().getSelectedValue();
-                model.select(selected);
+                model.setActiveDeck(selected);
             }
         });
 
@@ -42,9 +43,7 @@ public class DeckListController {
             if (name == null || name.isBlank()) {
                 name = "New Deck " + deckCounter.getAndIncrement();
             }
-            DeckModel deck = model.createDeck(name.trim());
-            gameModel.setActiveDeck(deck);
-            refresh();
+            model.createDeck(name.trim());
         });
 
         view.getDeleteDeckButton().addActionListener(e -> {
@@ -64,6 +63,13 @@ public class DeckListController {
         view.getBackButton().addActionListener(e -> gameModel.goToWorld());
     }
 
+    private void handleModelEvent(DeckListPropertyChangeEvent event) {
+        if (event == null) {
+            return;
+        }
+        refresh();
+    }
+
     private void refresh() {
         attachDeckListeners();
         List<DeckModel> decks = model.getDecks();
@@ -73,10 +79,17 @@ public class DeckListController {
     }
 
     private void attachDeckListeners() {
+        Set<DeckModel> toRemove = new HashSet<>(observedDecks);
         for (DeckModel deck : model.getDecks()) {
             if (observedDecks.add(deck)) {
                 deck.addPropertyChangeListener(deckChangeListener);
             }
+            toRemove.remove(deck);
+        }
+
+        for (DeckModel stale : toRemove) {
+            stale.removePropertyChangeListener(deckChangeListener);
+            observedDecks.remove(stale);
         }
     }
 }
