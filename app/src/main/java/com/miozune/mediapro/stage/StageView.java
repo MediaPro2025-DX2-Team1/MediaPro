@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -149,7 +150,7 @@ public class StageView extends JPanel implements Previewable {
         enemyHpBar.setValue(hp);
     }
 
-    public void updateHand(java.util.List<CardModel> cards) {
+    public void updateHand(List<CardModel> cards) {
         handPanel.removeAll();
         for (CardModel card : cards) {
             CardView cardView = new CardView(card);
