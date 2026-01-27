@@ -114,6 +114,7 @@ public class GameApplication {
 
     private void showDeckEdit() {
         if (deckEditViewHolder != null) {
+            deckEditViewHolder.dispose();
             root.remove(deckEditViewHolder.view());
         }
         deckEditViewHolder = new DeckViewHolder(model, model.getActiveDeck());
@@ -158,6 +159,7 @@ public class GameApplication {
 
     private static class DeckViewHolder {
         private final DeckView view;
+        @SuppressWarnings("unused")
         private final DeckController controller;
 
         DeckViewHolder(GameModel gameModel, DeckModel model) {
@@ -167,6 +169,10 @@ public class GameApplication {
 
         public DeckView view() {
             return view;
+        }
+
+        public void dispose() {
+            view.dispose();
         }
     }
 }

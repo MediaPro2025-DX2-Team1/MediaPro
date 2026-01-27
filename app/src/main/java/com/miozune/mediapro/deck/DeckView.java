@@ -20,6 +20,7 @@ import javax.swing.JScrollPane;
 
 public class DeckView extends JPanel implements Previewable {
     private final DeckModel model;
+    private DeckModel.PropertyChangeListener propertyChangeListener;
 
     // UIコンポーネント
     private JLabel nameLabel;
@@ -90,12 +91,16 @@ public class DeckView extends JPanel implements Previewable {
     }
 
     private void setupModelListener() {
-        model.addPropertyChangeListener(event -> {
-            switch (event) {
-                case DeckNameChangedEvent e -> updateNameDisplay(e.newName());
-                case DeckCardChangedEvent ignored -> updateCardList();
+        propertyChangeListener = event -> {
+            if (event instanceof DeckNameChangedEvent e) {
+                updateNameDisplay(e.newName());
+                return;
             }
-        });
+            if (event instanceof DeckCardChangedEvent) {
+                updateCardList();
+            }
+        };
+        model.addPropertyChangeListener(propertyChangeListener);
     }
 
     private void updateAllDisplays() {
@@ -150,5 +155,12 @@ public class DeckView extends JPanel implements Previewable {
 
     public DeckModel getModel() {
         return model;
+    }
+
+    public void dispose() {
+        if (propertyChangeListener != null) {
+            model.removePropertyChangeListener(propertyChangeListener);
+            propertyChangeListener = null;
+        }
     }
 }
