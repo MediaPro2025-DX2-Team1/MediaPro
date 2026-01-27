@@ -1,11 +1,16 @@
 package com.miozune.mediapro.drawpile;
 
 import com.miozune.mediapro.drawpile.events.DrawPileCardDrawnEvent;
-import com.miozune.mediapro.drawpile.events.DrawPileResetEvent;
 import com.miozune.mediapro.drawpile.events.DrawPileShuffledEvent;
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 public class DrawPileView extends JPanel implements Previewable {
 
@@ -45,10 +50,6 @@ public class DrawPileView extends JPanel implements Previewable {
                     remainingCards = e.cardsRemaining();
                     repaint();
                 }
-                case DrawPileResetEvent e -> {
-                    remainingCards = e.cardsRemaining();
-                    repaint();
-                }
             }
         });
     }
@@ -80,10 +81,7 @@ public class DrawPileView extends JPanel implements Previewable {
     }
 
     @Override
-    public void setupPreview() {
-        // デッキにダミーカードを追加してプレビュー用にシャッフル
-        model.initialize();
-    }
+    public void setupPreview() {}
 
     public DrawPileModel getModel() {
         return model;

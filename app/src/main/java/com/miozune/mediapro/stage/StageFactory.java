@@ -17,7 +17,6 @@ public class StageFactory {
 
     public StageModel create(StageDefinition definition, PlayerModel player, DeckModel deck) {
         DrawPileModel drawPile = new DrawPileModel(deck);
-        drawPile.initialize();
 
         HandModel hand = new HandModel();
         player.setHand(hand);

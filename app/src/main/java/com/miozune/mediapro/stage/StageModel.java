@@ -156,7 +156,7 @@ public class StageModel {
         return enemies;
     }
 
-    public DrawPileModel getDeck() {
+    public DrawPileModel getDrawpile() {
         return drawpile;
     }
 

@@ -14,11 +14,6 @@ public class DrawPileController {
         this.view = view;
     }
 
-    /* ゲーム開始時にデッキから山札を初期化する */
-    public void initializeFromDeck() {
-        model.initialize();
-    }
-
     /* ターン初めに5枚引く */
     public List<CardModel> drawTurnCards() {
         return model.drawCards(GameConfig.HAND_SIZE);
@@ -27,16 +22,6 @@ public class DrawPileController {
     /* 任意の枚数引く */
     public List<CardModel> drawSpecifiedCards(int count) {
         return model.drawCards(count);
-    }
-
-    /* 山札が5枚以下かチェック */
-    public boolean checkIfNeedsReset() {
-        return model.isLowOnCards(5);
-    }
-
-    /* 山札をリセット（hand, discard, deckのリセットはゲーム側で処理） */
-    public void resetDrawPile() {
-        model.reset();
     }
 
     public DrawPileModel getModel() {
