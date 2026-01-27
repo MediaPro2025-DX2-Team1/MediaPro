@@ -1,10 +1,9 @@
 package com.miozune.mediapro.decklist;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.game.GameModel;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DeckListModel {
 

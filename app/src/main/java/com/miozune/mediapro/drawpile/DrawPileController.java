@@ -1,9 +1,8 @@
 package com.miozune.mediapro.drawpile;
 
-import java.util.List;
-
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.game.GameConfig;
+import java.util.List;
 
 public class DrawPileController {
 

@@ -1,5 +1,6 @@
 package com.miozune.mediapro.world;
 
+import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,14 +8,11 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import com.miozune.mediapro.preview.Previewable;
 
 public class WorldView extends JPanel implements Previewable {
 

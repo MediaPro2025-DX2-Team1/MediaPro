@@ -1,14 +1,12 @@
 package com.miozune.mediapro.decklist;
 
-import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.JOptionPane;
-
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.game.GameModel;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.JOptionPane;
 
 public class DeckListController {
 

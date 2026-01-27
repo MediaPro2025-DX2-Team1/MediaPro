@@ -1,5 +1,10 @@
 package com.miozune.mediapro.decklist;
 
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.cardrecipe.CardRecipeModel;
+import com.miozune.mediapro.deck.DeckModel;
+import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,7 +13,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -18,12 +22,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-
-import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.card.CardView;
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
-import com.miozune.mediapro.deck.DeckModel;
-import com.miozune.mediapro.preview.Previewable;
 
 public class DeckListView extends JPanel implements Previewable {
 

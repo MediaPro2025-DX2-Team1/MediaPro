@@ -1,5 +1,11 @@
 package com.miozune.mediapro.deck;
 
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.cardrecipe.CardRecipeModel;
+import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
+import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
+import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,20 +14,12 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.card.CardView;
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
-import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
-import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
-import com.miozune.mediapro.preview.Previewable;
 
 public class DeckView extends JPanel implements Previewable {
     private final DeckModel model;

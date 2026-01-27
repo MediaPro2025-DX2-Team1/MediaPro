@@ -1,5 +1,8 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -7,7 +10,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -15,10 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-
-import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.card.CardView;
-import com.miozune.mediapro.preview.Previewable;
 
 public class StageView extends JPanel implements Previewable {
 
