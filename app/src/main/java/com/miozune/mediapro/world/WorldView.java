@@ -1,14 +1,27 @@
 package com.miozune.mediapro.world;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.*;
-import javax.swing.*;
 
 public class WorldView extends JPanel implements Previewable {
 
     private JButton stageButton1;
     private JButton stageButton2;
     private JButton stageButton3;
+    private JButton deckListButton;
 
     public WorldView() {
         setupPanel();
@@ -34,6 +47,10 @@ public class WorldView extends JPanel implements Previewable {
         stageButton3 = new JButton("Stage 3");
         stageButton3.setPreferredSize(new Dimension(200, 60));
         stageButton3.setFont(new Font("Arial", Font.BOLD, 24));
+
+        deckListButton = new JButton("Decks");
+        deckListButton.setPreferredSize(new Dimension(200, 40));
+        deckListButton.setFont(new Font("Arial", Font.BOLD, 18));
     }
 
     private void layoutComponents() {
@@ -67,6 +84,10 @@ public class WorldView extends JPanel implements Previewable {
         gbc.gridy = 2;
         buttonPanel.add(stageButton3, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        buttonPanel.add(deckListButton, gbc);
+
         add(titlePanel, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
     }
@@ -74,6 +95,7 @@ public class WorldView extends JPanel implements Previewable {
     public JButton getStageButton1() { return stageButton1; }
     public JButton getStageButton2() { return stageButton2; }
     public JButton getStageButton3() { return stageButton3; }
+    public JButton getDeckListButton() { return deckListButton; }
 
     @Override
     public String getPreviewDescription() {

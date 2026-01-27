@@ -1,5 +1,11 @@
 package com.miozune.mediapro.drawpile;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
@@ -7,8 +13,6 @@ import com.miozune.mediapro.drawpile.events.DrawPileCardDrawnEvent;
 import com.miozune.mediapro.drawpile.events.DrawPilePropertyChangeEvent;
 import com.miozune.mediapro.drawpile.events.DrawPileResetEvent;
 import com.miozune.mediapro.drawpile.events.DrawPileShuffledEvent;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DrawPileModel {
     private final List<CardModel> cards = new ArrayList<>();
@@ -51,12 +55,7 @@ public class DrawPileModel {
             CardRecipeModel recipe = entry.getKey();
             int count = entry.getValue();
             for (int i = 0; i < count; i++) {
-                cards.add(new CardModel(
-                    recipe.name(),
-                    recipe.cost(),
-                    recipe.imageName(),
-                    recipe.description()
-                ));
+                cards.add(new CardModel(recipe));
             }
         }
 

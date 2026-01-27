@@ -1,5 +1,6 @@
 package com.miozune.mediapro.deck;
 
+import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,8 +22,13 @@ public class DeckController {
         view.getAddButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // ダミーのカード追加（実際は選択ダイアログ等から）
-                CardRecipeModel dummyCard = new CardRecipeModel("新規カード", 1, "new.png", "新規カードの説明");
+                // ダミーカードをレジストリから追加（実際は選択UIを後続で実装）
+                CardRecipeModel dummyCard = CardRegistry.getInstance()
+                        .find("Fireball");
+                if (dummyCard == null) {
+                    dummyCard = new CardRecipeModel("Fireball", 2, "fireball.png", "火の玉を投げる");
+                    CardRegistry.getInstance().register(dummyCard);
+                }
                 model.addCard(dummyCard);
             }
         });

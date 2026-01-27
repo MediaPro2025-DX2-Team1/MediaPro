@@ -1,13 +1,15 @@
 package com.miozune.mediapro.stage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyModel;
+import com.miozune.mediapro.game.GameConfig;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ImmutableなStageDefinitionから、ステージ入場時に実行時のStageModelインスタンスを生成するFactoryクラス。
@@ -20,6 +22,9 @@ public class StageFactory {
 
         HandModel hand = new HandModel();
         player.setHand(hand);
+
+        // ステージ入場時に初期手札を配る
+        drawPile.drawCards(GameConfig.HAND_SIZE).forEach(hand::addCard);
 
         DiscardModel discard = new DiscardModel();
         List<EnemyModel> enemies = buildEnemies(definition.enemies());

@@ -1,8 +1,10 @@
 package com.miozune.mediapro.world;
 
-import com.miozune.mediapro.game.GameModel;
 import java.util.Objects;
+
 import javax.swing.JButton;
+
+import com.miozune.mediapro.game.GameModel;
 
 public class WorldController {
 
@@ -18,6 +20,7 @@ public class WorldController {
         wireStageButton(view.getStageButton1(), 1);
         wireStageButton(view.getStageButton2(), 2);
         wireStageButton(view.getStageButton3(), 3);
+        view.getDeckListButton().addActionListener(e -> gameModel.goToDeckList());
     }
 
     private void wireStageButton(JButton button, int stageNumber) {

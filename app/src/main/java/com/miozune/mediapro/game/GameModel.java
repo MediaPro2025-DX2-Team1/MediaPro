@@ -1,5 +1,9 @@
 package com.miozune.mediapro.game;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.game.events.GamePropertyChangeEvent;
@@ -8,8 +12,6 @@ import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.stage.StageFactory;
 import com.miozune.mediapro.stage.StageModel;
 import com.miozune.mediapro.world.WorldModel;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameModel {
 
@@ -64,6 +66,20 @@ public class GameModel {
         return activeDeck;
     }
 
+    public void setActiveDeck(DeckModel deck) {
+        if (deck == null || deck == this.activeDeck) {
+            return;
+        }
+        if (!decks.contains(deck)) {
+            decks.add(deck);
+        }
+        this.activeDeck = deck;
+    }
+
+    public List<DeckModel> getDecks() {
+        return List.copyOf(decks);
+    }
+
     public GameScene getScene() {
         return scene;
     }
@@ -75,6 +91,18 @@ public class GameModel {
     public void goToWorld() {
         world.clearCurrentStage();
         setScene(GameScene.WORLD);
+    }
+
+    public void goToDeckList() {
+        setScene(GameScene.DECK_LIST);
+    }
+
+    public void goToDeckEdit(DeckModel deck) {
+        ensureActiveDeck();
+        if (deck != null) {
+            setActiveDeck(deck);
+        }
+        setScene(GameScene.DECK_EDIT);
     }
 
     public StageModel startStage(int stageIndex) {
@@ -105,8 +133,17 @@ public class GameModel {
 
     private DeckModel createDefaultDeck() {
         DeckModel deck = new DeckModel("Starter Deck");
-        CardRecipeModel attack = new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。");
-        CardRecipeModel guard = new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。");
+        CardRegistry registry = CardRegistry.getInstance();
+        CardRecipeModel attack = registry.find("Attack");
+        CardRecipeModel guard = registry.find("Guard");
+        if (attack == null) {
+            attack = new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。");
+            registry.register(attack);
+        }
+        if (guard == null) {
+            guard = new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。");
+            registry.register(guard);
+        }
         for (int i = 0; i < 6; i++) {
             deck.addCard(attack);
         }
@@ -114,6 +151,22 @@ public class GameModel {
             deck.addCard(guard);
         }
         return deck;
+    }
+
+    public DeckModel createDeck(String name) {
+        DeckModel deck = new DeckModel(name);
+        decks.add(deck);
+        return deck;
+    }
+
+    public void removeDeck(DeckModel deck) {
+        if (deck == null) {
+            return;
+        }
+        decks.remove(deck);
+        if (deck == activeDeck) {
+            activeDeck = decks.isEmpty() ? null : decks.get(0);
+        }
     }
 
 }

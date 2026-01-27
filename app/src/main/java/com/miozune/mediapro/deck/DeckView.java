@@ -1,22 +1,32 @@
 package com.miozune.mediapro.deck;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import javax.swing.*;
 
 public class DeckView extends JPanel implements Previewable {
     private final DeckModel model;
 
     // UIコンポーネント
     private JLabel nameLabel;
-    private JList<String> cardList;
-    private DefaultListModel<String> listModel;
+    private JPanel cardsPanel;
     private JButton addButton;
     private JButton removeButton;
 
@@ -46,11 +56,8 @@ public class DeckView extends JPanel implements Previewable {
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        listModel = new DefaultListModel<>();
-        cardList = new JList<>(listModel);
-        cardList.setBackground(new Color(45, 45, 45));
-        cardList.setForeground(Color.WHITE);
-        cardList.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
+        cardsPanel.setBackground(new Color(45, 45, 45));
 
         addButton = new JButton("カード追加");
         removeButton = new JButton("カード削除");
@@ -64,9 +71,10 @@ public class DeckView extends JPanel implements Previewable {
 
     private void layoutComponents() {
         add(nameLabel, BorderLayout.NORTH);
-        JScrollPane scrollPane = new JScrollPane(cardList);
+        JScrollPane scrollPane = new JScrollPane(cardsPanel);
         scrollPane.setBackground(new Color(45, 45, 45));
         scrollPane.getViewport().setBackground(new Color(45, 45, 45));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         add(scrollPane, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(50, 50, 50));
@@ -94,13 +102,17 @@ public class DeckView extends JPanel implements Previewable {
     }
 
     private void updateCardList() {
-        listModel.clear();
+        cardsPanel.removeAll();
         List<CardRecipeModel> cards = new ArrayList<>(model.getCards().keySet());
         cards.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
         for (CardRecipeModel card : cards) {
             int count = model.getCount(card);
-            listModel.addElement(card.name() + " (コスト: " + card.cost() + ") x" + count);
+            for (int i = 0; i < count; i++) {
+                cardsPanel.add(new CardView(new CardModel(card)));
+            }
         }
+        cardsPanel.revalidate();
+        cardsPanel.repaint();
     }
 
     // getter for buttons (Controller access)

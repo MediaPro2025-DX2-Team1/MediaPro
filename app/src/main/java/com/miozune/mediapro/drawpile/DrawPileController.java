@@ -1,7 +1,9 @@
 package com.miozune.mediapro.drawpile;
 
-import com.miozune.mediapro.card.CardModel;
 import java.util.List;
+
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.game.GameConfig;
 
 public class DrawPileController {
 
@@ -20,7 +22,7 @@ public class DrawPileController {
 
     /* ターン初めに5枚引く */
     public List<CardModel> drawTurnCards() {
-        return model.drawCards(5);
+        return model.drawCards(GameConfig.HAND_SIZE);
     }
 
     /* 任意の枚数引く */
