@@ -1,8 +1,8 @@
 package com.miozune.mediapro.decklist;
 
 import com.miozune.mediapro.deck.DeckModel;
-import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.decklist.events.DeckListPropertyChangeEvent;
+import com.miozune.mediapro.game.GameModel;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
