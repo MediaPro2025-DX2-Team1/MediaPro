@@ -22,15 +22,14 @@ public class StageFactory {
         HandModel hand = new HandModel();
         player.setHand(hand);
 
-        // ステージ入場時に初期手札を配る
-        drawPile.drawCards(GameConfig.HAND_SIZE).forEach(hand::addCard);
-
         DiscardModel discard = new DiscardModel();
         List<EnemyModel> enemies = buildEnemies(definition.enemies());
 
         player.resetMana();
 
-        return new StageModel(player, enemies, drawPile, hand, discard);
+        StageModel model = new StageModel(player, enemies, drawPile, hand, discard);
+        model.drawToHand(GameConfig.HAND_SIZE);
+        return model;
     }
 
     private List<EnemyModel> buildEnemies(List<StageDefinition.EnemyDefinition> definitions) {
