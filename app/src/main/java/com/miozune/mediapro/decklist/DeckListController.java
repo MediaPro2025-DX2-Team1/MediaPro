@@ -24,7 +24,7 @@ public class DeckListController {
         this.model = model;
         this.view = view;
 
-        model.addListener(this::handleModelEvent);
+        model.addPropertyChangeListener(this::handleModelEvent);
         wireView();
         refresh();
     }

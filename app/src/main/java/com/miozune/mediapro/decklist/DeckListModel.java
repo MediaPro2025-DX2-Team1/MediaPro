@@ -92,13 +92,13 @@ public class DeckListModel {
         selected = decks.get(0);
     }
 
-    public void addListener(PropertyChangeListener listener) {
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
         if (listener != null) {
             listeners.add(listener);
         }
     }
 
-    public void removeListener(PropertyChangeListener listener) {
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
         listeners.remove(listener);
     }
 
