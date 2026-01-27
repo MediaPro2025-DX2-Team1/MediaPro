@@ -1,7 +1,6 @@
 package com.miozune.mediapro.decklist;
 
-import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.CardBadgeView;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.preview.Previewable;
@@ -17,7 +16,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -95,40 +93,11 @@ public class DeckListView extends JPanel implements Previewable {
                     .thenComparing(CardRecipeModel::name));
             for (CardRecipeModel recipe : recipes) {
                 int count = deck.getCount(recipe);
-                cardsPanel.add(createCardWithBadge(recipe, count));
+                cardsPanel.add(new CardBadgeView(recipe, count));
             }
         }
         cardsPanel.revalidate();
         cardsPanel.repaint();
-    }
-
-    private JPanel createCardWithBadge(CardRecipeModel card, int count) {
-        CardView cardView = new CardView(new CardModel(card));
-        Dimension size = cardView.getPreferredSize();
-
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(size);
-        layeredPane.setMinimumSize(size);
-
-        cardView.setBounds(0, 0, size.width, size.height);
-        layeredPane.add(cardView, JLayeredPane.DEFAULT_LAYER);
-
-        JLabel badge = new JLabel("x" + count, JLabel.CENTER);
-        badge.setOpaque(true);
-        badge.setBackground(new Color(0, 0, 0, 200));
-        badge.setForeground(Color.WHITE);
-        badge.setFont(new Font("SansSerif", Font.BOLD, 14));
-        badge.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
-
-        int badgeWidth = badge.getPreferredSize().width;
-        int badgeHeight = badge.getPreferredSize().height;
-        badge.setBounds(size.width - badgeWidth - 6, 6, badgeWidth, badgeHeight);
-        layeredPane.add(badge, JLayeredPane.PALETTE_LAYER);
-
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setOpaque(false);
-        wrapper.add(layeredPane, BorderLayout.CENTER);
-        return wrapper;
     }
 
     public JList<DeckModel> getDeckList() {
