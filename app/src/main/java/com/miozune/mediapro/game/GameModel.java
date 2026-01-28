@@ -1,7 +1,7 @@
 package com.miozune.mediapro.game;
 
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
+import com.miozune.mediapro.decklist.DeckListModel;
 import com.miozune.mediapro.game.events.GamePropertyChangeEvent;
 import com.miozune.mediapro.game.events.GameSceneChangedEvent;
 import com.miozune.mediapro.player.PlayerModel;
@@ -23,17 +23,16 @@ public class GameModel {
     private final PlayerModel player;
     private final WorldModel world;
     private final StageFactory stageFactory;
-    private final List<DeckModel> decks = new CopyOnWriteArrayList<>();
-    private DeckModel activeDeck;
+    private final DeckListModel deckListModel;
     private GameScene scene;
 
     public GameModel() {
         this.stageFactory = new StageFactory();
         this.player = PlayerModel.createDefaultPlayer();
         this.world = WorldModel.createDefault(stageFactory);
+        this.deckListModel = new DeckListModel();
         this.scene = GameScene.TITLE;
-
-        ensureActiveDeck();
+        this.deckListModel.ensureActiveDeck();
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -60,8 +59,20 @@ public class GameModel {
         return world;
     }
 
+    public DeckListModel getDeckListModel() {
+        return deckListModel;
+    }
+
     public DeckModel getActiveDeck() {
-        return activeDeck;
+        return deckListModel.getActiveDeck();
+    }
+
+    public void setActiveDeck(DeckModel deck) {
+        deckListModel.setActiveDeck(deck);
+    }
+
+    public List<DeckModel> getDecks() {
+        return deckListModel.getDecks();
     }
 
     public GameScene getScene() {
@@ -77,9 +88,21 @@ public class GameModel {
         setScene(GameScene.WORLD);
     }
 
+    public void goToDeckList() {
+        setScene(GameScene.DECK_LIST);
+    }
+
+    public void goToDeckEdit(DeckModel deck) {
+        deckListModel.ensureActiveDeck();
+        if (deck != null) {
+            deckListModel.setActiveDeck(deck);
+        }
+        setScene(GameScene.DECK_EDIT);
+    }
+
     public StageModel startStage(int stageIndex) {
-        ensureActiveDeck();
-        StageModel stage = world.createStageFor(player, activeDeck, stageIndex);
+        deckListModel.ensureActiveDeck();
+        StageModel stage = world.createStageFor(player, deckListModel.getActiveDeck(), stageIndex);
         stage.setBattleListener(playerWon -> goToWorld());
         setScene(GameScene.STAGE);
         return stage;
@@ -93,27 +116,12 @@ public class GameModel {
         }
     }
 
-    private void ensureActiveDeck() {
-        if (activeDeck == null) {
-            if (decks.isEmpty()) {
-                System.out.println("デッキが存在しません。デフォルトデッキを作成します。");
-                decks.add(createDefaultDeck());
-            }
-            activeDeck = decks.get(0);
-        }
+    public DeckModel createDeck(String name) {
+        return deckListModel.createDeck(name);
     }
 
-    private DeckModel createDefaultDeck() {
-        DeckModel deck = new DeckModel("Starter Deck");
-        CardRecipeModel attack = new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。");
-        CardRecipeModel guard = new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。");
-        for (int i = 0; i < 6; i++) {
-            deck.addCard(attack);
-        }
-        for (int i = 0; i < 4; i++) {
-            deck.addCard(guard);
-        }
-        return deck;
+    public void removeDeck(DeckModel deck) {
+        deckListModel.removeDeck(deck);
     }
 
 }

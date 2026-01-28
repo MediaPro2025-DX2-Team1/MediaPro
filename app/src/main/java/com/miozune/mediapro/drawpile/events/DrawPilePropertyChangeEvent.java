@@ -4,7 +4,6 @@ import com.miozune.mediapro.drawpile.DrawPileModel;
 
 public sealed interface DrawPilePropertyChangeEvent
         permits DrawPileCardDrawnEvent,
-                DrawPileResetEvent,
                 DrawPileShuffledEvent {
 
     DrawPileModel getDrawPile();

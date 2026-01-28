@@ -3,6 +3,7 @@ package com.miozune.mediapro.stage;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyModel;
+import com.miozune.mediapro.game.GameConfig;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
 import java.util.List;
@@ -48,12 +49,25 @@ public class StageModel {
         this.listener = listener;
     }
 
-    // ドロー処理
-    public void draw() {
-        if (isBattleOver)
-            return;
+    // ドロー処理（1枚）
+    public void drawToHand() {
+        drawToHand(1);
+    }
 
-        drawpile.drawCard();
+    // ドロー処理（複数枚）
+    public void drawToHand(int count) {
+        if (isBattleOver) {
+            return;
+        }
+        for (int i = 0; i < count; i++) {
+            if (hand.getCards().size() >= GameConfig.HAND_SIZE) {
+                break;
+            }
+            var card = drawpile.drawCard();
+            if (card != null) {
+                hand.addCard(card);
+            }
+        }
         updateBattleState();
     }
 
@@ -142,7 +156,7 @@ public class StageModel {
         return enemies;
     }
 
-    public DrawPileModel getDeck() {
+    public DrawPileModel getDrawpile() {
         return drawpile;
     }
 

@@ -4,6 +4,7 @@ import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyModel;
+import com.miozune.mediapro.game.GameConfig;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ public class StageFactory {
 
     public StageModel create(StageDefinition definition, PlayerModel player, DeckModel deck) {
         DrawPileModel drawPile = new DrawPileModel(deck);
-        drawPile.initialize();
 
         HandModel hand = new HandModel();
         player.setHand(hand);
@@ -26,7 +26,9 @@ public class StageFactory {
 
         player.resetMana();
 
-        return new StageModel(player, enemies, drawPile, hand, discard);
+        StageModel model = new StageModel(player, enemies, drawPile, hand, discard);
+        model.drawToHand(GameConfig.HAND_SIZE);
+        return model;
     }
 
     private List<EnemyModel> buildEnemies(List<StageDefinition.EnemyDefinition> definitions) {

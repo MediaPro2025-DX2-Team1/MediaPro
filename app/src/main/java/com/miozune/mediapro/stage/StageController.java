@@ -1,5 +1,6 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,6 +16,12 @@ public class StageController {
         // バトル終了リスナー登録
         model.setBattleListener(playerWon -> handleBattleEnd(playerWon));
 
+        model.getHand().addPropertyChangeListener(event -> {
+            if (event instanceof HandCardChangedEvent handEvent) {
+                view.updateHand(handEvent.newcards());
+            }
+        });
+
         connectUI();
         updateView();
     }
@@ -25,7 +32,7 @@ public class StageController {
         view.getDrawButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                model.getDeck().drawCard();
+                model.drawToHand();
                 updateView();
             }
         });
@@ -49,6 +56,7 @@ public class StageController {
     private void updateView() {
         view.updatePlayerHP(model.getPlayer().getHp());
         view.updateEnemyHP(model.getEnemies().get(0).getHp());
+        view.updateHand(model.getHand().getCards());
     }
 
     /* バトル終了時の処理 */

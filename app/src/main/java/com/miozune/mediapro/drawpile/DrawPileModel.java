@@ -5,14 +5,15 @@ import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.drawpile.events.DrawPileCardDrawnEvent;
 import com.miozune.mediapro.drawpile.events.DrawPilePropertyChangeEvent;
-import com.miozune.mediapro.drawpile.events.DrawPileResetEvent;
 import com.miozune.mediapro.drawpile.events.DrawPileShuffledEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DrawPileModel {
     private final List<CardModel> cards = new ArrayList<>();
-    private final DeckModel deck;
 
     @FunctionalInterface
     public interface PropertyChangeListener {
@@ -39,11 +40,11 @@ public class DrawPileModel {
 
     /* コンストラクタ */
     public DrawPileModel(DeckModel deck) {
-        this.deck = deck;
+        rebuildFromDeck(deck);
     }
 
     /* Deckを参照してCardModelのlistを作成し、シャッフルする */
-    public void initialize() {
+    private void rebuildFromDeck(DeckModel deck) {
         cards.clear();
         Map<CardRecipeModel, Integer> deckCards = deck.getCards();
 
@@ -51,12 +52,7 @@ public class DrawPileModel {
             CardRecipeModel recipe = entry.getKey();
             int count = entry.getValue();
             for (int i = 0; i < count; i++) {
-                cards.add(new CardModel(
-                    recipe.name(),
-                    recipe.cost(),
-                    recipe.imageName(),
-                    recipe.description()
-                ));
+                cards.add(new CardModel(recipe));
             }
         }
 
@@ -91,13 +87,6 @@ public class DrawPileModel {
         return drawnCards;
     }
 
-    /* 山札をリセットする（Deckから再度初期化） */
-    public void reset() {
-        cards.clear();
-        initialize();
-        fireEvent(new DrawPileResetEvent(this, cards.size()));
-    }
-
     /* 山札の残り枚数を取得する */
     public int getRemainingCount() {
         return cards.size();
@@ -106,16 +95,6 @@ public class DrawPileModel {
     /* 山札の全カードを取得する */
     public List<CardModel> getCards() {
         return Collections.unmodifiableList(cards);
-    }
-
-    /* 参照しているDeckを取得する */
-    public DeckModel getDeck() {
-        return deck;
-    }
-
-    /* 山札が5枚以下かどうかをチェック */
-    public boolean isLowOnCards(int threshold) {
-        return cards.size() <= threshold;
     }
 
     /* デフォルトインスタンスを作成（プレビュー用） */

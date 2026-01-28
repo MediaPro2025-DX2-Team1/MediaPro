@@ -1,8 +1,23 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 public class StageView extends JPanel implements Previewable {
 
@@ -46,11 +61,10 @@ public class StageView extends JPanel implements Previewable {
         bottomPanel.setPreferredSize(new Dimension(0, 200));
         bottomPanel.setOpaque(false);
 
-        // 左側：手札（仮）
-        handPanel = new JPanel();
+        // 左側：手札
+        handPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         handPanel.setBackground(new Color(45, 45, 45));
         handPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        handPanel.add(new JLabel("<html><font color='white'>手札パネル（未実装）</font></html>"));
 
         // 右側：アクションボタン（3分割して埋める）
         actionPanel = new JPanel(new GridLayout(3, 1, 0, 5)); // 縦に3つ並べる
@@ -134,6 +148,17 @@ public class StageView extends JPanel implements Previewable {
     public void updateEnemyHP(int hp) {
         enemyHpLabel.setText("HP: " + hp);
         enemyHpBar.setValue(hp);
+    }
+
+    public void updateHand(List<CardModel> cards) {
+        handPanel.removeAll();
+        for (CardModel card : cards) {
+            CardView cardView = new CardView(card);
+            cardView.setPreferredSize(new Dimension(CardView.DEFAULT_WIDTH, CardView.DEFAULT_HEIGHT));
+            handPanel.add(cardView);
+        }
+        handPanel.revalidate();
+        handPanel.repaint();
     }
 
     /* Previewableインターフェースの実装 */
