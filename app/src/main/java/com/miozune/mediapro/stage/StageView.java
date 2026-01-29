@@ -10,12 +10,15 @@ import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.player.PlayerView;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
@@ -26,6 +29,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class StageView extends JPanel implements Previewable {
 
@@ -185,7 +189,7 @@ public class StageView extends JPanel implements Previewable {
         }
 
         @Override
-        protected void paintComponent(java.awt.Graphics g) {
+        protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -198,12 +202,12 @@ public class StageView extends JPanel implements Previewable {
             g2.fillOval(x, y, size, size);
 
             g2.setColor(BORDER);
-            g2.setStroke(new java.awt.BasicStroke(2f));
+            g2.setStroke(new BasicStroke(2f));
             g2.drawOval(x, y, size, size);
 
             String text = String.format("%d/%d", mana, maxMana);
             g2.setFont(new Font("SansSerif", Font.BOLD, 14));
-            java.awt.FontMetrics fm = g2.getFontMetrics();
+            FontMetrics fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(text);
             int textHeight = fm.getAscent();
             int tx = getWidth() / 2 - textWidth / 2;
@@ -219,7 +223,7 @@ public class StageView extends JPanel implements Previewable {
         CardController.CardClickListener bridgeListener = null;
         if (clickListener != null) {
             bridgeListener = (cardView, e) -> {
-                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+                if (SwingUtilities.isRightMouseButton(e)) {
                     handView.showCardDetail(cardView.getCardModel());
                     return;
                 }

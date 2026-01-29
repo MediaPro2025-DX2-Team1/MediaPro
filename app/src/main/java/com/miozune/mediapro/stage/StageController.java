@@ -3,6 +3,7 @@ package com.miozune.mediapro.stage;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
+import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -69,7 +70,7 @@ public class StageController {
     }
 
     @SuppressWarnings("unused")
-    private void handleCardClick(CardView cardView, java.awt.event.MouseEvent ignoredEvent) {
+    private void handleCardClick(CardView cardView, MouseEvent ignoredEvent) {
         if (model.isBattleOver() || model.getTurn() != StageModel.Turn.PLAYER) {
             return;
         }
