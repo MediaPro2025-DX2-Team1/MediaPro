@@ -24,10 +24,12 @@ public class StageFactory {
         DiscardModel discard = new DiscardModel();
         List<EnemyModel> enemies = buildEnemies(definition.enemies());
 
-        player.resetMana();
+        player.setMana(player.getMaxMana());
 
         StageModel model = new StageModel(player, enemies, drawPile, hand, discard);
-        model.drawToHand(GameConfig.HAND_SIZE);
+        int initialDraw = Math.max(GameConfig.HAND_SIZE - 1, 0);
+        model.drawToHand(initialDraw);
+        model.startBattle();
         return model;
     }
 

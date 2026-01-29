@@ -220,7 +220,16 @@ public class PlayerModel {
         return hp > 0;
     }
 
+    /**
+     * 敗北後にワールドへ戻る際のリセット。
+     * HPを全快し、付与中の効果をすべて解除する。
+     */
+    public void resetAfterDefeat() {
+        setHp(maxHp);
+        effects.clear();
+    }
+
     public static PlayerModel createDefaultPlayer() {
-        return new PlayerModel("プレイヤー", 100, 100, 0, 10);
+        return new PlayerModel("プレイヤー", 100, 100, 10, 10);
     }
 }

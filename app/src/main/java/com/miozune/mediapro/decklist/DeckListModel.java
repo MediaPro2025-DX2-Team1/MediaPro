@@ -114,11 +114,11 @@ public class DeckListModel {
         CardRecipeModel attack = registry.find("Attack");
         CardRecipeModel guard = registry.find("Guard");
         if (attack == null) {
-            attack = new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。");
+            attack = new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。", CardRecipeModel.EffectType.DAMAGE, 6);
             registry.register(attack);
         }
         if (guard == null) {
-            guard = new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。");
+            guard = new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。", CardRecipeModel.EffectType.NONE, 0);
             registry.register(guard);
         }
         for (int i = 0; i < 6; i++) {

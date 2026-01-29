@@ -18,10 +18,10 @@ public final class CardRegistry {
 
     private CardRegistry() {
         // TODO: 実際のカードデータに差し替える
-        register(new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。"));
-        register(new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。"));
-        register(new CardRecipeModel("Fireball", 2, "fireball.png", "小さな火の玉を放つ。"));
-        register(new CardRecipeModel("Heal", 2, "heal.png", "少量のHPを回復する。"));
+        register(new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。", CardRecipeModel.EffectType.DAMAGE, 10));
+        register(new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード（現状は効果なし）。", CardRecipeModel.EffectType.NONE, 0));
+        register(new CardRecipeModel("Fireball", 2, "fireball.png", "小さな火の玉を放つ。", CardRecipeModel.EffectType.DAMAGE, 10));
+        register(new CardRecipeModel("Heal", 2, "heal.png", "少量のHPを回復する。", CardRecipeModel.EffectType.HEAL, 8));
     }
 
     public static CardRegistry getInstance() {

@@ -145,8 +145,8 @@ public class DeckView extends JPanel implements Previewable {
     @Override
     public void setupPreview() {
         // プレビュー用のダミーデータ
-        CardRecipeModel dummyCard1 = new CardRecipeModel("ファイアボール", 3, "fireball.png", "火の玉を投げる");
-        CardRecipeModel dummyCard2 = new CardRecipeModel("ヒール", 2, "heal.png", "HPを回復する");
+        CardRecipeModel dummyCard1 = new CardRecipeModel("ファイアボール", 3, "fireball.png", "火の玉を投げる", CardRecipeModel.EffectType.DAMAGE, 10);
+        CardRecipeModel dummyCard2 = new CardRecipeModel("ヒール", 2, "heal.png", "HPを回復する", CardRecipeModel.EffectType.HEAL, 6);
         model.addCard(dummyCard1);
         model.addCard(dummyCard1);
         model.addCard(dummyCard2);

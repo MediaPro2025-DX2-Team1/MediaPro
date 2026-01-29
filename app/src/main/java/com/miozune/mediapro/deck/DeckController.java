@@ -29,7 +29,7 @@ public class DeckController {
                 CardRecipeModel dummyCard = CardRegistry.getInstance()
                         .find("Fireball");
                 if (dummyCard == null) {
-                    dummyCard = new CardRecipeModel("Fireball", 2, "fireball.png", "火の玉を投げる");
+                    dummyCard = new CardRecipeModel("Fireball", 2, "fireball.png", "火の玉を投げる", CardRecipeModel.EffectType.DAMAGE, 10);
                     CardRegistry.getInstance().register(dummyCard);
                 }
                 model.addCard(dummyCard);

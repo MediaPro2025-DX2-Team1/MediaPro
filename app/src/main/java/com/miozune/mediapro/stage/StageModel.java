@@ -1,9 +1,10 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyModel;
-import com.miozune.mediapro.game.GameConfig;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
 import java.util.List;
@@ -22,6 +23,8 @@ public class StageModel {
     private Turn turn = Turn.PLAYER;
 
     private boolean isBattleOver = false;// 戦闘終了フラグ
+
+    private static final int ENEMY_BASE_DAMAGE = 5;
 
     public interface BattleListener { // 終了結果を外へ通知するためのリスナー
         void onBattleEnd(boolean playerWon);
@@ -44,6 +47,15 @@ public class StageModel {
         this.discard = discard;
     }
 
+    /* 戦闘開始 */
+    public void startBattle() {
+        if (isBattleOver) {
+            return;
+        }
+        turn = Turn.PLAYER;
+        startPlayerTurn();
+    }
+
     /* 外部から終了フラグを登録 */
     public void setBattleListener(BattleListener listener) {
         this.listener = listener;
@@ -60,9 +72,6 @@ public class StageModel {
             return;
         }
         for (int i = 0; i < count; i++) {
-            if (hand.getCards().size() >= GameConfig.HAND_SIZE) {
-                break;
-            }
             var card = drawpile.drawCard();
             if (card != null) {
                 hand.addCard(card);
@@ -96,6 +105,13 @@ public class StageModel {
         }
     }
 
+    /**
+     * モデル外部から状態が変化した際に呼び出すことで終了判定を走らせる。
+     */
+    public void checkBattleState() {
+        updateBattleState();
+    }
+
     /* ターン切り替え */
     public void nextTurn() {
         if (isBattleOver)
@@ -105,6 +121,11 @@ public class StageModel {
             endPlayerTurn();
             turn = Turn.ENEMY;
             startEnemyTurn();
+            if (isBattleOver) {
+                return;
+            }
+            turn = Turn.PLAYER;
+            startPlayerTurn();
         } else {
             endEnemyTurn();
             turn = Turn.PLAYER;
@@ -116,26 +137,69 @@ public class StageModel {
 
     // 自分ターンへの移行
     private void startPlayerTurn() {
-        // 例：
-        // マナ回復
-        // カードドロー
-        // ターン開始Effect通知
+        player.addMana();
+        drawToHand(1);
+        // TODO: ターン開始時の効果をここに集約する
     }
 
     private void endPlayerTurn() {
-        // 例：
-        // 手札上限処理
-        // ターン終了Effect通知
+        // 2026-01 現仕様: ターン終了時に手札は捨て札へ送らない
     }
 
     // 相手ターンへの移行
     private void startEnemyTurn() {
-        // 例：
-        // 敵の攻撃を呼び出す（後で）
+        for (EnemyModel enemy : enemies) {
+            if (isBattleOver) {
+                return;
+            }
+            if (enemy.isDead()) {
+                continue;
+            }
+            player.takeDamage(ENEMY_BASE_DAMAGE);
+            updateBattleState();
+        }
     }
 
     private void endEnemyTurn() {
 
+    }
+
+    /* カード使用処理 */
+    public boolean playCard(CardModel card, EnemyModel target) {
+        if (card == null || target == null || isBattleOver || turn != Turn.PLAYER) {
+            return false;
+        }
+        if (!hand.getCards().contains(card)) {
+            return false;
+        }
+
+        CardRecipeModel recipe = card.recipe();
+        if (!player.consumeMana(recipe.cost())) {
+            return false;
+        }
+
+        switch (recipe.effectType()) {
+            case DAMAGE -> target.takeDamage(recipe.effectValue());
+            case HEAL -> player.heal(recipe.effectValue());
+            case NONE -> {
+                // 効果なしカード
+            }
+        }
+
+        hand.removeCard(card);
+        discard.addCard(card);
+        updateBattleState();
+        return true;
+    }
+
+    /* ユーティリティ */
+    public EnemyModel firstAliveEnemy() {
+        for (EnemyModel enemy : enemies) {
+            if (!enemy.isDead()) {
+                return enemy;
+            }
+        }
+        return null;
     }
 
     /* バトル終了処理 */

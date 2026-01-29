@@ -6,6 +6,7 @@ import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Objects;
@@ -59,6 +60,8 @@ public class PlayerView extends JPanel implements Previewable {
     private JLabel hpLabel;
     private JProgressBar manaBar;
     private JLabel manaLabel;
+    private JPanel manaPanel;
+    private Component manaSpacer;
 
     // --- Model参照 ---
 
@@ -93,6 +96,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     private void setupPanel() {
         setPreferredSize(new Dimension(400, 180));
+        setMaximumSize(new Dimension(400, 180));
         setOpaque(true);
         setBackground(new Color(245, 245, 245));
         setBorder(BorderFactory.createCompoundBorder(
@@ -110,7 +114,8 @@ public class PlayerView extends JPanel implements Previewable {
         hpBar.setValue(100);
         hpBar.setStringPainted(true);
         hpBar.setForeground(new Color(220, 50, 50));
-        hpBar.setPreferredSize(new Dimension(300, 30));
+        hpBar.setPreferredSize(new Dimension(300, 24));
+        hpBar.setMaximumSize(new Dimension(300, 24));
         // hpBarの色は動的に変更される
 
         hpLabel = new JLabel();
@@ -120,7 +125,8 @@ public class PlayerView extends JPanel implements Previewable {
         manaBar.setValue(5);
         manaBar.setStringPainted(true);
         manaBar.setForeground(new Color(50, 150, 220));
-        manaBar.setPreferredSize(new Dimension(300, 30));
+        manaBar.setPreferredSize(new Dimension(300, 24));
+        manaBar.setMaximumSize(new Dimension(300, 24));
         manaBar.setUI(new ColoredProgressBarUI(new Color(50, 150, 220))); // 青
 
         manaLabel = new JLabel();
@@ -142,10 +148,11 @@ public class PlayerView extends JPanel implements Previewable {
         JPanel hpPanel = createStatPanel(hpLabel, hpBar);
 
         // マナセクション
-        JPanel manaPanel = createStatPanel(manaLabel, manaBar);
+        manaPanel = createStatPanel(manaLabel, manaBar);
 
         centerPanel.add(hpPanel);
-        centerPanel.add(Box.createVerticalStrut(10));
+        manaSpacer = Box.createVerticalStrut(10);
+        centerPanel.add(manaSpacer);
         centerPanel.add(manaPanel);
 
         add(centerPanel, BorderLayout.CENTER);
@@ -192,6 +199,21 @@ public class PlayerView extends JPanel implements Previewable {
      */
     public PlayerModel getPlayerModel() {
         return model;
+    }
+
+    /**
+     * マナ表示のON/OFFを切り替える。
+     * 手札上にマナを別表示する場合に使用する。
+     */
+    public void setManaVisible(boolean visible) {
+        if (manaPanel != null) {
+            manaPanel.setVisible(visible);
+        }
+        if (manaSpacer != null) {
+            manaSpacer.setVisible(visible);
+        }
+        revalidate();
+        repaint();
     }
 
     /**
