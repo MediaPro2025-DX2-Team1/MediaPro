@@ -374,7 +374,7 @@ public class ExampleView extends JPanel implements Previewable {
 
 ## コーディング規約
 
-### インポート（Import）
+### インポート（Import） (重要)
 
 - **原則としてimport文を使用してください**。コード本文中で完全修飾名（パッケージ名を含むクラス名）を使用することは避けてください。
 - 完全修飾名の使用は、**クラス名の衝突**（例: `java.util.List` と `java.awt.List`）がある場合にのみ許可されます。

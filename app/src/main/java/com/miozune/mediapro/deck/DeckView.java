@@ -1,32 +1,45 @@
 package com.miozune.mediapro.deck;
 
 import com.miozune.mediapro.card.CardBadgeView;
+import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 
 public class DeckView extends JPanel implements Previewable {
     private final DeckModel model;
     private DeckModel.PropertyChangeListener propertyChangeListener;
 
+    private Consumer<CardRecipeModel> deckCardClickHandler;
+    private Consumer<CardRecipeModel> availableCardClickHandler;
+    private final List<CardRecipeModel> availableCards = new ArrayList<>();
+
     // UIコンポーネント
     private JLabel nameLabel;
     private JPanel cardsPanel;
-    private JButton addButton;
-    private JButton removeButton;
+    private JPanel availableCardsPanel;
     private JButton backButton;
 
     // コンストラクタ（Previewable要件）
@@ -58,15 +71,14 @@ public class DeckView extends JPanel implements Previewable {
         cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
         cardsPanel.setBackground(new Color(45, 45, 45));
 
-        addButton = new JButton("カード追加");
-        removeButton = new JButton("カード削除");
+        availableCardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
+        availableCardsPanel.setBackground(new Color(45, 45, 45));
+
         backButton = new JButton("戻る");
 
         Font btnFont = new Font("SansSerif", Font.BOLD, 16);
-        for (JButton btn : new JButton[] { addButton, removeButton, backButton }) {
-            btn.setFont(btnFont);
-            btn.setFocusPainted(false);
-        }
+        backButton.setFont(btnFont);
+        backButton.setFocusPainted(false);
     }
 
     private void layoutComponents() {
@@ -78,16 +90,39 @@ public class DeckView extends JPanel implements Previewable {
         headerButtons.add(backButton);
         header.add(headerButtons, BorderLayout.EAST);
         add(header, BorderLayout.NORTH);
-        JScrollPane scrollPane = new JScrollPane(cardsPanel);
+        JScrollPane deckScrollPane = createScrollPane(cardsPanel);
+        JScrollPane availableScrollPane = createScrollPane(availableCardsPanel);
+
+        JPanel center = new JPanel();
+        center.setOpaque(false);
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+        center.add(createSectionPanel("デッキ内のカード", deckScrollPane));
+        center.add(Box.createVerticalStrut(16));
+        center.add(createSectionPanel("所持カード一覧", availableScrollPane));
+
+        add(center, BorderLayout.CENTER);
+    }
+
+    private JScrollPane createScrollPane(JPanel content) {
+        JScrollPane scrollPane = new JScrollPane(content);
         scrollPane.setBackground(new Color(45, 45, 45));
         scrollPane.getViewport().setBackground(new Color(45, 45, 45));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        add(scrollPane, BorderLayout.CENTER);
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(50, 50, 50));
-        buttonPanel.add(addButton);
-        buttonPanel.add(removeButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setPreferredSize(new Dimension(0, 260));
+        return scrollPane;
+    }
+
+    private JPanel createSectionPanel(String title, JScrollPane scrollPane) {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setOpaque(false);
+        JLabel label = new JLabel(title);
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("SansSerif", Font.BOLD, 18));
+        wrapper.add(label, BorderLayout.NORTH);
+        wrapper.add(scrollPane, BorderLayout.CENTER);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+        return wrapper;
     }
 
     private void setupModelListener() {
@@ -98,6 +133,7 @@ public class DeckView extends JPanel implements Previewable {
             }
             if (event instanceof DeckCardChangedEvent) {
                 updateCardList();
+                updateAvailableCardList();
             }
         };
         model.addPropertyChangeListener(propertyChangeListener);
@@ -106,6 +142,7 @@ public class DeckView extends JPanel implements Previewable {
     private void updateAllDisplays() {
         updateNameDisplay(model.getName());
         updateCardList();
+        updateAvailableCardList();
     }
 
     private void updateNameDisplay(String name) {
@@ -118,23 +155,69 @@ public class DeckView extends JPanel implements Previewable {
         cards.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
         for (CardRecipeModel card : cards) {
             int count = model.getCount(card);
-            cardsPanel.add(new CardBadgeView(card, count));
+            cardsPanel.add(createHoverableBadge(card, count, deckCardClickHandler));
         }
         cardsPanel.revalidate();
         cardsPanel.repaint();
     }
 
-    // getter for buttons (Controller access)
-    public JButton getAddButton() {
-        return addButton;
+    private void updateAvailableCardList() {
+        availableCardsPanel.removeAll();
+        for (CardRecipeModel card : availableCards) {
+            availableCardsPanel.add(createHoverableBadge(card, 1, availableCardClickHandler));
+        }
+        availableCardsPanel.revalidate();
+        availableCardsPanel.repaint();
     }
 
-    public JButton getRemoveButton() {
-        return removeButton;
+    private CardBadgeView createHoverableBadge(CardRecipeModel card, int count, Consumer<CardRecipeModel> clickHandler) {
+        CardBadgeView badge = new CardBadgeView(card, count);
+        badge.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        Border normalBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2); // 厚みを保った透明枠
+        Border hoverBorder = BorderFactory.createLineBorder(new Color(200, 160, 60), 2);
+        badge.setBorder(normalBorder);
+        badge.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                badge.setBorder(hoverBorder);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                badge.setBorder(normalBorder);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (clickHandler != null) {
+                    clickHandler.accept(card);
+                }
+            }
+        });
+        return badge;
     }
 
     public JButton getBackButton() {
         return backButton;
+    }
+
+    public void setOnDeckCardClick(Consumer<CardRecipeModel> handler) {
+        this.deckCardClickHandler = handler;
+        updateCardList();
+    }
+
+    public void setOnAvailableCardClick(Consumer<CardRecipeModel> handler) {
+        this.availableCardClickHandler = handler;
+        updateAvailableCardList();
+    }
+
+    public void setAvailableCards(Collection<CardRecipeModel> cards) {
+        availableCards.clear();
+        if (cards != null) {
+            availableCards.addAll(cards);
+        }
+        availableCards.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
+        updateAvailableCardList();
     }
 
     @Override
@@ -151,6 +234,8 @@ public class DeckView extends JPanel implements Previewable {
         model.addCard(dummyCard1);
         model.addCard(dummyCard2);
         model.setName("プレビューデッキ");
+
+        setAvailableCards(CardRegistry.getInstance().listAll());
     }
 
     public DeckModel getModel() {
