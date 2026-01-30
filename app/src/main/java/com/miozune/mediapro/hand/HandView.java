@@ -2,16 +2,29 @@ package com.miozune.mediapro.hand;
 
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.events.CardClickListener;
+import com.miozune.mediapro.card.events.CardClickedEvent;
+import com.miozune.mediapro.card.events.ClickType;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class HandView extends JPanel implements Previewable {
 
@@ -36,6 +49,7 @@ public class HandView extends JPanel implements Previewable {
     private JPanel detailPanel;
     private JPanel cardListPanel;
     private HandActionListener actionListener;
+    private CardClickListener cardClickListener;
     private HandModel.PropertyChangeListener modelListener;
 
     // 生成したカードのコンポーネントを保持するリスト
@@ -171,7 +185,7 @@ public class HandView extends JPanel implements Previewable {
     }
 
     // --- カード生成と更新 ---
-    public void updateHand(List<CardModel> cards) {
+    public final void updateHand(List<CardModel> cards) {
         cardListPanel.removeAll();
         cardComponentList.clear();
 
@@ -210,13 +224,7 @@ public class HandView extends JPanel implements Previewable {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (actionListener == null) return;
-
-                    if (SwingUtilities.isLeftMouseButton(e)) {
-                        actionListener.onCardLeftClick(cardModel);
-                    } else if (SwingUtilities.isRightMouseButton(e)) {
-                        actionListener.onCardRightClick(cardModel);
-                    }
+                    handleClick(cardView, e);
                 }
             });
 
@@ -256,6 +264,25 @@ public class HandView extends JPanel implements Previewable {
     // --- リスナー設定 ---
     public void setHandActionListener(HandActionListener listener) {
         this.actionListener = listener;
+    }
+
+    public void setCardClickListener(CardClickListener listener) {
+        this.cardClickListener = listener;
+    }
+
+    private void handleClick(CardView cardView, MouseEvent e) {
+        if (cardClickListener != null) {
+            CardClickedEvent event = new CardClickedEvent(cardView.getCardModel(), ClickType.fromMouseEvent(e));
+            cardClickListener.onCardClicked(event);
+            return;
+        }
+        if (actionListener == null) return;
+
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            actionListener.onCardLeftClick(cardView.getCardModel());
+        } else if (SwingUtilities.isRightMouseButton(e)) {
+            actionListener.onCardRightClick(cardView.getCardModel());
+        }
     }
 
     private void setupModelListener() {

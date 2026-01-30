@@ -3,8 +3,8 @@ package com.miozune.mediapro.discard;
 import com.miozune.mediapro.card.CardModel;
 
 public class DiscardController {
-    private DiscardModel model;
-    private DiscardView view;
+    private final DiscardModel model;
+    private final DiscardView view;
 
     public DiscardController(DiscardModel model, DiscardView view) {
         this.model = model;
@@ -14,12 +14,7 @@ public class DiscardController {
         this.view.setCloseButtonListener(e -> closeDiscardView());
 
         // カードクリック時の処理
-        this.view.setCardClickListener(e -> {
-            Object source = e.getSource();
-            if (source instanceof CardModel) {
-                onCardClick((CardModel) source);
-            }
-        });
+        this.view.setCardClickListener(event -> onCardClick(event.card()));
     }
 
     private void closeDiscardView() {
@@ -29,5 +24,13 @@ public class DiscardController {
 
     public void onCardClick(CardModel cardModel) {
         view.showCardDetail(cardModel);
+    }
+
+    public DiscardModel getModel() {
+        return model;
+    }
+
+    public DiscardView getView() {
+        return view;
     }
 }

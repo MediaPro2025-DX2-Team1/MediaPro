@@ -134,7 +134,7 @@ public class GameApplication {
             root.remove(stageView);
         }
         stageView = new StageView();
-        stageController = new StageController(stage, stageView);
+        stageController = new StageController(model, stage, stageView);
         root.add(stageView, STAGE_CARD);
         layout.show(root, STAGE_CARD);
         root.revalidate();

@@ -10,10 +10,12 @@ package com.miozune.mediapro.cardrecipe;
  * @param description 説明文
  */
 public record CardRecipeModel(
-        String name,
-        int cost,
-        String imageName,
-        String description) {
+    String name,
+    int cost,
+    String imageName,
+    String description,
+    EffectType effectType,
+    int effectValue) {
 
     /**
      * サンプルのCardModelを作成する。
@@ -26,6 +28,19 @@ public record CardRecipeModel(
                 "サンプルカード",
                 3,
                 "sample.jpg",
-                "これはサンプルカードの説明文です。カードの効果や特徴などを記載します。");
+                "これはサンプルカードの説明文です。カードの効果や特徴などを記載します。",
+                EffectType.DAMAGE,
+                5);
+    }
+
+    /**
+     * カード効果の種別。
+     * DAMAGE: 敵単体へダメージ
+     * HEAL: プレイヤー回復
+     */
+    public enum EffectType {
+        DAMAGE,
+        HEAL,
+        NONE
     }
 }

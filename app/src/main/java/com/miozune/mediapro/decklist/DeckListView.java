@@ -128,13 +128,13 @@ public class DeckListView extends JPanel implements Previewable {
     @Override
     public void setupPreview() {
         DeckModel fireDeck = new DeckModel("Fire Deck");
-        CardRecipeModel blaze = new CardRecipeModel("Blaze", 2, "blaze.png", "炎の一撃");
+        CardRecipeModel blaze = new CardRecipeModel("Blaze", 2, "blaze.png", "炎の一撃", CardRecipeModel.EffectType.DAMAGE, 8);
         fireDeck.addCard(blaze);
         fireDeck.addCard(blaze);
 
         DeckModel frostDeck = new DeckModel("Frost Deck");
-        CardRecipeModel iceShard = new CardRecipeModel("Ice Shard", 1, "ice.png", "冷気の矢");
-        CardRecipeModel barrier = new CardRecipeModel("Barrier", 1, "barrier.png", "氷の防壁");
+        CardRecipeModel iceShard = new CardRecipeModel("Ice Shard", 1, "ice.png", "冷気の矢", CardRecipeModel.EffectType.DAMAGE, 4);
+        CardRecipeModel barrier = new CardRecipeModel("Barrier", 1, "barrier.png", "氷の防壁", CardRecipeModel.EffectType.NONE, 0);
         frostDeck.addCard(iceShard);
         frostDeck.addCard(iceShard);
         frostDeck.addCard(barrier);

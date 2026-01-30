@@ -1,15 +1,19 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.card.events.CardClickedEvent;
+import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class StageController {
 
-    private StageModel model;
-    private StageView view;
+    private final GameModel gameModel;
+    private final StageModel model;
+    private final StageView view;
 
-    public StageController(StageModel model, StageView view) {
+    public StageController(GameModel gameModel, StageModel model, StageView view) {
+        this.gameModel = gameModel;
         this.model = model;
         this.view = view;
 
@@ -18,9 +22,15 @@ public class StageController {
 
         model.getHand().addPropertyChangeListener(event -> {
             if (event instanceof HandCardChangedEvent handEvent) {
-                view.updateHand(handEvent.newcards());
+                view.updateHand(handEvent.newcards(), this::handleCardClick);
             }
         });
+
+        model.getPlayer().addPropertyChangeListener(event -> model.checkBattleState());
+        model.getEnemies().forEach(enemy -> enemy.addPropertyChangeListener(event -> model.checkBattleState()));
+
+        // プレイヤー/敵ビューをセット
+        view.setActors(model.getPlayer(), model.getEnemies().isEmpty() ? null : model.getEnemies().get(0));
 
         connectUI();
         updateView();
@@ -28,43 +38,48 @@ public class StageController {
 
     /* View のボタンやイベントを Model とつなぐ */
     private void connectUI() {
+        view.getDeckButton().addActionListener(e -> System.out.println("山札確認"));
 
-        view.getDrawButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                model.drawToHand();
-                updateView();
-            }
-        });
+        view.getDiscardButton().addActionListener(e -> System.out.println("捨札確認"));
 
-        view.getDeckButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("山札確認");
-            }
-        });
-
-        view.getDiscardButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("捨札確認");
-            }
+        view.getEndTurnButton().addActionListener(e -> {
+            model.nextTurn();
+            updateView();
         });
     }
 
     /* Model の情報を View に反映 */
     private void updateView() {
-        view.updatePlayerHP(model.getPlayer().getHp());
-        view.updateEnemyHP(model.getEnemies().get(0).getHp());
-        view.updateHand(model.getHand().getCards());
+        view.updateHand(model.getHand().getCards(), this::handleCardClick);
     }
 
     /* バトル終了時の処理 */
     private void handleBattleEnd(boolean playerWon) {
-        if (playerWon) {
-            System.out.println("勝利画面へ…");
-        } else {
-            System.out.println("敗北画面へ…");
+        view.getDeckButton().setEnabled(false);
+        view.getDiscardButton().setEnabled(false);
+        view.getEndTurnButton().setEnabled(false);
+        String message = playerWon ? "勝利しました" : "敗北しました";
+        if (!playerWon) {
+            model.getPlayer().resetAfterDefeat();
         }
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(view, message, "戦闘結果", JOptionPane.INFORMATION_MESSAGE);
+            gameModel.goToWorld();
+        });
+    }
+
+    private void handleCardClick(CardClickedEvent event) {
+        if (model.isBattleOver() || model.getTurn() != StageModel.Turn.PLAYER) {
+            return;
+        }
+        var target = model.firstAliveEnemy();
+        if (target == null) {
+            return;
+        }
+        boolean played = model.playCard(event.card(), target);
+        if (!played) {
+            System.out.println("カードを使用できませんでした");
+        }
+        updateView();
     }
 }
