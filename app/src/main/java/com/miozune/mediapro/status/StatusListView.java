@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  */
 public class StatusListView extends JPanel {
 
-    private static final Dimension BADGE_SIZE = new Dimension(120, 46);
+    private static final Dimension BADGE_SIZE = new Dimension(140, 46);
     private static final Dimension LIST_SIZE = new Dimension(420, 52);
 
     public StatusListView() {
