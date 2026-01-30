@@ -342,7 +342,7 @@ public class PlayerModel {
     }
 
     public static PlayerModel createDefaultPlayer() {
-        return new PlayerModel("プレイヤー", 100, 100, 10, 10);
+        return new PlayerModel("プレイヤー", 80, 80, 3, 3);
     }
 
     private void fireStatusesChanged() {

@@ -138,7 +138,7 @@ public class StageModel {
     // 自分ターンへの移行
     private void startPlayerTurn() {
         player.onTurnStartStatuses();
-        player.addMana();
+        player.setMana(player.getMaxMana());
         drawToHand(1);
         // TODO: ターン開始時の効果をここに集約する
     }
