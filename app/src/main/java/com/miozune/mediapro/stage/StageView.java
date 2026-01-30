@@ -1,8 +1,9 @@
 package com.miozune.mediapro.stage;
 
-import com.miozune.mediapro.card.CardController;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.events.CardClickListener;
+import com.miozune.mediapro.card.events.ClickType;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.enemy.EnemyView;
 import com.miozune.mediapro.hand.HandView;
@@ -29,7 +30,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class StageView extends JPanel implements Previewable {
 
@@ -216,15 +216,15 @@ public class StageView extends JPanel implements Previewable {
         }
     }
 
-    public void updateHand(List<CardModel> cards, CardController.CardClickListener clickListener) {
-        CardController.CardClickListener bridgeListener = null;
+    public void updateHand(List<CardModel> cards, CardClickListener clickListener) {
+        CardClickListener bridgeListener = null;
         if (clickListener != null) {
-            bridgeListener = (cardView, e) -> {
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    handView.showCardDetail(cardView.getCardModel());
+            bridgeListener = event -> {
+                if (event.clickType() == ClickType.RIGHT) {
+                    handView.showCardDetail(event.card());
                     return;
                 }
-                clickListener.onCardClicked(cardView, e);
+                clickListener.onCardClicked(event);
             };
         }
         handView.setCardClickListener(bridgeListener);

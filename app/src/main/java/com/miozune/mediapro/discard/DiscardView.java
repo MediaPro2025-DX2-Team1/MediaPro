@@ -2,10 +2,12 @@ package com.miozune.mediapro.discard;
 
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.events.CardClickListener;
+import com.miozune.mediapro.card.events.CardClickedEvent;
+import com.miozune.mediapro.card.events.ClickType;
 import com.miozune.mediapro.discard.events.DiscardCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,7 +22,7 @@ public class DiscardView extends JPanel implements Previewable {
     private JPanel detailPanel;
     private JPanel cardListPanel;
     private JButton closeButton;
-    private ActionListener cardClickListener;
+    private CardClickListener cardClickListener;
     private DiscardModel.PropertyChangeListener modelListener;
 
     public DiscardView() {
@@ -158,7 +160,7 @@ public class DiscardView extends JPanel implements Previewable {
         this.closeButton.addActionListener(listener);
     }
 
-    public void setCardClickListener(ActionListener listener) {
+    public void setCardClickListener(CardClickListener listener) {
         this.cardClickListener = listener;
     }
 
@@ -183,8 +185,8 @@ public class DiscardView extends JPanel implements Previewable {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (cardClickListener != null) {
-                        ActionEvent actionEvent = new ActionEvent(cardModel, ActionEvent.ACTION_PERFORMED, "cardClicked");
-                        cardClickListener.actionPerformed(actionEvent);
+                        CardClickedEvent event = new CardClickedEvent(cardModel, ClickType.fromMouseEvent(e));
+                        cardClickListener.onCardClicked(event);
                     }
                 }
             });
@@ -206,10 +208,6 @@ public class DiscardView extends JPanel implements Previewable {
     public void setupPreview() {
         closeButton.addActionListener(e -> System.out.println("closebutton clicked."));
         updateDiscard(DiscardModel.createDefaultDiscard().getCards());
-        setCardClickListener(e -> {
-            if (e.getSource() instanceof CardModel) {
-                showCardDetail((CardModel) e.getSource());
-            }
-        });
+        setCardClickListener(event -> showCardDetail(event.card()));
     }
 }

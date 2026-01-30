@@ -1,8 +1,10 @@
 package com.miozune.mediapro.hand;
 
-import com.miozune.mediapro.card.CardController;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.events.CardClickListener;
+import com.miozune.mediapro.card.events.CardClickedEvent;
+import com.miozune.mediapro.card.events.ClickType;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
@@ -47,7 +49,7 @@ public class HandView extends JPanel implements Previewable {
     private JPanel detailPanel;
     private JPanel cardListPanel;
     private HandActionListener actionListener;
-    private CardController.CardClickListener cardClickListener;
+    private CardClickListener cardClickListener;
     private HandModel.PropertyChangeListener modelListener;
 
     // 生成したカードのコンポーネントを保持するリスト
@@ -264,13 +266,14 @@ public class HandView extends JPanel implements Previewable {
         this.actionListener = listener;
     }
 
-    public void setCardClickListener(CardController.CardClickListener listener) {
+    public void setCardClickListener(CardClickListener listener) {
         this.cardClickListener = listener;
     }
 
     private void handleClick(CardView cardView, MouseEvent e) {
         if (cardClickListener != null) {
-            cardClickListener.onCardClicked(cardView, e);
+            CardClickedEvent event = new CardClickedEvent(cardView.getCardModel(), ClickType.fromMouseEvent(e));
+            cardClickListener.onCardClicked(event);
             return;
         }
         if (actionListener == null) return;

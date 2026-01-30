@@ -1,5 +1,8 @@
 package com.miozune.mediapro.card;
 
+import com.miozune.mediapro.card.events.CardClickListener;
+import com.miozune.mediapro.card.events.CardClickedEvent;
+import com.miozune.mediapro.card.events.ClickType;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -42,12 +45,12 @@ public class CardController {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                handleMouseEnter(e);
+                handleMouseEnter();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                handleMouseExit(e);
+                handleMouseExit();
             }
         });
     }
@@ -61,7 +64,8 @@ public class CardController {
         System.out.println("Card clicked: " + view.getCardModel().name());
 
         if (clickListener != null) {
-            clickListener.onCardClicked(view, e);
+            CardClickedEvent event = new CardClickedEvent(view.getCardModel(), ClickType.fromMouseEvent(e));
+            clickListener.onCardClicked(event);
         }
     }
 
@@ -70,7 +74,7 @@ public class CardController {
      *
      * @param e マウスイベント
      */
-    private void handleMouseEnter(MouseEvent e) {
+    private void handleMouseEnter() {
         hovering = true;
         // TODO: ホバーエフェクト（拡大、ハイライトなど）を実装
         System.out.println("Mouse entered card: " + view.getCardModel().name());
@@ -81,7 +85,7 @@ public class CardController {
      *
      * @param e マウスイベント
      */
-    private void handleMouseExit(MouseEvent e) {
+    private void handleMouseExit() {
         hovering = false;
         // TODO: ホバーエフェクト解除
         System.out.println("Mouse exited card: " + view.getCardModel().name());
@@ -112,19 +116,5 @@ public class CardController {
      */
     public CardView getView() {
         return view;
-    }
-
-    /**
-     * カードクリック時のリスナーインターフェース。
-     */
-    @FunctionalInterface
-    public interface CardClickListener {
-        /**
-         * カードがクリックされた時に呼び出される。
-         *
-         * @param cardView クリックされたカード
-         * @param e マウスイベント
-         */
-        void onCardClicked(CardView cardView, MouseEvent e);
     }
 }
