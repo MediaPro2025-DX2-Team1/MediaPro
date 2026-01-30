@@ -1,5 +1,6 @@
 package com.miozune.mediapro.effect.action;
 
+import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyModel;
@@ -18,7 +19,8 @@ public record ActionContext(
         EnemyModel target,
         DrawPileModel drawPile,
         HandModel hand,
-        DiscardModel discard) {
+        DiscardModel discard,
+        CardModel card) {
 
     public EnemyModel resolveTarget() {
         if (target != null && !target.isDead()) {

@@ -183,7 +183,7 @@ public class StageModel {
             return false;
         }
 
-        ActionContext context = new ActionContext(this, player, enemies, target, drawpile, hand, discard);
+        ActionContext context = new ActionContext(this, player, enemies, target, drawpile, hand, discard, card);
         card.action().execute(context);
 
         hand.removeCard(card);

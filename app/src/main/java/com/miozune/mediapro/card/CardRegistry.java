@@ -3,10 +3,12 @@ package com.miozune.mediapro.card;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.effect.CardAction;
 import com.miozune.mediapro.effect.action.AddShieldActionEffect;
+import com.miozune.mediapro.effect.action.AllOutStrikeActionEffect;
 import com.miozune.mediapro.effect.action.ApplyStrengthActionEffect;
 import com.miozune.mediapro.effect.action.ApplyWeaknessActionEffect;
 import com.miozune.mediapro.effect.action.DamageAllEnemiesActionEffect;
 import com.miozune.mediapro.effect.action.DamageSingleEnemyActionEffect;
+import com.miozune.mediapro.effect.action.DrainActionEffect;
 import com.miozune.mediapro.effect.action.DrawCardsActionEffect;
 import com.miozune.mediapro.effect.action.HealSelfActionEffect;
 import com.miozune.mediapro.effect.action.MultiHitSingleEnemyActionEffect;
@@ -100,15 +102,13 @@ public final class CardRegistry {
                 new SelfDamageActionEffect(2),
                 new DamageSingleEnemyActionEffect(12))));
 
-        /*
         register(new CardRecipeModel(
             "渾身の一刀",
             2,
             "all_out_strike.jpg",
             "手札をすべて捨てる。敵1体に捨てた枚数×7ダメージを与える。",
             CardAction.of(
-                new AllOutStrikeActionEffect())));
-        */
+                new AllOutStrikeActionEffect(7))));
 
         register(new CardRecipeModel(
             "火事場の馬鹿力",
@@ -147,15 +147,13 @@ public final class CardRegistry {
                 new WhirlwindBladeActionEffect())));
         */
 
-        /*
         register(new CardRecipeModel(
             "ドレイン",
             1,
             "drain.jpg",
             "敵1体に6ダメージを与える。この攻撃で敵を倒した場合、自分のHPを2回復する。",
             CardAction.of(
-                new DrainActionEffect()))));
-        */
+                new DrainActionEffect(6, 2))));
 
         register(new CardRecipeModel(
             "精神統一",
