@@ -137,7 +137,7 @@ public class PlayerViewTest {
         // マナ関連のボタン
         JButton addMana1Btn = new JButton("マナ +1");
         addMana1Btn.addActionListener(e -> {
-            model.addMana();
+            model.addMana(1);
             System.out.println("→ マナを1追加");
         });
 

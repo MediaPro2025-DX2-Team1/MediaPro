@@ -271,8 +271,8 @@ public class PlayerModel {
      *
      * @return 追加後のマナ値
      */
-    public int addMana() {
-        setMana(mana + 1);
+    public int addMana(int amount) {
+        setMana(mana + amount);
         return mana;
     }
 

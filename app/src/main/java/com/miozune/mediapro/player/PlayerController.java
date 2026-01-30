@@ -71,7 +71,7 @@ public class PlayerController {
 
         // マナ操作ボタン
         JButton addManaBtn = new JButton("+1 Mana");
-        addManaBtn.addActionListener(e -> model.addMana());
+        addManaBtn.addActionListener(e -> model.addMana(1));
 
         JButton consumeManaBtn = new JButton("-2 Mana");
         consumeManaBtn.addActionListener(e -> {
