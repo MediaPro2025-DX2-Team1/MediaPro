@@ -104,13 +104,13 @@ public class PlayerViewTest {
         // HP関連のボタン
         JButton damage5Btn = new JButton("ダメージ -5");
         damage5Btn.addActionListener(e -> {
-            model.takeDamage(5);
+            model.receiveDamage(5);
             System.out.println("→ ダメージ5を与えた");
         });
 
         JButton damage25Btn = new JButton("ダメージ -25");
         damage25Btn.addActionListener(e -> {
-            model.takeDamage(25);
+            model.receiveDamage(25);
             System.out.println("→ ダメージ25を与えた");
         });
 

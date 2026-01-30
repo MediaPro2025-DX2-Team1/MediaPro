@@ -101,7 +101,7 @@ public class PlayerView extends JPanel implements Previewable {
     private void updateAllDisplays() {
         statusView.updateName(model.getName());
         statusView.updateHp(model.getHp(), model.getMaxHp());
-        statusListView.updateStatuses(model.getEffects());
+        statusListView.updateStatuses(model.getStatusEffects());
     }
 
     /**

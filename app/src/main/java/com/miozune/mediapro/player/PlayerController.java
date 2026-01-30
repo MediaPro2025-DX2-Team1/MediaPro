@@ -64,7 +64,7 @@ public class PlayerController {
 
         // HP操作ボタン
         JButton damageBtn = new JButton("-10 HP");
-        damageBtn.addActionListener(e -> model.takeDamage(10));
+        damageBtn.addActionListener(e -> model.receiveDamage(10));
 
         JButton healBtn = new JButton("+20 HP");
         healBtn.addActionListener(e -> model.heal(20));
