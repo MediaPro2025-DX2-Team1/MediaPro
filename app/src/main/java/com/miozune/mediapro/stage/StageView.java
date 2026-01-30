@@ -120,21 +120,18 @@ public class StageView extends JPanel implements Previewable {
         }
         playerModel = player;
         topPanel.removeAll();
-        boolean needsSpacer = false;
-        if (player != null) {
-            playerView = new PlayerView(player);
-            playerView.setManaVisible(false);
-            playerView.setAlignmentY(Component.TOP_ALIGNMENT);
-            addActorView(playerView);
-            setupPlayerListener();
-            updateManaDisplay(player.getMana());
-            needsSpacer = true;
+        if (player == null) {
+            throw new IllegalArgumentException("PlayerModel cannot be null");
         }
+        playerView = new PlayerView(player);
+        playerView.setAlignmentY(Component.TOP_ALIGNMENT);
+        addActorView(playerView);
+        setupPlayerListener();
+        updateManaDisplay(player.getMana());
+
         if (enemy != null) {
             enemyView = new EnemyView(enemy);
-            if (needsSpacer) {
-                topPanel.add(Box.createHorizontalStrut(30));
-            }
+            topPanel.add(Box.createHorizontalStrut(30));
             enemyView.setAlignmentY(Component.TOP_ALIGNMENT);
             addActorView(enemyView);
         }
