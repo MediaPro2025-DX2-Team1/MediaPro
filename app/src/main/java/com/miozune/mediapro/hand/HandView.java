@@ -7,19 +7,8 @@ import com.miozune.mediapro.card.events.CardClickedEvent;
 import com.miozune.mediapro.card.events.ClickType;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JLayeredPane;
@@ -137,7 +126,11 @@ public class HandView extends JPanel implements Previewable {
 
     // カード重ねるためのレイアウト調整
     private void layoutCards() {
-        if (cardComponentList.isEmpty()) return;
+        if (cardComponentList.isEmpty()) {
+            cardListPanel.revalidate();
+            cardListPanel.repaint();
+            return;
+        }
 
         int panelWidth = getWidth();
         int panelHeight = getHeight();
@@ -234,6 +227,8 @@ public class HandView extends JPanel implements Previewable {
 
         // 最後に配置計算を実行
         layoutCards();
+        revalidate();
+        repaint();
     }
 
     // --- 詳細表示メソッド ---

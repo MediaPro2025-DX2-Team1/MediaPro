@@ -6,7 +6,7 @@ import com.miozune.mediapro.enemy.EnemyModel;
  * Enemy の状態変化を表すイベントの基底インターフェース
  */
 public sealed interface EnemyPropertyChangeEvent
-    permits EnemyHpChangedEvent, EnemyNameChangedEvent {
+    permits EnemyHpChangedEvent, EnemyNameChangedEvent, EnemyStatusesChangedEvent {
 
     /**
      * このイベントの発生元となった Enemy を取得

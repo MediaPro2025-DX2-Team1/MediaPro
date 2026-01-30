@@ -3,6 +3,7 @@ package com.miozune.mediapro.enemy;
 import com.miozune.mediapro.enemy.events.EnemyHpChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyNameChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyPropertyChangeEvent;
+import com.miozune.mediapro.enemy.events.EnemyStatusesChangedEvent;
 import com.miozune.mediapro.status.StatusEffect;
 import com.miozune.mediapro.status.WeaknessStatus;
 import java.util.List;
@@ -109,9 +110,11 @@ public class EnemyModel {
         }
         if (effect instanceof WeaknessStatus weakness) {
             mergeWeakness(weakness);
-            return;
+        } else {
+            statusEffects.add(effect);
         }
-        statusEffects.add(effect);
+
+        fireStatusesChanged();
     }
 
     public void addWeakness(int turns) {
@@ -142,7 +145,10 @@ public class EnemyModel {
         for (StatusEffect status : statusEffects) {
             status.onTurnStart();
         }
-        statusEffects.removeIf(StatusEffect::isExpired);
+        boolean removed = statusEffects.removeIf(StatusEffect::isExpired);
+        if (removed || !statusEffects.isEmpty()) {
+            fireStatusesChanged();
+        }
     }
 
     public int applyIncomingDamageModifiers(int baseDamage) {
@@ -194,5 +200,9 @@ public class EnemyModel {
      */
     public boolean isDead() {
         return hp <= 0;
+    }
+
+    private void fireStatusesChanged() {
+        fireEvent(new EnemyStatusesChangedEvent(this, getStatusEffects()));
     }
 }

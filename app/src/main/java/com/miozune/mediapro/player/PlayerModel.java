@@ -5,6 +5,7 @@ import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
 import com.miozune.mediapro.player.events.PlayerPropertyChangeEvent;
+import com.miozune.mediapro.player.events.PlayerStatusesChangedEvent;
 import com.miozune.mediapro.status.ShieldStatus;
 import com.miozune.mediapro.status.StatusEffect;
 import com.miozune.mediapro.status.StrengthStatus;
@@ -159,19 +160,17 @@ public class PlayerModel {
     // --- 状態管理 ---
 
     public void addStatus(StatusEffect effect) {
-        if (effect == null) {
-            return;
-        }
         // 同種はまとめて扱う
-        if (effect instanceof ShieldStatus shield) {
-            mergeShield(shield);
-            return;
+        switch (effect) {
+            case null -> {
+                return;
+            }
+            case ShieldStatus shield -> mergeShield(shield);
+            case StrengthStatus strength -> mergeStrength(strength);
+            default -> statusEffects.add(effect);
         }
-        if (effect instanceof StrengthStatus strength) {
-            mergeStrength(strength);
-            return;
-        }
-        statusEffects.add(effect);
+
+        fireStatusesChanged();
     }
 
     private void mergeShield(ShieldStatus shield) {
@@ -189,7 +188,7 @@ public class PlayerModel {
         }
     }
 
-    private void mergeStrength(StrengthStatus strength) {
+    private boolean mergeStrength(StrengthStatus strength) {
         StrengthStatus existing = null;
         for (StatusEffect effect : statusEffects) {
             if (effect instanceof StrengthStatus s) {
@@ -199,20 +198,27 @@ public class PlayerModel {
         }
         if (existing != null) {
             existing.stack(strength);
-        } else {
-            statusEffects.add(strength);
+            return true;
         }
+        statusEffects.add(strength);
+        return true;
     }
 
     public void clearExpiredStatuses() {
-        statusEffects.removeIf(StatusEffect::isExpired);
+        boolean removed = statusEffects.removeIf(StatusEffect::isExpired);
+        if (removed) {
+            fireStatusesChanged();
+        }
     }
 
     public void onTurnStartStatuses() {
         for (StatusEffect status : statusEffects) {
             status.onTurnStart();
         }
-        clearExpiredStatuses();
+        boolean removed = statusEffects.removeIf(StatusEffect::isExpired);
+        if (removed || !statusEffects.isEmpty()) {
+            fireStatusesChanged();
+        }
     }
 
     public int applyOutgoingDamageModifiers(int baseDamage) {
@@ -332,9 +338,14 @@ public class PlayerModel {
     public void resetAfterDefeat() {
         setHp(maxHp);
         statusEffects.clear();
+        fireStatusesChanged();
     }
 
     public static PlayerModel createDefaultPlayer() {
         return new PlayerModel("プレイヤー", 100, 100, 10, 10);
+    }
+
+    private void fireStatusesChanged() {
+        fireEvent(new PlayerStatusesChangedEvent(this, getEffects()));
     }
 }

@@ -3,9 +3,12 @@ package com.miozune.mediapro.enemy;
 import com.miozune.mediapro.actor.ActorStatusView;
 import com.miozune.mediapro.enemy.events.EnemyHpChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyNameChangedEvent;
+import com.miozune.mediapro.enemy.events.EnemyStatusesChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.status.StatusListView;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Objects;
 import javax.swing.JPanel;
 
@@ -25,6 +28,7 @@ public class EnemyView extends JPanel implements Previewable {
 
     private final EnemyModel model;
     private final ActorStatusView statusView;
+    private final StatusListView statusListView;
     private EnemyModel.PropertyChangeListener modelListener;
 
     /**
@@ -42,9 +46,19 @@ public class EnemyView extends JPanel implements Previewable {
     public EnemyView(EnemyModel model) {
         this.model = Objects.requireNonNull(model);
         this.statusView = new ActorStatusView(STYLE);
+        this.statusListView = new StatusListView();
         setLayout(new BorderLayout());
         setOpaque(false);
+        setPreferredSize(new Dimension(420, 230));
+        setMinimumSize(new Dimension(420, 230));
+        setMaximumSize(new Dimension(420, 230));
+
+        JPanel bottom = new JPanel(new BorderLayout());
+        bottom.setOpaque(false);
+        bottom.add(statusListView, BorderLayout.EAST);
+
         add(statusView, BorderLayout.CENTER);
+        add(bottom, BorderLayout.SOUTH);
 
         setupModelListener();
         updateAllDisplays();
@@ -58,6 +72,10 @@ public class EnemyView extends JPanel implements Previewable {
             }
             if (event instanceof EnemyNameChangedEvent nameChanged) {
                 statusView.updateName(nameChanged.newName());
+                return;
+            }
+            if (event instanceof EnemyStatusesChangedEvent statusesChanged) {
+                statusListView.updateStatuses(statusesChanged.effects());
             }
         };
 
@@ -67,6 +85,7 @@ public class EnemyView extends JPanel implements Previewable {
     private void updateAllDisplays() {
         statusView.updateName(model.getName());
         statusView.updateHp(model.getHp(), model.getMaxHp());
+        statusListView.updateStatuses(model.getStatusEffects());
     }
 
     public EnemyModel getModel() {
@@ -85,6 +104,7 @@ public class EnemyView extends JPanel implements Previewable {
         model.setName("プレビュースライム");
         model.setMaxHp(100);
         model.setHp(60);
+        model.addWeakness(2);
         updateAllDisplays();
     }
 }

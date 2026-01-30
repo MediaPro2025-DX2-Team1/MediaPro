@@ -9,7 +9,7 @@ import com.miozune.mediapro.decklist.events.DeckListSelectionChangedEvent;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DeckListModel {
+public final class DeckListModel {
 
     @FunctionalInterface
     public interface PropertyChangeListener {
@@ -109,7 +109,7 @@ public class DeckListModel {
     }
 
     private DeckModel createDefaultDeck() {
-        DeckModel deck = new DeckModel("Starter Deck");
+        DeckModel deck = new DeckModel("スターターデッキ");
         CardRegistry registry = CardRegistry.getInstance();
         CardRecipeModel slash = registry.find("スラッシュ");
         CardRecipeModel block = registry.find("ブロック");
