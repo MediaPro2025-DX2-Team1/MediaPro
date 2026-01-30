@@ -5,6 +5,9 @@ import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
+import com.miozune.mediapro.effect.CardAction;
+import com.miozune.mediapro.effect.action.DamageSingleEnemyActionEffect;
+import com.miozune.mediapro.effect.action.HealSelfActionEffect;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -228,8 +231,18 @@ public class DeckView extends JPanel implements Previewable {
     @Override
     public void setupPreview() {
         // プレビュー用のダミーデータ
-        CardRecipeModel dummyCard1 = new CardRecipeModel("ファイアボール", 3, "fireball.png", "火の玉を投げる", CardRecipeModel.EffectType.DAMAGE, 10);
-        CardRecipeModel dummyCard2 = new CardRecipeModel("ヒール", 2, "heal.png", "HPを回復する", CardRecipeModel.EffectType.HEAL, 6);
+        CardRecipeModel dummyCard1 = new CardRecipeModel(
+            "ファイアボール",
+            3,
+            "fireball.png",
+            "火の玉を投げる",
+            CardAction.of(new DamageSingleEnemyActionEffect(10)));
+        CardRecipeModel dummyCard2 = new CardRecipeModel(
+            "ヒール",
+            2,
+            "heal.png",
+            "HPを回復する",
+            CardAction.of(new HealSelfActionEffect(6)));
         model.addCard(dummyCard1);
         model.addCard(dummyCard1);
         model.addCard(dummyCard2);

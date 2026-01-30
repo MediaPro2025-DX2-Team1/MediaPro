@@ -1,11 +1,14 @@
 package com.miozune.mediapro.player;
 
-import com.miozune.mediapro.Effect.EffectModel;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
 import com.miozune.mediapro.player.events.PlayerPropertyChangeEvent;
+import com.miozune.mediapro.status.ShieldStatus;
+import com.miozune.mediapro.status.StatusEffect;
+import com.miozune.mediapro.status.StrengthStatus;
+import com.miozune.mediapro.status.WeaknessStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -37,7 +40,7 @@ public class PlayerModel {
     private int maxHp;
     private int mana;
     private int maxMana;
-    private final List<EffectModel> effects;
+    private final List<StatusEffect> statusEffects;
 
     private final List<PropertyChangeListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -53,7 +56,7 @@ public class PlayerModel {
         this.hp = Math.max(0, Math.min(hp, this.maxHp));
         this.maxMana = Math.max(0, maxMana);
         this.mana = Math.max(0, Math.min(mana, this.maxMana));
-        this.effects = new ArrayList<>();
+        this.statusEffects = new ArrayList<>();
     }
 
     // --- リスナー管理 ---
@@ -149,8 +152,110 @@ public class PlayerModel {
         this.maxMana = Math.max(0, maxMana);
     }
 
-    public List<EffectModel> getEffects() {
-        return effects;
+    public List<StatusEffect> getEffects() {
+        return List.copyOf(statusEffects);
+    }
+
+    // --- 状態管理 ---
+
+    public void addStatus(StatusEffect effect) {
+        if (effect == null) {
+            return;
+        }
+        // 同種はまとめて扱う
+        if (effect instanceof ShieldStatus shield) {
+            mergeShield(shield);
+            return;
+        }
+        if (effect instanceof StrengthStatus strength) {
+            mergeStrength(strength);
+            return;
+        }
+        statusEffects.add(effect);
+    }
+
+    private void mergeShield(ShieldStatus shield) {
+        ShieldStatus existing = null;
+        for (StatusEffect effect : statusEffects) {
+            if (effect instanceof ShieldStatus s) {
+                existing = s;
+                break;
+            }
+        }
+        if (existing != null) {
+            existing.addShield(shield.amount());
+        } else {
+            statusEffects.add(shield);
+        }
+    }
+
+    private void mergeStrength(StrengthStatus strength) {
+        StrengthStatus existing = null;
+        for (StatusEffect effect : statusEffects) {
+            if (effect instanceof StrengthStatus s) {
+                existing = s;
+                break;
+            }
+        }
+        if (existing != null) {
+            existing.stack(strength);
+        } else {
+            statusEffects.add(strength);
+        }
+    }
+
+    public void clearExpiredStatuses() {
+        statusEffects.removeIf(StatusEffect::isExpired);
+    }
+
+    public void onTurnStartStatuses() {
+        for (StatusEffect status : statusEffects) {
+            status.onTurnStart();
+        }
+        clearExpiredStatuses();
+    }
+
+    public int applyOutgoingDamageModifiers(int baseDamage) {
+        int result = baseDamage;
+        for (StatusEffect status : statusEffects) {
+            result = status.onOutgoingDamage(result);
+        }
+        return Math.max(0, result);
+    }
+
+    public int applyIncomingDamageModifiers(int baseDamage) {
+        int result = baseDamage;
+        for (StatusEffect status : statusEffects) {
+            result = status.onIncomingDamage(result);
+        }
+        return Math.max(0, result);
+    }
+
+    public int receiveDamage(int rawDamage) {
+        int actual = applyIncomingDamageModifiers(rawDamage);
+        setHp(hp - actual);
+        return actual;
+    }
+
+    public void addShield(int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        addStatus(new ShieldStatus(amount));
+    }
+
+    public void addStrength(int bonus, int turns) {
+        if (bonus <= 0 || turns <= 0) {
+            return;
+        }
+        addStatus(new StrengthStatus(bonus, turns));
+    }
+
+    public void addWeakness(int turns) {
+        if (turns <= 0) {
+            return;
+        }
+        addStatus(new WeaknessStatus(turns));
     }
 
     // --- ゲームロジックメソッド ---
@@ -226,7 +331,7 @@ public class PlayerModel {
      */
     public void resetAfterDefeat() {
         setHp(maxHp);
-        effects.clear();
+        statusEffects.clear();
     }
 
     public static PlayerModel createDefaultPlayer() {

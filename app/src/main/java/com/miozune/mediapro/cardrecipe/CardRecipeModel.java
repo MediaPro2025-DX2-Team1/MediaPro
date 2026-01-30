@@ -1,5 +1,8 @@
 package com.miozune.mediapro.cardrecipe;
 
+import com.miozune.mediapro.effect.CardAction;
+import com.miozune.mediapro.effect.action.DamageSingleEnemyActionEffect;
+
 /**
  * カードのデータを保持するイミュータブルなレコード。
  * カード名、コスト、画像ファイル名、説明文を持つ。
@@ -8,14 +11,14 @@ package com.miozune.mediapro.cardrecipe;
  * @param cost        コスト
  * @param imageName   画像ファイル名（例: "card_001.jpg"）
  * @param description 説明文
+ * @param cardAction  複合効果
  */
 public record CardRecipeModel(
     String name,
     int cost,
     String imageName,
     String description,
-    EffectType effectType,
-    int effectValue) {
+     CardAction cardAction) {
 
     /**
      * サンプルのCardModelを作成する。
@@ -29,18 +32,6 @@ public record CardRecipeModel(
                 3,
                 "sample.jpg",
                 "これはサンプルカードの説明文です。カードの効果や特徴などを記載します。",
-                EffectType.DAMAGE,
-                5);
-    }
-
-    /**
-     * カード効果の種別。
-     * DAMAGE: 敵単体へダメージ
-     * HEAL: プレイヤー回復
-     */
-    public enum EffectType {
-        DAMAGE,
-        HEAL,
-        NONE
+                CardAction.of(new DamageSingleEnemyActionEffect(5)));
     }
 }

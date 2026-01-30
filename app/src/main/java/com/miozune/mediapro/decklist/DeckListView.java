@@ -3,6 +3,9 @@ package com.miozune.mediapro.decklist;
 import com.miozune.mediapro.card.CardBadgeView;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
+import com.miozune.mediapro.effect.CardAction;
+import com.miozune.mediapro.effect.action.AddShieldActionEffect;
+import com.miozune.mediapro.effect.action.DamageSingleEnemyActionEffect;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -128,13 +131,28 @@ public class DeckListView extends JPanel implements Previewable {
     @Override
     public void setupPreview() {
         DeckModel fireDeck = new DeckModel("Fire Deck");
-        CardRecipeModel blaze = new CardRecipeModel("Blaze", 2, "blaze.png", "炎の一撃", CardRecipeModel.EffectType.DAMAGE, 8);
+        CardRecipeModel blaze = new CardRecipeModel(
+            "Blaze",
+            2,
+            "blaze.png",
+            "炎の一撃",
+            CardAction.of(new DamageSingleEnemyActionEffect(8)));
         fireDeck.addCard(blaze);
         fireDeck.addCard(blaze);
 
         DeckModel frostDeck = new DeckModel("Frost Deck");
-        CardRecipeModel iceShard = new CardRecipeModel("Ice Shard", 1, "ice.png", "冷気の矢", CardRecipeModel.EffectType.DAMAGE, 4);
-        CardRecipeModel barrier = new CardRecipeModel("Barrier", 1, "barrier.png", "氷の防壁", CardRecipeModel.EffectType.NONE, 0);
+        CardRecipeModel iceShard = new CardRecipeModel(
+            "Ice Shard",
+            1,
+            "ice.png",
+            "冷気の矢",
+            CardAction.of(new DamageSingleEnemyActionEffect(4)));
+        CardRecipeModel barrier = new CardRecipeModel(
+            "Barrier",
+            1,
+            "barrier.png",
+            "氷の防壁",
+            CardAction.of(new AddShieldActionEffect(3)));
         frostDeck.addCard(iceShard);
         frostDeck.addCard(iceShard);
         frostDeck.addCard(barrier);

@@ -111,21 +111,22 @@ public class DeckListModel {
     private DeckModel createDefaultDeck() {
         DeckModel deck = new DeckModel("Starter Deck");
         CardRegistry registry = CardRegistry.getInstance();
-        CardRecipeModel attack = registry.find("Attack");
-        CardRecipeModel guard = registry.find("Guard");
-        if (attack == null) {
-            attack = new CardRecipeModel("Attack", 1, "attack.jpg", "シンプルな攻撃カード。", CardRecipeModel.EffectType.DAMAGE, 6);
-            registry.register(attack);
+        CardRecipeModel slash = registry.find("スラッシュ");
+        CardRecipeModel block = registry.find("ブロック");
+        CardRecipeModel armorBreak = registry.find("鎧砕き");
+
+        if (slash != null) {
+            for (int i = 0; i < 4; i++) {
+                deck.addCard(slash);
+            }
         }
-        if (guard == null) {
-            guard = new CardRecipeModel("Guard", 1, "guard.jpg", "防御カード。", CardRecipeModel.EffectType.NONE, 0);
-            registry.register(guard);
+        if (block != null) {
+            for (int i = 0; i < 5; i++) {
+                deck.addCard(block);
+            }
         }
-        for (int i = 0; i < 6; i++) {
-            deck.addCard(attack);
-        }
-        for (int i = 0; i < 4; i++) {
-            deck.addCard(guard);
+        if (armorBreak != null) {
+            deck.addCard(armorBreak);
         }
         return deck;
     }

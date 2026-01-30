@@ -3,6 +3,8 @@ package com.miozune.mediapro.enemy;
 import com.miozune.mediapro.enemy.events.EnemyHpChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyNameChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyPropertyChangeEvent;
+import com.miozune.mediapro.status.StatusEffect;
+import com.miozune.mediapro.status.WeaknessStatus;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,6 +23,7 @@ public class EnemyModel {
     private String name;
     private int hp;
     private int maxHp;
+    private final List<StatusEffect> statusEffects = new CopyOnWriteArrayList<>();
 
     /**
      * コンストラクタ
@@ -94,6 +97,74 @@ public class EnemyModel {
         if (this.hp > this.maxHp) {
             setHp(this.maxHp);
         }
+    }
+
+    public List<StatusEffect> getStatusEffects() {
+        return List.copyOf(statusEffects);
+    }
+
+    public void addStatus(StatusEffect effect) {
+        if (effect == null) {
+            return;
+        }
+        if (effect instanceof WeaknessStatus weakness) {
+            mergeWeakness(weakness);
+            return;
+        }
+        statusEffects.add(effect);
+    }
+
+    public void addWeakness(int turns) {
+        if (turns <= 0) {
+            return;
+        }
+        addStatus(new WeaknessStatus(turns));
+    }
+
+    private void mergeWeakness(WeaknessStatus weakness) {
+        WeaknessStatus existing = null;
+        for (StatusEffect status : statusEffects) {
+            if (status instanceof WeaknessStatus w) {
+                existing = w;
+                break;
+            }
+        }
+        if (existing != null) {
+            statusEffects.remove(existing);
+            int remaining = Math.max(existing.remainingTurns(), weakness.remainingTurns());
+            statusEffects.add(new WeaknessStatus(existing.bonusDamage(), remaining));
+        } else {
+            statusEffects.add(weakness);
+        }
+    }
+
+    public void onTurnStartStatuses() {
+        for (StatusEffect status : statusEffects) {
+            status.onTurnStart();
+        }
+        statusEffects.removeIf(StatusEffect::isExpired);
+    }
+
+    public int applyIncomingDamageModifiers(int baseDamage) {
+        int result = baseDamage;
+        for (StatusEffect status : statusEffects) {
+            result = status.onIncomingDamage(result);
+        }
+        return Math.max(0, result);
+    }
+
+    public int applyOutgoingDamageModifiers(int baseDamage) {
+        int result = baseDamage;
+        for (StatusEffect status : statusEffects) {
+            result = status.onOutgoingDamage(result);
+        }
+        return Math.max(0, result);
+    }
+
+    public int receiveDamage(int rawDamage) {
+        int actual = applyIncomingDamageModifiers(rawDamage);
+        setHp(hp - actual);
+        return actual;
     }
 
     // --- ユーティリティメソッド ---
