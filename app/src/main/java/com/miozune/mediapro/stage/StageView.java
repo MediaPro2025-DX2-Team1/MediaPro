@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class StageView extends JPanel implements Previewable {
 
@@ -265,7 +266,7 @@ public class StageView extends JPanel implements Previewable {
         }
     }
 
-    private javax.swing.border.Border createEnemyBorder(boolean highlighted) {
+    private Border createEnemyBorder(boolean highlighted) {
         Color color = highlighted ? new Color(110, 150, 220) : new Color(80, 80, 80);
         return BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(color, 2, true),
