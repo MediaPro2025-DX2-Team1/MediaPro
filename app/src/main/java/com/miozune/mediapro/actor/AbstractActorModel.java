@@ -152,17 +152,21 @@ public abstract class AbstractActorModel<E> {
     }
 
     public void addShield(int amount) {
+        addShield(amount, false);
+    }
+
+    public void addShield(int amount, boolean isPermanent) {
         if (amount <= 0) {
             return;
         }
-        addStatus(new ShieldStatus(amount));
+        addStatus(new ShieldStatus(amount, isPermanent));
     }
 
-    public void addStrength(int bonus, int turns) {
-        if (bonus <= 0 || turns <= 0) {
+    public void addStrength(int bonus) {
+        if (bonus <= 0) {
             return;
         }
-        addStatus(new StrengthStatus(bonus, turns));
+        addStatus(new StrengthStatus(bonus));
     }
 
     public void addWeakness(int turns) {
@@ -198,7 +202,13 @@ public abstract class AbstractActorModel<E> {
             }
         }
         if (existing != null) {
-            existing.addShield(shield.amount());
+            // 永続エフェクトと一時的エフェクトは別々に管理
+            if (existing.isPermanent() == shield.isPermanent()) {
+                existing.addShield(shield.amount());
+            } else {
+                // 永続と一時が混在する場合は追加
+                statusEffects.add(shield);
+            }
         } else {
             statusEffects.add(shield);
         }

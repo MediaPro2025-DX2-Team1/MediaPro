@@ -4,17 +4,24 @@ import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.effect.action.ActionContext;
+import com.miozune.mediapro.enemy.EnemyFactory;
+import com.miozune.mediapro.enemy.EnemyFactory.EnemyInstance;
 import com.miozune.mediapro.enemy.EnemyModel;
+import com.miozune.mediapro.enemy.EnemyType;
+import com.miozune.mediapro.enemy.behavior.EnemyActionContext;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StageModel {
     private final PlayerModel player;
-    private final List<EnemyModel> enemies;
+    private final List<EnemyInstance> enemies;
     private final DrawPileModel drawpile;
     private final HandModel hand;
     private final DiscardModel discard;
+    private final EnemyFactory enemyFactory;
 
     public enum Turn {
         PLAYER, ENEMY
@@ -24,27 +31,34 @@ public class StageModel {
 
     private boolean isBattleOver = false;// 戦闘終了フラグ
 
-    private static final int ENEMY_BASE_DAMAGE = 5;
-
     public interface BattleListener { // 終了結果を外へ通知するためのリスナー
         void onBattleEnd(boolean playerWon);
     }
 
-    private BattleListener listener;
+    public interface EnemyListChangeListener {
+        void onEnemiesChanged(List<EnemyModel> enemies);
+    }
+
+    private BattleListener battleListener;
+    private final List<EnemyListChangeListener> enemyListListeners = new CopyOnWriteArrayList<>();
 
     /* コンストラクタ */
     public StageModel(
             PlayerModel player,
-            List<EnemyModel> enemies,
+            List<EnemyInstance> enemyInstances,
             DrawPileModel drawpile,
             HandModel hand,
-            DiscardModel discard) {
+            DiscardModel discard,
+            EnemyFactory enemyFactory) {
 
         this.player = player;
-        this.enemies = enemies;
+        this.enemies = new ArrayList<>(enemyInstances);
         this.drawpile = drawpile;
         this.hand = hand;
         this.discard = discard;
+        this.enemyFactory = enemyFactory;
+
+        notifyEnemyListChanged();
     }
 
     /* 戦闘開始 */
@@ -58,7 +72,17 @@ public class StageModel {
 
     /* 外部から終了フラグを登録 */
     public void setBattleListener(BattleListener listener) {
-        this.listener = listener;
+        this.battleListener = listener;
+    }
+
+    public void addEnemyListChangeListener(EnemyListChangeListener listener) {
+        if (listener != null) {
+            enemyListListeners.add(listener);
+        }
+    }
+
+    public void removeEnemyListChangeListener(EnemyListChangeListener listener) {
+        enemyListListeners.remove(listener);
     }
 
     // ドロー処理（1枚）
@@ -93,8 +117,8 @@ public class StageModel {
 
         // 敵全滅チェック
         boolean allDead = true;
-        for (EnemyModel e : enemies) {
-            if (e.getHp() > 0) {
+        for (EnemyInstance e : enemies) {
+            if (e.model().getHp() > 0) {
                 allDead = false;
                 break;
             }
@@ -149,7 +173,9 @@ public class StageModel {
 
     // 相手ターンへの移行
     private void startEnemyTurn() {
-        for (EnemyModel enemy : enemies) {
+        List<EnemyInstance> snapshot = new ArrayList<>(enemies);
+        for (EnemyInstance enemyInstance : snapshot) {
+            EnemyModel enemy = enemyInstance.model();
             enemy.onTurnStartStatuses();
             if (isBattleOver) {
                 return;
@@ -157,8 +183,11 @@ public class StageModel {
             if (enemy.isDead()) {
                 continue;
             }
-            player.receiveDamage(ENEMY_BASE_DAMAGE);
+            enemyInstance.behavior().performTurn(new EnemyActionContext(this, enemy));
             updateBattleState();
+            if (isBattleOver) {
+                return;
+            }
         }
     }
 
@@ -183,7 +212,7 @@ public class StageModel {
             return false;
         }
 
-        ActionContext context = new ActionContext(this, player, enemies, target, drawpile, hand, discard, card);
+        ActionContext context = new ActionContext(this, player, getEnemies(), target, drawpile, hand, discard, card);
         card.action().execute(context);
 
         hand.removeCard(card);
@@ -194,9 +223,9 @@ public class StageModel {
 
     /* ユーティリティ */
     public EnemyModel firstAliveEnemy() {
-        for (EnemyModel enemy : enemies) {
-            if (!enemy.isDead()) {
-                return enemy;
+        for (EnemyInstance enemy : enemies) {
+            if (!enemy.model().isDead()) {
+                return enemy.model();
             }
         }
         return null;
@@ -206,8 +235,8 @@ public class StageModel {
     private void endBattle(boolean playerWon) {
         isBattleOver = true;
 
-        if (listener != null) {
-            listener.onBattleEnd(playerWon);
+        if (battleListener != null) {
+            battleListener.onBattleEnd(playerWon);
         }
     }
 
@@ -217,7 +246,7 @@ public class StageModel {
     }
 
     public List<EnemyModel> getEnemies() {
-        return enemies;
+        return enemies.stream().map(EnemyInstance::model).toList();
     }
 
     public DrawPileModel getDrawpile() {
@@ -238,5 +267,41 @@ public class StageModel {
 
     public boolean isBattleOver() {
         return isBattleOver;
+    }
+
+    /* 敵側の行動ユーティリティ */
+    public void enemyAttack(EnemyModel attacker, int baseDamage) {
+        if (attacker == null || isBattleOver || attacker.isDead()) {
+            return;
+        }
+        int actual = attacker.applyOutgoingDamageModifiers(baseDamage);
+        player.receiveDamage(actual);
+        updateBattleState();
+    }
+
+    public void enemyAttack(EnemyModel attacker, int baseDamage, int times) {
+        int repeat = Math.max(1, times);
+        for (int i = 0; i < repeat; i++) {
+            enemyAttack(attacker, baseDamage);
+            if (isBattleOver) {
+                break;
+            }
+        }
+    }
+
+    public void summonEnemy(EnemyType type) {
+        if (enemyFactory == null || type == null) {
+            return;
+        }
+        EnemyInstance instance = enemyFactory.create(type);
+        enemies.add(instance);
+        notifyEnemyListChanged();
+    }
+
+    private void notifyEnemyListChanged() {
+        List<EnemyModel> snapshot = getEnemies();
+        for (EnemyListChangeListener enemyListener : enemyListListeners) {
+            enemyListener.onEnemiesChanged(snapshot);
+        }
     }
 }

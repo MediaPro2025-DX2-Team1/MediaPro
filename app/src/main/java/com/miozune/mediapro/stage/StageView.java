@@ -165,6 +165,12 @@ public class StageView extends JPanel implements Previewable {
         repaint();
     }
 
+    public void refreshEnemies(List<EnemyModel> enemies) {
+        updateEnemies(enemies);
+        revalidate();
+        repaint();
+    }
+
     private void updateEnemies(List<EnemyModel> enemies) {
         enemyGrid.removeAll();
         enemyPanels.clear();

@@ -49,12 +49,16 @@ public class StatusListView extends JPanel {
 
         if (effect instanceof ShieldStatus shield) {
             title = "シールド";
-            detail = String.format("+%d / 1ターン", shield.amount());
+            if (shield.isPermanent()) {
+                detail = String.format("+%d / ∞", shield.amount());
+            } else {
+                detail = String.format("+%d / 1ターン", shield.amount());
+            }
             background = new Color(40, 90, 150, 200);
             border = new Color(70, 130, 190);
         } else if (effect instanceof StrengthStatus strength) {
             title = "筋力";
-            detail = String.format("+%d / %dターン", strength.bonus(), strength.remainingTurns());
+            detail = String.format("+%d / ∞", strength.bonus());
             background = new Color(140, 90, 30, 200);
             border = new Color(180, 130, 60);
         } else if (effect instanceof WeaknessStatus weakness) {

@@ -1,5 +1,6 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.enemy.EnemyType;
 import java.util.List;
 
 /**
@@ -16,23 +17,23 @@ public record StageDefinition(
 
     public static StageDefinition createStage1() {
         List<EnemyDefinition> enemyDefs = List.of(
-            new EnemyDefinition("スライム", 12, 12),
-            new EnemyDefinition("デビル", 16, 16),
-            new EnemyDefinition("ゾンビ", 20, 20));
+            new EnemyDefinition(EnemyType.SLIME, "スライム", 12, 12),
+            new EnemyDefinition(EnemyType.DEVIL, "デビル", 16, 16),
+            new EnemyDefinition(EnemyType.ZOMBIE, "ゾンビ", 20, 20));
         return new StageDefinition("stage-1", "Stage 1", enemyDefs);
     }
 
     public static StageDefinition createStage2() {
         List<EnemyDefinition> enemyDefs = List.of(
-            new EnemyDefinition("ゴブリンリーダー", 60, 60));
+            new EnemyDefinition(EnemyType.GOBLIN_LEADER, "ゴブリンリーダー", 60, 60));
         return new StageDefinition("stage-2", "Stage 2", enemyDefs);
     }
 
     public static StageDefinition createStage3() {
         List<EnemyDefinition> enemyDefs = List.of(
-            new EnemyDefinition("ドラゴン", 120, 120));
+            new EnemyDefinition(EnemyType.DRAGON, "ドラゴン", 120, 120));
         return new StageDefinition("stage-3", "Stage 3", enemyDefs);
     }
 
-    public record EnemyDefinition(String name, int hp, int maxHp) { }
+    public record EnemyDefinition(EnemyType type, String name, int hp, int maxHp) { }
 }

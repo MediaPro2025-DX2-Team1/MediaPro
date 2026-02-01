@@ -126,7 +126,7 @@ public class PlayerView extends JPanel implements Previewable {
         model.setMaxHp(100);
         model.setHp(75);
         model.addShield(12);
-        model.addStrength(3, 2);
+        model.addStrength(3);
         model.addWeakness(2);
         updateAllDisplays();
     }
