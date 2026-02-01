@@ -104,8 +104,12 @@ public abstract class AbstractActorModel<E> {
         return List.copyOf(statusEffects);
     }
 
-    protected List<StatusEffect> getMutableStatusEffects() {
-        return statusEffects;
+    public void clearStatusEffects() {
+        if (statusEffects.isEmpty()) {
+            return;
+        }
+        statusEffects.clear();
+        fireStatusesChanged();
     }
 
     public void addStatus(StatusEffect effect) {

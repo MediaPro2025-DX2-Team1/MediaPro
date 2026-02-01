@@ -110,8 +110,7 @@ public class PlayerModel extends AbstractActorModel<PlayerPropertyChangeEvent> {
      */
     public void resetAfterDefeat() {
         setHp(getMaxHp());
-        getMutableStatusEffects().clear();
-        fireStatusesChanged();
+        clearStatusEffects();
     }
 
     public static PlayerModel createDefaultPlayer() {
