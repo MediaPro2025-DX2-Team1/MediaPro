@@ -11,32 +11,22 @@ import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.player.PlayerView;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.HashMap;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import java.util.Map;
+import javax.swing.*;
 
 public class StageView extends JPanel implements Previewable {
 
     private static final int HAND_MIN_HEIGHT = CardView.DEFAULT_HEIGHT + 20;
+    private static final int SELECTION_BANNER_HEIGHT = 36;
 
     private final JPanel topPanel;
     private final JPanel bottomPanel;
+    private final JPanel selectionBanner;
+    private final JLabel selectionLabel;
 
     private final HandView handView;
     private final JPanel handWrapper;
@@ -44,13 +34,18 @@ public class StageView extends JPanel implements Previewable {
     private final JPanel handContainer;
     private final JPanel manaWrapper;
     private final ManaBadge manaBadge;
+    private final JPanel playerContainer;
+    private final JPanel enemyGrid;
 
     private final JButton deckButton;
     private final JButton discardButton;
     private final JButton endTurnButton;
 
     private PlayerView playerView;
-    private EnemyView enemyView;
+    private final Map<EnemyModel, JPanel> enemyPanels = new HashMap<>();
+    private boolean selectingTarget;
+    private EnemyClickListener enemyClickListener;
+    private BackgroundClickListener backgroundClickListener;
     private PlayerModel playerModel;
     private PlayerModel.PropertyChangeListener playerListener;
 
@@ -61,9 +56,42 @@ public class StageView extends JPanel implements Previewable {
         setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         /* --- 上部：戦闘画面エリア --- */
-        topPanel = new JPanel();
+        topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+
+        selectionBanner = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        selectionBanner.setOpaque(false);
+        selectionBanner.setPreferredSize(new Dimension(0, SELECTION_BANNER_HEIGHT));
+        selectionBanner.setMinimumSize(new Dimension(0, SELECTION_BANNER_HEIGHT));
+        selectionBanner.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        selectionLabel = new JLabel();
+        selectionLabel.setForeground(new Color(200, 230, 255));
+        selectionLabel.setFont(selectionLabel.getFont().deriveFont(Font.BOLD, 14f));
+        selectionBanner.add(selectionLabel);
+        selectionBanner.setVisible(true);
+
+        playerContainer = new JPanel(new BorderLayout());
+        playerContainer.setOpaque(false);
+
+        enemyGrid = new JPanel(new GridLayout(0, 3, 20, 20));
+        enemyGrid.setOpaque(false);
+        enemyGrid.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        enemyGrid.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!selectingTarget || backgroundClickListener == null) {
+                    return;
+                }
+                Component target = enemyGrid.getComponentAt(e.getPoint());
+                if (target == enemyGrid) {
+                    backgroundClickListener.onBackgroundClicked();
+                }
+            }
+        });
+
+        topPanel.add(selectionBanner, BorderLayout.NORTH);
+        topPanel.add(playerContainer, BorderLayout.WEST);
+        topPanel.add(enemyGrid, BorderLayout.CENTER);
 
         /* --- 下部：操作エリア --- */
         bottomPanel = new JPanel(new BorderLayout());
@@ -111,36 +139,77 @@ public class StageView extends JPanel implements Previewable {
 
         add(topPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+
+        setupKeyBindings();
     }
 
 
-    public void setActors(PlayerModel player, EnemyModel enemy) {
+    public void setActors(PlayerModel player, List<EnemyModel> enemies) {
         if (playerListener != null && playerModel != null) {
             playerModel.removePropertyChangeListener(playerListener);
         }
         playerModel = player;
-        topPanel.removeAll();
         if (player == null) {
             throw new IllegalArgumentException("PlayerModel cannot be null");
         }
         playerView = new PlayerView(player);
-        playerView.setAlignmentY(Component.TOP_ALIGNMENT);
-        addActorView(playerView);
+        playerContainer.removeAll();
+        playerContainer.add(playerView, BorderLayout.NORTH);
         setupPlayerListener();
         updateManaDisplay(player.getMana());
 
-        if (enemy != null) {
-            enemyView = new EnemyView(enemy);
-            topPanel.add(Box.createHorizontalStrut(30));
-            enemyView.setAlignmentY(Component.TOP_ALIGNMENT);
-            addActorView(enemyView);
-        }
-        topPanel.revalidate();
-        topPanel.repaint();
+        updateEnemies(enemies);
+        exitTargetSelection();
+        revalidate();
+        repaint();
     }
 
-    private void addActorView(JComponent view) {
-        topPanel.add(view);
+    private void updateEnemies(List<EnemyModel> enemies) {
+        enemyGrid.removeAll();
+        enemyPanels.clear();
+        if (enemies == null || enemies.isEmpty()) {
+            enemyGrid.revalidate();
+            enemyGrid.repaint();
+            return;
+        }
+        for (EnemyModel enemy : enemies) {
+            if (enemy == null) {
+                continue;
+            }
+            JPanel panel = createEnemyPanel(enemy);
+            enemyPanels.put(enemy, panel);
+            enemyGrid.add(panel);
+        }
+        enemyGrid.revalidate();
+        enemyGrid.repaint();
+    }
+
+    private JPanel createEnemyPanel(EnemyModel enemy) {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setOpaque(false);
+        wrapper.setBorder(createEnemyBorder(false));
+        EnemyView view = new EnemyView(enemy);
+        wrapper.add(view, BorderLayout.CENTER);
+
+        wrapper.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                handleEnemyHover(enemy, true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                handleEnemyHover(enemy, false);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (enemyClickListener != null) {
+                    enemyClickListener.onEnemyClicked(enemy);
+                }
+            }
+        });
+        return wrapper;
     }
 
     private void setupPlayerListener() {
@@ -161,6 +230,79 @@ public class StageView extends JPanel implements Previewable {
         }
         int maxMana = playerModel.getMaxMana();
         manaBadge.setValues(mana, maxMana);
+    }
+
+    private void handleEnemyHover(EnemyModel enemy, boolean entered) {
+        JPanel panel = enemyPanels.get(enemy);
+        if (panel == null) {
+            return;
+        }
+        if (!selectingTarget) {
+            panel.setBorder(createEnemyBorder(false));
+            return;
+        }
+        panel.setBorder(createEnemyBorder(entered));
+    }
+
+    private void updateSelectionUiState() {
+        Cursor cursor = selectingTarget
+            ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            : Cursor.getDefaultCursor();
+        enemyGrid.setCursor(cursor);
+        enemyPanels.values().forEach(panel -> {
+            panel.setCursor(cursor);
+            panel.setBorder(createEnemyBorder(false));
+        });
+        if (selectingTarget) {
+            selectionBanner.setOpaque(true);
+            selectionBanner.setBackground(new Color(60, 90, 140, 80));
+            selectionLabel.setText("敵をクリックして攻撃対象を選んでください (Escでキャンセル)");
+            requestFocusInWindow();
+        } else {
+            selectionBanner.setOpaque(false);
+            selectionBanner.setBackground(new Color(0, 0, 0, 0));
+            selectionLabel.setText("");
+        }
+    }
+
+    private javax.swing.border.Border createEnemyBorder(boolean highlighted) {
+        Color color = highlighted ? new Color(110, 150, 220) : new Color(80, 80, 80);
+        return BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(color, 2, true),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        );
+    }
+
+    public void enterTargetSelection() {
+        selectingTarget = true;
+        updateSelectionUiState();
+    }
+
+    public void exitTargetSelection() {
+        selectingTarget = false;
+        updateSelectionUiState();
+    }
+
+    private void setupKeyBindings() {
+        setFocusable(true);
+        ActionMap actionMap = getActionMap();
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "cancelTarget");
+        actionMap.put("cancelTarget", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                if (selectingTarget && backgroundClickListener != null) {
+                    backgroundClickListener.onBackgroundClicked();
+                }
+            }
+        });
+    }
+
+    public void setEnemyClickListener(EnemyClickListener listener) {
+        this.enemyClickListener = listener;
+    }
+
+    public void setBackgroundClickListener(BackgroundClickListener listener) {
+        this.backgroundClickListener = listener;
     }
 
     private static class ManaBadge extends JComponent {
@@ -242,9 +384,11 @@ public class StageView extends JPanel implements Previewable {
         PlayerModel player = PlayerModel.createDefaultPlayer();
         player.setHp(80);
         player.setMana(3);
-        EnemyModel enemy = EnemyModel.createDefault();
-        enemy.setHp(50);
-        setActors(player, enemy);
+        EnemyModel enemyA = EnemyModel.createDefault();
+        enemyA.setHp(50);
+        EnemyModel enemyB = EnemyModel.createDefault();
+        enemyB.setHp(70);
+        setActors(player, List.of(enemyA, enemyB));
     }
 
     // Getter
@@ -258,5 +402,14 @@ public class StageView extends JPanel implements Previewable {
 
     public JButton getEndTurnButton() {
         return endTurnButton;
+    }
+
+    @FunctionalInterface
+    public interface EnemyClickListener {
+        void onEnemyClicked(EnemyModel enemy);
+    }
+
+    public interface BackgroundClickListener {
+        void onBackgroundClicked();
     }
 }
