@@ -31,7 +31,6 @@ public class GoblinLeaderBehavior implements EnemyBehavior {
                 context.addStrengthToSelf(BUFF_STRENGTH);
             }
             case 2 -> context.attackPlayer(ATTACK_DAMAGE);
-            default -> { }
         }
         step = (step + 1) % 3;
     }

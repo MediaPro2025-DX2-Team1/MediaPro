@@ -17,7 +17,6 @@ public class DragonBehavior implements EnemyBehavior {
             case 0 -> context.attackPlayer(FIRST_ATTACK);
             case 1 -> context.applyWeaknessToPlayer(WEAK_TURNS);
             case 2 -> context.attackPlayer(MULTI_DAMAGE, MULTI_TIMES);
-            default -> { }
         }
         step = (step + 1) % 3;
     }

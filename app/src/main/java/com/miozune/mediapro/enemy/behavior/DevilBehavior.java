@@ -16,7 +16,6 @@ public class DevilBehavior implements EnemyBehavior {
             case 0 -> context.applyWeaknessToPlayer(WEAK_TURNS);
             case 1 -> context.attackPlayer(FIRST_ATTACK);
             case 2 -> context.attackPlayer(SECOND_ATTACK);
-            default -> { }
         }
         step = (step + 1) % 3;
     }
