@@ -49,6 +49,8 @@ public class StageController {
         view.getDiscardButton().addActionListener(e -> System.out.println("捨札確認"));
 
         view.getEndTurnButton().addActionListener(e -> {
+            targetingCard = null;
+            view.exitTargetSelection();
             model.nextTurn();
             updateView();
         });
