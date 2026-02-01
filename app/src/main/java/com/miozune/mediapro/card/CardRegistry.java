@@ -82,7 +82,7 @@ public final class CardRegistry {
             1,
             "rage.jpg",
             "自分は筋力2を得る。",
-            CardAction.of(new ApplyStrengthActionEffect(2, 1)),
+            CardAction.of(new ApplyStrengthActionEffect(2)),
             CardTargetType.SELF));
 
         register(new CardRecipeModel(

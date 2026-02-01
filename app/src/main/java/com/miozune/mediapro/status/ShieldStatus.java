@@ -2,17 +2,27 @@ package com.miozune.mediapro.status;
 
 /**
  * 受けるダメージを軽減する一時シールド。
- * プレイヤーターン開始時に失われる。
+ * プレイヤーターン開始時に失われる（永続フラグがfalseの場合）。
  */
 public final class ShieldStatus implements StatusEffect {
     private int amount;
+    private final boolean isPermanent;
 
     public ShieldStatus(int amount) {
+        this(amount, false);
+    }
+
+    public ShieldStatus(int amount, boolean isPermanent) {
         this.amount = Math.max(0, amount);
+        this.isPermanent = isPermanent;
     }
 
     public int amount() {
         return amount;
+    }
+
+    public boolean isPermanent() {
+        return isPermanent;
     }
 
     public void addShield(int value) {
@@ -21,7 +31,9 @@ public final class ShieldStatus implements StatusEffect {
 
     @Override
     public void onTurnStart() {
-        amount = 0;
+        if (!isPermanent) {
+            amount = 0;
+        }
     }
 
     @Override

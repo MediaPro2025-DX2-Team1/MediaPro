@@ -6,6 +6,9 @@ import com.miozune.mediapro.card.events.CardClickedEvent;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -15,6 +18,7 @@ public class StageController {
     private final StageModel model;
     private final StageView view;
     private CardModel targetingCard;
+    private final Set<EnemyModel> enemyListenerRegistered = new HashSet<>();
 
     public StageController(GameModel gameModel, StageModel model, StageView view) {
         this.gameModel = gameModel;
@@ -31,7 +35,9 @@ public class StageController {
         });
 
         model.getPlayer().addPropertyChangeListener(event -> model.checkBattleState());
-        model.getEnemies().forEach(enemy -> enemy.addPropertyChangeListener(event -> model.checkBattleState()));
+        attachEnemyListeners(model.getEnemies());
+
+        model.addEnemyListChangeListener(this::handleEnemiesChanged);
 
         // プレイヤー/敵ビューをセット
         view.setActors(model.getPlayer(), model.getEnemies());
@@ -40,6 +46,19 @@ public class StageController {
 
         connectUI();
         updateView();
+    }
+
+    private void attachEnemyListeners(List<EnemyModel> enemies) {
+        if (enemies == null) {
+            return;
+        }
+        for (EnemyModel enemy : enemies) {
+            if (enemy == null || enemyListenerRegistered.contains(enemy)) {
+                continue;
+            }
+            enemy.addPropertyChangeListener(event -> model.checkBattleState());
+            enemyListenerRegistered.add(enemy);
+        }
     }
 
     /* View のボタンやイベントを Model とつなぐ */
@@ -59,6 +78,11 @@ public class StageController {
     /* Model の情報を View に反映 */
     private void updateView() {
         view.updateHand(model.getHand().getCards(), this::handleCardClick);
+    }
+
+    private void handleEnemiesChanged(List<EnemyModel> enemies) {
+        attachEnemyListeners(enemies);
+        view.refreshEnemies(enemies);
     }
 
     /* バトル終了時の処理 */

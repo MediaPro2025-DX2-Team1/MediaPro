@@ -1,23 +1,21 @@
 package com.miozune.mediapro.effect.action;
 
 /**
- * 筋力を付与。
+ * 筋力を付与（永続）。
  */
 public final class ApplyStrengthActionEffect implements ActionEffect {
     private final int bonus;
-    private final int turns;
 
-    public ApplyStrengthActionEffect(int bonus, int turns) {
+    public ApplyStrengthActionEffect(int bonus) {
         this.bonus = Math.max(0, bonus);
-        this.turns = Math.max(0, turns);
     }
 
     @Override
     public boolean apply(ActionContext context) {
-        if (bonus <= 0 || turns <= 0) {
+        if (bonus <= 0) {
             return true;
         }
-        context.player().addStrength(bonus, turns);
+        context.player().addStrength(bonus);
         return true;
     }
 }
