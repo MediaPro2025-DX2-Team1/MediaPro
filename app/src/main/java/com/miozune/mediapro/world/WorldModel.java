@@ -26,9 +26,9 @@ public class WorldModel {
 
     public static WorldModel createDefault(StageFactory stageFactory) {
         List<StageDefinition> defaults = List.of(
-            StageDefinition.createSample(1),
-            StageDefinition.createSample(2),
-            StageDefinition.createSample(3)
+            StageDefinition.createStage1(),
+            StageDefinition.createStage2(),
+            StageDefinition.createStage3()
         );
         return new WorldModel(defaults, stageFactory);
     }

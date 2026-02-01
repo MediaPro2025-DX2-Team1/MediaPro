@@ -35,6 +35,10 @@ public final class CardModel {
         return recipe.description();
     }
 
+    public CardTargetType targetType() {
+        return recipe.targetType();
+    }
+
     public CardAction action() {
         return recipe.cardAction();
     }

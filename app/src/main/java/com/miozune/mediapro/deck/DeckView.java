@@ -2,6 +2,7 @@ package com.miozune.mediapro.deck;
 
 import com.miozune.mediapro.card.CardBadgeView;
 import com.miozune.mediapro.card.CardRegistry;
+import com.miozune.mediapro.card.CardTargetType;
 import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
@@ -236,13 +237,15 @@ public class DeckView extends JPanel implements Previewable {
             3,
             "fireball.png",
             "火の玉を投げる",
-            CardAction.of(new DamageSingleEnemyActionEffect(10)));
+            CardAction.of(new DamageSingleEnemyActionEffect(10)),
+            CardTargetType.SINGLE_ENEMY);
         CardRecipeModel dummyCard2 = new CardRecipeModel(
             "ヒール",
             2,
             "heal.png",
             "HPを回復する",
-            CardAction.of(new HealSelfActionEffect(6)));
+            CardAction.of(new HealSelfActionEffect(6)),
+            CardTargetType.SELF);
         model.addCard(dummyCard1);
         model.addCard(dummyCard1);
         model.addCard(dummyCard2);

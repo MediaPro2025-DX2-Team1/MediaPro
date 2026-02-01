@@ -40,14 +40,16 @@ public final class CardRegistry {
             1,
             "slash.jpg",
             "敵1体に5ダメージを与える。",
-            CardAction.of(new DamageSingleEnemyActionEffect(5))));
+            CardAction.of(new DamageSingleEnemyActionEffect(5)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "ブロック",
             1,
             "block.jpg",
             "自分は5シールドを得る。",
-            CardAction.of(new AddShieldActionEffect(5))));
+            CardAction.of(new AddShieldActionEffect(5)),
+            CardTargetType.SELF));
 
         register(new CardRecipeModel(
             "鎧砕き",
@@ -56,42 +58,48 @@ public final class CardRegistry {
             "敵1体に8ダメージ。弱体2ターンを与える。",
             CardAction.of(
                 new DamageSingleEnemyActionEffect(8),
-                new ApplyWeaknessActionEffect(2))));
+                new ApplyWeaknessActionEffect(2)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "補給",
             1,
             "supply.jpg",
             "山札からカードを2枚引く。",
-            CardAction.of(new DrawCardsActionEffect(2))));
+            CardAction.of(new DrawCardsActionEffect(2)),
+            CardTargetType.NONE));
 
         register(new CardRecipeModel(
             "リカバリー",
             1,
             "recovery.jpg",
             "自分のHPを3回復する。",
-            CardAction.of(new HealSelfActionEffect(3))));
+            CardAction.of(new HealSelfActionEffect(3)),
+            CardTargetType.SELF));
 
         register(new CardRecipeModel(
             "激昂",
             1,
             "rage.jpg",
             "自分は筋力2を得る。",
-            CardAction.of(new ApplyStrengthActionEffect(2, 1))));
+            CardAction.of(new ApplyStrengthActionEffect(2, 1)),
+            CardTargetType.SELF));
 
         register(new CardRecipeModel(
             "ツインスラッシュ",
             1,
             "twin_slash.jpg",
             "敵1体に5ダメージを2回与える。",
-            CardAction.of(new MultiHitSingleEnemyActionEffect(5, 2))));
+            CardAction.of(new MultiHitSingleEnemyActionEffect(5, 2)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "なぎ払い",
             1,
             "cleave.jpg",
             "すべての敵に4ダメージを与える。",
-            CardAction.of(new DamageAllEnemiesActionEffect(4))));
+            CardAction.of(new DamageAllEnemiesActionEffect(4)),
+            CardTargetType.ALL_ENEMIES));
 
         register(new CardRecipeModel(
             "諸刃の剣",
@@ -100,7 +108,8 @@ public final class CardRegistry {
             "自分は2ダメージを受ける。敵1体に12ダメージを与える。",
             CardAction.of(
                 new SelfDamageActionEffect(2),
-                new DamageSingleEnemyActionEffect(12))));
+                new DamageSingleEnemyActionEffect(12)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "渾身の一刀",
@@ -108,7 +117,8 @@ public final class CardRegistry {
             "all_out_strike.jpg",
             "手札をすべて捨てる。敵1体に捨てた枚数×7ダメージを与える。",
             CardAction.of(
-                new AllOutStrikeActionEffect(7))));
+                new AllOutStrikeActionEffect(7)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "火事場の馬鹿力",
@@ -117,7 +127,8 @@ public final class CardRegistry {
             "自分は4ダメージを受ける。すべての敵に20ダメージを与える。",
             CardAction.of(
                 new SelfDamageActionEffect(4),
-                new DamageAllEnemiesActionEffect(20))));
+                new DamageAllEnemiesActionEffect(20)),
+            CardTargetType.ALL_ENEMIES));
 
         register(new CardRecipeModel(
             "牽制",
@@ -126,7 +137,8 @@ public final class CardRegistry {
             "敵1体に6ダメージを与える。山札からカードを1枚引く。",
             CardAction.of(
                 new DamageSingleEnemyActionEffect(6),
-                new DrawCardsActionEffect(1))));
+                new DrawCardsActionEffect(1)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "サルベージ",
@@ -135,7 +147,8 @@ public final class CardRegistry {
             "自分は7シールドを得る。山札からカードを1枚引く。",
             CardAction.of(
                 new AddShieldActionEffect(7),
-                new DrawCardsActionEffect(1))));
+                new DrawCardsActionEffect(1)),
+            CardTargetType.NONE));
 
         /*
         register(new CardRecipeModel(
@@ -153,7 +166,8 @@ public final class CardRegistry {
             "drain.jpg",
             "敵1体に6ダメージを与える。この攻撃で敵を倒した場合、自分のHPを2回復する。",
             CardAction.of(
-                new DrainActionEffect(6, 2))));
+                new DrainActionEffect(6, 2)),
+            CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
             "精神統一",
@@ -161,7 +175,8 @@ public final class CardRegistry {
             "meditation.jpg",
             "エナジーを1回復する。",
             CardAction.of(
-                new RestoreManaActionEffect(1))));
+                new RestoreManaActionEffect(1)),
+            CardTargetType.SELF));
 
         register(new CardRecipeModel(
             "威嚇",
@@ -170,7 +185,8 @@ public final class CardRegistry {
             "自分は12シールドを得る。すべての敵に弱体3ターンを与える。",
             CardAction.of(
                 new AddShieldActionEffect(12),
-                new ApplyWeaknessActionEffect(3))));
+                new ApplyWeaknessActionEffect(3)),
+            CardTargetType.ALL_ENEMIES));
     }
 
     /**
