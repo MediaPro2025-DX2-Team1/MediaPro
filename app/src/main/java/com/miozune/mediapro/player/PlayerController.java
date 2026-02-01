@@ -64,14 +64,14 @@ public class PlayerController {
 
         // HP操作ボタン
         JButton damageBtn = new JButton("-10 HP");
-        damageBtn.addActionListener(e -> model.takeDamage(10));
+        damageBtn.addActionListener(e -> model.receiveDamage(10));
 
         JButton healBtn = new JButton("+20 HP");
         healBtn.addActionListener(e -> model.heal(20));
 
         // マナ操作ボタン
         JButton addManaBtn = new JButton("+1 Mana");
-        addManaBtn.addActionListener(e -> model.addMana());
+        addManaBtn.addActionListener(e -> model.addMana(1));
 
         JButton consumeManaBtn = new JButton("-2 Mana");
         consumeManaBtn.addActionListener(e -> {

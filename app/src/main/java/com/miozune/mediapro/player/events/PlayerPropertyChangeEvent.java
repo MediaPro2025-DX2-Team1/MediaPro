@@ -7,7 +7,7 @@ import com.miozune.mediapro.player.PlayerModel;
  * sealed interfaceにより、許可されたイベントのみを定義できる。
  */
 public sealed interface PlayerPropertyChangeEvent
-    permits PlayerHpChangedEvent, PlayerManaChangedEvent, PlayerNameChangedEvent {
+    permits PlayerHpChangedEvent, PlayerManaChangedEvent, PlayerNameChangedEvent, PlayerStatusesChangedEvent {
 
     /**
      * イベントの発生源となるPlayerModelを取得する。

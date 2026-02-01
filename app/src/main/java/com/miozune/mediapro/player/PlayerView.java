@@ -3,9 +3,12 @@ package com.miozune.mediapro.player;
 import com.miozune.mediapro.actor.ActorStatusView;
 import com.miozune.mediapro.player.events.PlayerHpChangedEvent;
 import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
+import com.miozune.mediapro.player.events.PlayerStatusesChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.status.StatusListView;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Objects;
 import javax.swing.JPanel;
 
@@ -25,6 +28,7 @@ public class PlayerView extends JPanel implements Previewable {
 
     private final PlayerModel model;
     private final ActorStatusView statusView;
+    private final StatusListView statusListView;
     private PlayerModel.PropertyChangeListener modelListener;
 
     /**
@@ -43,9 +47,19 @@ public class PlayerView extends JPanel implements Previewable {
     public PlayerView(PlayerModel model) {
         this.model = Objects.requireNonNull(model);
         this.statusView = new ActorStatusView(STYLE);
+        this.statusListView = new StatusListView();
         setLayout(new BorderLayout());
         setOpaque(false);
+        setPreferredSize(new Dimension(420, 230));
+        setMinimumSize(new Dimension(420, 230));
+        setMaximumSize(new Dimension(420, 230));
+
+        JPanel bottom = new JPanel(new BorderLayout());
+        bottom.setOpaque(false);
+        bottom.add(statusListView, BorderLayout.EAST);
+
         add(statusView, BorderLayout.CENTER);
+        add(bottom, BorderLayout.SOUTH);
 
         setupModelListener();
         updateAllDisplays();
@@ -73,6 +87,7 @@ public class PlayerView extends JPanel implements Previewable {
             switch (event) {
                 case PlayerHpChangedEvent e -> statusView.updateHp(e.newHp(), model.getMaxHp());
                 case PlayerNameChangedEvent e -> statusView.updateName(e.newName());
+                case PlayerStatusesChangedEvent e -> statusListView.updateStatuses(e.effects());
                 default -> { }
             }
         };
@@ -86,6 +101,7 @@ public class PlayerView extends JPanel implements Previewable {
     private void updateAllDisplays() {
         statusView.updateName(model.getName());
         statusView.updateHp(model.getHp(), model.getMaxHp());
+        statusListView.updateStatuses(model.getStatusEffects());
     }
 
     /**
@@ -109,6 +125,9 @@ public class PlayerView extends JPanel implements Previewable {
     public void setupPreview() {
         model.setMaxHp(100);
         model.setHp(75);
+        model.addShield(12);
+        model.addStrength(3, 2);
+        model.addWeakness(2);
         updateAllDisplays();
     }
 }

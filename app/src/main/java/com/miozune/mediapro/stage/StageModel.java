@@ -1,9 +1,9 @@
 package com.miozune.mediapro.stage;
 
 import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
+import com.miozune.mediapro.effect.action.ActionContext;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
@@ -137,7 +137,8 @@ public class StageModel {
 
     // 自分ターンへの移行
     private void startPlayerTurn() {
-        player.addMana();
+        player.onTurnStartStatuses();
+        player.setMana(player.getMaxMana());
         drawToHand(1);
         // TODO: ターン開始時の効果をここに集約する
     }
@@ -149,13 +150,14 @@ public class StageModel {
     // 相手ターンへの移行
     private void startEnemyTurn() {
         for (EnemyModel enemy : enemies) {
+            enemy.onTurnStartStatuses();
             if (isBattleOver) {
                 return;
             }
             if (enemy.isDead()) {
                 continue;
             }
-            player.takeDamage(ENEMY_BASE_DAMAGE);
+            player.receiveDamage(ENEMY_BASE_DAMAGE);
             updateBattleState();
         }
     }
@@ -166,25 +168,23 @@ public class StageModel {
 
     /* カード使用処理 */
     public boolean playCard(CardModel card, EnemyModel target) {
-        if (card == null || target == null || isBattleOver || turn != Turn.PLAYER) {
+        if (card == null || isBattleOver || turn != Turn.PLAYER) {
             return false;
         }
         if (!hand.getCards().contains(card)) {
             return false;
         }
 
-        CardRecipeModel recipe = card.recipe();
-        if (!player.consumeMana(recipe.cost())) {
+        if (!player.consumeMana(card.cost())) {
             return false;
         }
 
-        switch (recipe.effectType()) {
-            case DAMAGE -> target.takeDamage(recipe.effectValue());
-            case HEAL -> player.heal(recipe.effectValue());
-            case NONE -> {
-                // 効果なしカード
-            }
+        if (card.action() == null) {
+            return false;
         }
+
+        ActionContext context = new ActionContext(this, player, enemies, target, drawpile, hand, discard, card);
+        card.action().execute(context);
 
         hand.removeCard(card);
         discard.addCard(card);
