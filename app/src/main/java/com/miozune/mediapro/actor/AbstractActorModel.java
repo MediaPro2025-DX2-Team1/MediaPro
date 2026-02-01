@@ -219,10 +219,8 @@ public abstract class AbstractActorModel<E> {
         for (StatusEffect status : statusEffects) {
             status.onTurnStart();
         }
-        boolean removed = statusEffects.removeIf(StatusEffect::isExpired);
-        if (removed || !statusEffects.isEmpty()) {
-            fireStatusesChanged();
-        }
+        statusEffects.removeIf(StatusEffect::isExpired);
+        fireStatusesChanged();
     }
 
     public int applyIncomingDamageModifiers(int baseDamage) {
@@ -230,6 +228,7 @@ public abstract class AbstractActorModel<E> {
         for (StatusEffect status : statusEffects) {
             result = status.onIncomingDamage(result);
         }
+        fireStatusesChanged();
         return Math.max(0, result);
     }
 
@@ -238,6 +237,7 @@ public abstract class AbstractActorModel<E> {
         for (StatusEffect status : statusEffects) {
             result = status.onOutgoingDamage(result);
         }
+        fireStatusesChanged();
         return Math.max(0, result);
     }
 
