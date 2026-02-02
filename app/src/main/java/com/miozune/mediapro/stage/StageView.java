@@ -178,19 +178,18 @@ public class StageView extends JPanel implements Previewable {
     private void updateLayerBounds() {
         int width = getWidth();
         int height = getHeight();
-        if (layeredPane != null) {
-            layeredPane.setBounds(0, 0, width, height);
-        }
-        if (mainContentPanel != null) {
-            mainContentPanel.setBounds(0, 0, width, height);
-        }
-        if (overlayLayer != null) {
-            overlayLayer.setBounds(0, 0, width, height);
-        }
+        layeredPane.setBounds(0, 0, width, height);
+        mainContentPanel.setBounds(0, 0, width, height);
+        overlayLayer.setBounds(0, 0, width, height);
         revalidate();
         repaint();
     }
 
+    @Override
+    public void doLayout() {
+        super.doLayout();
+        updateLayerBounds();
+    }
 
     public void setActors(PlayerModel player, List<EnemyModel> enemies) {
         if (playerListener != null && playerModel != null) {
@@ -437,7 +436,7 @@ public class StageView extends JPanel implements Previewable {
 
     /** 捨て札一覧をオーバーレイに表示 */
     public void showDiscardPile(List<CardModel> discardCards) {
-        CardListOverlay content = new CardListOverlay("捨て札一覧", discardCards, this::hideOverlay, this::showCardDetail);
+        CardListOverlay content = new CardListOverlay("捨札一覧", discardCards, this::hideOverlay, this::showCardDetail);
         overlayLayer.push(OverlayPanels.backdrop(content, this::hideOverlay));
     }
 
