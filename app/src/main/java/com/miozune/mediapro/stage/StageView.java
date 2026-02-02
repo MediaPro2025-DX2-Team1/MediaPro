@@ -181,8 +181,6 @@ public class StageView extends JPanel implements Previewable {
         layeredPane.setBounds(0, 0, width, height);
         mainContentPanel.setBounds(0, 0, width, height);
         overlayLayer.setBounds(0, 0, width, height);
-        revalidate();
-        repaint();
     }
 
     @Override
@@ -497,8 +495,6 @@ public class StageView extends JPanel implements Previewable {
     /** オーバーレイを1階層閉じる */
     public void hideOverlay() {
         overlayLayer.pop();
-        revalidate();
-        repaint();
     }
 
     /** 全てのオーバーレイをクリア */

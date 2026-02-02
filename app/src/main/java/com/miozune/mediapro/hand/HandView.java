@@ -15,11 +15,6 @@ import javax.swing.JPanel;
 
 public class HandView extends JPanel implements Previewable {
 
-    public interface HandActionListener {
-        void onCardLeftClick(CardModel card);
-        void onCardRightClick(CardModel card);
-    }
-
     // --- 定数定義 ---
     // ホバー時に浮き上がる距離（ピクセル）
     private static final int HOVER_OFFSET = 20;

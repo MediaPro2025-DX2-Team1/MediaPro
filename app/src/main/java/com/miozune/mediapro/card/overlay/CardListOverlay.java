@@ -8,7 +8,6 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.swing.*;
-import javax.swing.BorderFactory;
 
 public class CardListOverlay extends JPanel {
 

@@ -3,7 +3,6 @@ package com.miozune.mediapro.card;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.util.ImageLoader;
 import java.awt.*;
-import java.awt.BasicStroke;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
