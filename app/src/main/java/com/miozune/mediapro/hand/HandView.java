@@ -11,9 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class HandView extends JPanel implements Previewable {
 
@@ -34,10 +32,7 @@ public class HandView extends JPanel implements Previewable {
 
     // --- フィールド変数 ---
     private final HandModel model;
-    private JLayeredPane layeredPane;
-    private JPanel detailPanel;
     private JPanel cardListPanel;
-    private HandActionListener actionListener;
     private CardClickListener cardClickListener;
     private HandModel.PropertyChangeListener modelListener;
 
@@ -52,7 +47,6 @@ public class HandView extends JPanel implements Previewable {
     public HandView(HandModel model) {
         this.model = model;
         setupPanels();
-        createDetailPanel();
         setupModelListener();
         updateHand(model.getCards());
     }
@@ -63,65 +57,18 @@ public class HandView extends JPanel implements Previewable {
         setOpaque(false);
         setLayout(new BorderLayout());
 
-        // レイヤーペインの初期化
-        layeredPane = new JLayeredPane();
-        add(layeredPane, BorderLayout.CENTER);
-
         // カード一覧エリア
         cardListPanel = new JPanel(null);
         cardListPanel.setOpaque(false);
+        add(cardListPanel, BorderLayout.CENTER);
 
-        layeredPane.add(cardListPanel, JLayeredPane.DEFAULT_LAYER);
-
-        // リサイズ時にレイヤーサイズ調整とカード再配置を行う
+        // リサイズ時にカード再配置を行う
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                updateLayerBounds();
                 layoutCards();
             }
         });
-    }
-
-    // パネルサイズの同期
-    private void updateLayerBounds() {
-        Rectangle bounds = new Rectangle(0, 0, getWidth(), getHeight());
-        if (detailPanel != null) {
-            detailPanel.setBounds(bounds);
-        }
-        if (cardListPanel != null) {
-            cardListPanel.setBounds(bounds);
-        }
-        revalidate();
-        repaint();
-    }
-
-    // 拡大表示用のパネル作成
-    private void createDetailPanel() {
-        detailPanel = new JPanel(new GridBagLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(0, 0, 0, 120));
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.dispose();
-            }
-        };
-        detailPanel.setOpaque(false);
-
-        // 背景クリックで閉じる
-        detailPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                hideCardDetail();
-            }
-        });
-
-        detailPanel.setVisible(false);
-        detailPanel.setBounds(0, 0, 800, 260);
-        layeredPane.add(detailPanel, JLayeredPane.MODAL_LAYER);
     }
 
     // カード重ねるためのレイアウト調整
@@ -231,36 +178,7 @@ public class HandView extends JPanel implements Previewable {
         repaint();
     }
 
-    // --- 詳細表示メソッド ---
-    public void showCardDetail(CardModel cardModel) {
-        detailPanel.removeAll();
-        CardView bigCardView = new CardView(cardModel);
-        bigCardView.setPreferredSize(new Dimension(300, 420));
-
-        // 詳細カードクリック時はイベントを消費（背後のカードをクリックしないように）
-        bigCardView.addMouseListener(new MouseAdapter() {
-             @Override
-             public void mouseClicked(MouseEvent e) {
-                 e.consume();
-             }
-        });
-
-        detailPanel.add(bigCardView);
-        detailPanel.setVisible(true);
-        detailPanel.revalidate();
-        detailPanel.repaint();
-    }
-
-    public void hideCardDetail() {
-        detailPanel.setVisible(false);
-        detailPanel.removeAll();
-    }
-
     // --- リスナー設定 ---
-    public void setHandActionListener(HandActionListener listener) {
-        this.actionListener = listener;
-    }
-
     public void setCardClickListener(CardClickListener listener) {
         this.cardClickListener = listener;
     }
@@ -269,14 +187,6 @@ public class HandView extends JPanel implements Previewable {
         if (cardClickListener != null) {
             CardClickedEvent event = new CardClickedEvent(cardView.getCardModel(), ClickType.fromMouseEvent(e));
             cardClickListener.onCardClicked(event);
-            return;
-        }
-        if (actionListener == null) return;
-
-        if (SwingUtilities.isLeftMouseButton(e)) {
-            actionListener.onCardLeftClick(cardView.getCardModel());
-        } else if (SwingUtilities.isRightMouseButton(e)) {
-            actionListener.onCardRightClick(cardView.getCardModel());
         }
     }
 
@@ -301,21 +211,11 @@ public class HandView extends JPanel implements Previewable {
         HandModel previewModel = HandModel.createDefaultHand();
 
         // 2. プレビュー用のリスナーをセット
-        setHandActionListener(new HandActionListener() {
-            @Override
-            public void onCardLeftClick(CardModel card) {
-                System.out.println("[Preview] left clicked");
-            }
-
-            @Override
-            public void onCardRightClick(CardModel card) {
-                System.out.println("[Preview] right clicked");
-                showCardDetail(card);
-            }
+        setCardClickListener(event -> {
+            System.out.println("[Preview] Card clicked: " + event.clickType());
         });
 
         // 3. 画面更新
         updateHand(previewModel.getCards());
-        updateLayerBounds();
     }
 }

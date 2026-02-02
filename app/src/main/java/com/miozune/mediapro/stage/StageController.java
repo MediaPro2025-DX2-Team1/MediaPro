@@ -9,7 +9,6 @@ import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class StageController {
@@ -63,9 +62,13 @@ public class StageController {
 
     /* View のボタンやイベントを Model とつなぐ */
     private void connectUI() {
-        view.getDeckButton().addActionListener(e -> System.out.println("山札確認"));
+        view.getDeckButton().addActionListener(e -> {
+            view.showDrawPile(model.getDrawpile().getCards());
+        });
 
-        view.getDiscardButton().addActionListener(e -> System.out.println("捨札確認"));
+        view.getDiscardButton().addActionListener(e -> {
+            view.showDiscardPile(model.getDiscard().getCards());
+        });
 
         view.getEndTurnButton().addActionListener(e -> {
             targetingCard = null;
@@ -77,7 +80,13 @@ public class StageController {
 
     /* Model の情報を View に反映 */
     private void updateView() {
-        view.updateHand(model.getHand().getCards(), this::handleCardClick);
+        view.updateHand(model.getHand().getCards(), event -> {
+            if (event.isRightClick()) {
+                view.showCardDetail(event.card());
+                return;
+            }
+            handleCardClick(event);
+        });
     }
 
     private void handleEnemiesChanged(List<EnemyModel> enemies) {
@@ -90,13 +99,11 @@ public class StageController {
         view.getDeckButton().setEnabled(false);
         view.getDiscardButton().setEnabled(false);
         view.getEndTurnButton().setEnabled(false);
-        String message = playerWon ? "勝利しました" : "敗北しました";
         if (!playerWon) {
             model.getPlayer().resetAfterDefeat();
         }
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(view, message, "戦闘結果", JOptionPane.INFORMATION_MESSAGE);
-            gameModel.goToWorld();
+            view.showBattleResult(playerWon, () -> gameModel.goToWorld());
         });
     }
 
