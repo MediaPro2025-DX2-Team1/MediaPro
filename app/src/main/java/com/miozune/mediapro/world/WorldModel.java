@@ -1,5 +1,6 @@
 package com.miozune.mediapro.world;
 
+import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.stage.StageDefinition;
 import com.miozune.mediapro.stage.StageFactory;
@@ -49,7 +50,7 @@ public class WorldModel {
         return stageDefinitions.get(idx);
     }
 
-    public StageModel createStageFor(PlayerModel player, com.miozune.mediapro.deck.DeckModel deck, int stageIndex) {
+    public StageModel createStageFor(PlayerModel player, DeckModel deck, int stageIndex) {
         selectedStageDefinition = getDefinitionByIndex(stageIndex);
         currentStage = stageFactory.create(selectedStageDefinition, player, deck);
         return currentStage;

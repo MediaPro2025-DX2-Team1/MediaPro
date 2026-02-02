@@ -2,22 +2,13 @@ package com.miozune.mediapro.card.overlay;
 
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.function.Consumer;
+import javax.swing.*;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 
 public class CardListOverlay extends JPanel {
 
@@ -31,7 +22,7 @@ public class CardListOverlay extends JPanel {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 var g2 = g.create();
-                if (g2 instanceof java.awt.Graphics2D g2d) {
+                if (g2 instanceof Graphics2D g2d) {
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2d.setColor(new Color(30, 30, 30, 240));
                     g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);

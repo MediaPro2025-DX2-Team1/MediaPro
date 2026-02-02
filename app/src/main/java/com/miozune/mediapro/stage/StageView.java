@@ -343,7 +343,7 @@ public class StageView extends JPanel implements Previewable {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "cancelAction");
         actionMap.put("cancelAction", new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 // オーバーレイが表示されていて、ESCで閉じられる場合のみ閉じる
                 if (overlayLayer.isVisible() && overlayLayer.isTopCloseableByEsc()) {
                     hideOverlay();
