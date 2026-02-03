@@ -1,6 +1,8 @@
 package com.miozune.mediapro.world;
 
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.progress.ProgressModel;
+import com.miozune.mediapro.stage.StageFactory;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,15 +18,23 @@ import javax.swing.SwingConstants;
 
 public class WorldView extends JPanel implements Previewable {
 
+    private final WorldModel worldModel;
     private JButton stageButton1;
     private JButton stageButton2;
     private JButton stageButton3;
     private JButton deckListButton;
 
     public WorldView() {
+        this(WorldModel.createDefault(new StageFactory(), new ProgressModel()));
+    }
+
+    public WorldView(WorldModel worldModel) {
+        this.worldModel = worldModel;
         setupPanel();
         initComponents();
         layoutComponents();
+        setupModelListener();
+        updateStageButtons();
     }
 
     private void setupPanel() {
@@ -95,6 +105,48 @@ public class WorldView extends JPanel implements Previewable {
     public JButton getStageButton3() { return stageButton3; }
     public JButton getDeckListButton() { return deckListButton; }
 
+    public WorldModel getWorldModel() { return worldModel; }
+
+    /**
+     * Modelのリスナーをセットアップします。
+     */
+    private void setupModelListener() {
+        worldModel.getProgressModel().addPropertyChangeListener(event -> {
+            updateStageButtons();
+        });
+    }
+
+    /**
+     * ステージボタンの状態を更新します。
+     * アンロックされていないステージは無効化され、グレーアウト表示されます。
+     */
+    private void updateStageButtons() {
+        updateStageButton(stageButton1, "stage1");
+        updateStageButton(stageButton2, "stage2");
+        updateStageButton(stageButton3, "stage3");
+    }
+
+    /**
+     * 個別のステージボタンの状態を更新します。
+     *
+     * @param button ステージボタン
+     * @param stageId ステージID（例: "stage1"）
+     */
+    private void updateStageButton(JButton button, String stageId) {
+        boolean unlocked = worldModel.isStageUnlocked(stageId);
+        boolean cleared = worldModel.isStageCleared(stageId);
+
+        button.setEnabled(unlocked);
+
+        if (cleared) {
+            button.setBackground(new Color(144, 238, 144)); // ライトグリーン（クリア済み）
+        } else if (unlocked) {
+            button.setBackground(null); // デフォルト色（アンロック済み）
+        } else {
+            button.setBackground(new Color(180, 180, 180)); // グレー（ロック中）
+        }
+    }
+
     @Override
     public String getPreviewDescription() {
         return "ステージ選択画面のプレビュー";
@@ -102,6 +154,12 @@ public class WorldView extends JPanel implements Previewable {
 
     @Override
     public void setupPreview() {
+        // プレビュー用にstage2とstage3をアンロック、stage1をクリア済みに設定
+        worldModel.getProgressModel().clearStage("stage1");
+        worldModel.getProgressModel().unlockStage("stage2");
+        worldModel.getProgressModel().unlockStage("stage3");
+        updateStageButtons();
+
         stageButton1.addActionListener(e -> System.out.println("[Preview] Stage 1 clicked"));
         stageButton2.addActionListener(e -> System.out.println("[Preview] Stage 2 clicked"));
         stageButton3.addActionListener(e -> System.out.println("[Preview] Stage 3 clicked"));

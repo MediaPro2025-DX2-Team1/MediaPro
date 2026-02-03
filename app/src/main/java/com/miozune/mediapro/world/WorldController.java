@@ -15,14 +15,14 @@ public class WorldController {
         this.view = Objects.requireNonNull(view, "view");
         this.gameModel = Objects.requireNonNull(gameModel, "gameModel");
 
-        wireStageButton(view.getStageButton1(), 1);
-        wireStageButton(view.getStageButton2(), 2);
-        wireStageButton(view.getStageButton3(), 3);
+        wireStageButton(view.getStageButton1(), "stage1");
+        wireStageButton(view.getStageButton2(), "stage2");
+        wireStageButton(view.getStageButton3(), "stage3");
         view.getDeckListButton().addActionListener(e -> gameModel.goToDeckList());
     }
 
-    private void wireStageButton(JButton button, int stageNumber) {
-        button.addActionListener(e -> gameModel.startStage(stageNumber));
+    private void wireStageButton(JButton button, String stageId) {
+        button.addActionListener(e -> gameModel.startStage(stageId));
     }
 
     public WorldModel getModel() {

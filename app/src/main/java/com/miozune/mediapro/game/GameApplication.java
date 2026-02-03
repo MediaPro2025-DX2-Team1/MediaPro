@@ -49,8 +49,11 @@ public class GameApplication {
         this.layout = new CardLayout();
         this.root = new JPanel(layout);
 
+        // セーブデータをロード
+        model.loadProgress();
+
         this.titleView = new TitleView();
-        this.worldView = new WorldView();
+        this.worldView = new WorldView(model.getWorld());
         this.titleController = new TitleController(titleView, model);
         this.worldController = new WorldController(model.getWorld(), worldView, model);
 
