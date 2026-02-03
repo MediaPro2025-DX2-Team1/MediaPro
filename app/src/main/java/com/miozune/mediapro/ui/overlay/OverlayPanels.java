@@ -14,6 +14,7 @@ public final class OverlayPanels {
 
     /**
      * 半透明の背景を描画し、背景クリックで指定のハンドラを呼び出すパネルを生成する。
+     * 下層のUIへのマウスイベント通過を防ぐため、onBackgroundClickがnullでも常にMouseListenerを登録する。
      */
     public static JPanel backdrop(JComponent content, Runnable onBackgroundClick) {
         JPanel backdrop = new JPanel(new GridBagLayout()) {
@@ -25,16 +26,52 @@ public final class OverlayPanels {
             }
         };
         backdrop.setOpaque(false);
-        if (onBackgroundClick != null) {
-            backdrop.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (backdrop.getComponentAt(e.getPoint()) == backdrop) {
+
+        // マウスイベントを消費して下層への通過を防ぐ
+        backdrop.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (backdrop.getComponentAt(e.getPoint()) == backdrop) {
+                    if (onBackgroundClick != null) {
                         onBackgroundClick.run();
                     }
                 }
-            });
-        }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                e.consume();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                e.consume();
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                e.consume();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                e.consume();
+            }
+        });
+
+        // ホバーイベントも消費して完全にブロック
+        backdrop.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                e.consume();
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                e.consume();
+            }
+        });
+
         if (content != null) {
             backdrop.add(content);
         }
