@@ -10,8 +10,7 @@ import javax.swing.JPanel;
 
 public final class OverlayPanels {
 
-    private OverlayPanels() {
-    }
+    private OverlayPanels() {}
 
     /**
      * 半透明の背景を描画し、背景クリックで指定のハンドラを呼び出すパネルを生成する。
@@ -37,13 +36,6 @@ public final class OverlayPanels {
             });
         }
         if (content != null) {
-            // コンテンツ側でイベントを消費させて背景クリックと区別する
-            content.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    e.consume();
-                }
-            });
             backdrop.add(content);
         }
         return backdrop;
