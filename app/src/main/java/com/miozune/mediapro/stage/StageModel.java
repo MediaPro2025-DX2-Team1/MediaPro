@@ -167,9 +167,7 @@ public class StageModel {
         // TODO: ターン開始時の効果をここに集約する
     }
 
-    private void endPlayerTurn() {
-        // 2026-01 現仕様: ターン終了時に手札は捨て札へ送らない
-    }
+    private void endPlayerTurn() {}
 
     // 相手ターンへの移行
     private void startEnemyTurn() {

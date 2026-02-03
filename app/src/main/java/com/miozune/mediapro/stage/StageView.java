@@ -451,7 +451,7 @@ public class StageView extends JPanel implements Previewable {
         }));
     }
 
-    /** 捨て札一覧をオーバーレイに表示 */
+    /** 捨札一覧をオーバーレイに表示 */
     public void showDiscardPile(List<CardModel> discardCards) {
         CardListOverlay content = new CardListOverlay(
             "捨札一覧",
