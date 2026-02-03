@@ -12,6 +12,9 @@ import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.player.PlayerView;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.stage.events.BattleResultOkEvent;
+import com.miozune.mediapro.stage.events.OverlayClosedEvent;
+import com.miozune.mediapro.stage.events.OverlayEvent;
 import com.miozune.mediapro.ui.overlay.OverlayLayer;
 import com.miozune.mediapro.ui.overlay.OverlayPanels;
 import java.awt.*;
@@ -19,6 +22,7 @@ import java.awt.event.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.*;
 import javax.swing.border.Border;
 
@@ -56,6 +60,7 @@ public class StageView extends JPanel implements Previewable {
     private BackgroundClickListener backgroundClickListener;
     private PlayerModel playerModel;
     private PlayerModel.PropertyChangeListener playerListener;
+    private final List<OverlayListener> overlayListeners = new CopyOnWriteArrayList<>();
 
     public StageView() {
         setLayout(new BorderLayout());
@@ -428,18 +433,40 @@ public class StageView extends JPanel implements Previewable {
 
     /** 山札一覧をオーバーレイに表示 */
     public void showDrawPile(List<CardModel> drawPileCards) {
-        CardListOverlay content = new CardListOverlay("山札一覧", drawPileCards, this::hideOverlay, this::showCardDetail);
-        overlayLayer.push(OverlayPanels.backdrop(content, this::hideOverlay));
+        CardListOverlay content = new CardListOverlay(
+            "山札一覧",
+            drawPileCards,
+            () -> {
+                hideOverlay();
+                fireOverlayEvent(new OverlayClosedEvent());
+            },
+            this::showCardDetail
+        );
+        overlayLayer.push(OverlayPanels.backdrop(content, () -> {
+            hideOverlay();
+            fireOverlayEvent(new OverlayClosedEvent());
+        }));
     }
 
     /** 捨て札一覧をオーバーレイに表示 */
     public void showDiscardPile(List<CardModel> discardCards) {
-        CardListOverlay content = new CardListOverlay("捨札一覧", discardCards, this::hideOverlay, this::showCardDetail);
-        overlayLayer.push(OverlayPanels.backdrop(content, this::hideOverlay));
+        CardListOverlay content = new CardListOverlay(
+            "捨札一覧",
+            discardCards,
+            () -> {
+                hideOverlay();
+                fireOverlayEvent(new OverlayClosedEvent());
+            },
+            this::showCardDetail
+        );
+        overlayLayer.push(OverlayPanels.backdrop(content, () -> {
+            hideOverlay();
+            fireOverlayEvent(new OverlayClosedEvent());
+        }));
     }
 
     /** 勝敗結果をオーバーレイに表示 */
-    public void showBattleResult(boolean isVictory, Runnable onClose) {
+    public void showBattleResult(boolean isVictory) {
         clearAllOverlays();
 
         JPanel resultPanel = new JPanel(new BorderLayout()) {
@@ -471,9 +498,7 @@ public class StageView extends JPanel implements Previewable {
         okButton.setPreferredSize(new Dimension(120, 40));
         okButton.addActionListener(e -> {
             hideOverlay();
-            if (onClose != null) {
-                onClose.run();
-            }
+            fireOverlayEvent(new BattleResultOkEvent(isVictory));
         });
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setOpaque(false);
@@ -540,5 +565,31 @@ public class StageView extends JPanel implements Previewable {
 
     public interface BackgroundClickListener {
         void onBackgroundClicked();
+    }
+
+    /** オーバーレイイベントのリスナーインターフェース */
+    @FunctionalInterface
+    public interface OverlayListener {
+        void onOverlayEvent(OverlayEvent event);
+    }
+
+    /** オーバーレイリスナーを追加 */
+    public void addOverlayListener(OverlayListener listener) {
+        if (listener != null) {
+            overlayListeners.add(listener);
+        }
+    }
+
+    /** オーバーレイリスナーを削除 */
+    public void removeOverlayListener(OverlayListener listener) {
+        overlayListeners.remove(listener);
+    }
+
+    /** オーバーレイイベントを発行 */
+    private void fireOverlayEvent(OverlayEvent event) {
+        if (event == null) return;
+        for (OverlayListener listener : overlayListeners) {
+            listener.onOverlayEvent(event);
+        }
     }
 }

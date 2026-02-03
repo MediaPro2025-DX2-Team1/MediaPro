@@ -6,6 +6,8 @@ import com.miozune.mediapro.card.events.CardClickedEvent;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
+import com.miozune.mediapro.stage.events.BattleResultOkEvent;
+import com.miozune.mediapro.stage.events.OverlayEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +43,9 @@ public class StageController {
         view.setActors(model.getPlayer(), model.getEnemies());
         view.setEnemyClickListener(this::handleEnemyClick);
         view.setBackgroundClickListener(this::handleBackgroundCancel);
+
+        // オーバーレイイベントリスナー登録
+        view.addOverlayListener(this::handleOverlayEvent);
 
         connectUI();
         updateView();
@@ -95,11 +100,15 @@ public class StageController {
         if (!playerWon) {
             model.getPlayer().resetAfterDefeat();
         }
-        view.showBattleResult(playerWon, this::onBattleResultOk);
+        view.showBattleResult(playerWon);
     }
 
-    private void onBattleResultOk() {
-        gameModel.goToWorld();
+    /* オーバーレイイベントのハンドラ */
+    private void handleOverlayEvent(OverlayEvent event) {
+        if (event instanceof BattleResultOkEvent) {
+            gameModel.goToWorld();
+        }
+        // 他のイベントは特に処理不要
     }
 
     private void handleCardClick(CardClickedEvent event) {
