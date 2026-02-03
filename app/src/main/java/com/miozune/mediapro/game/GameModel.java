@@ -7,6 +7,7 @@ import com.miozune.mediapro.game.events.GameSceneChangedEvent;
 import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.progress.ProgressModel;
 import com.miozune.mediapro.save.SaveManager;
+import com.miozune.mediapro.stage.StageDefinition;
 import com.miozune.mediapro.stage.StageFactory;
 import com.miozune.mediapro.stage.StageModel;
 import com.miozune.mediapro.stage.events.BattleEndedEvent;
@@ -116,15 +117,21 @@ public class GameModel {
         setScene(GameScene.DECK_EDIT);
     }
 
-    public StageModel startStage(int stageIndex) {
+    /**
+     * ステージIDを指定してステージを開始します。
+     *
+     * @param stageId ステージID（例: "stage1"）
+     * @return 作成されたステージ
+     */
+    public StageModel startStage(String stageId) {
         deckListModel.ensureActiveDeck();
-        StageModel stage = world.createStageFor(player, deckListModel.getActiveDeck(), stageIndex);
+        StageModel stage = world.createStageFor(player, deckListModel.getActiveDeck(), stageId);
 
         // バトル終了イベントをリッスンして進行状況を保存
         stage.addPropertyChangeListener(event -> {
             if (event instanceof BattleEndedEvent battleEvent) {
                 if (battleEvent.playerWon()) {
-                    onStageCleared(stageIndex);
+                    onStageCleared(stageId);
                 }
             }
         });
@@ -137,16 +144,16 @@ public class GameModel {
      * ステージクリア時の処理。
      * 進行状況を更新し、セーブファイルに保存します。
      *
-     * @param stageIndex クリアしたステージのインデックス（1-based）
+     * @param stageId クリアしたステージID
      */
-    private void onStageCleared(int stageIndex) {
-        String stageId = "stage" + stageIndex;
-        progressModel.clearStage(stageId);
+    private void onStageCleared(String stageId) {
+        StageDefinition stageDefinition = world.getDefinitionById(stageId);
+        progressModel.clearStage(stageDefinition);
 
         // セーブファイルに保存
         try {
             saveManager.save(progressModel);
-            System.out.println("進行状況を保存しました: " + stageId + " クリア");
+            System.out.println("進行状況を保存しました: " + stageDefinition.id() + " クリア");
         } catch (IOException e) {
             System.err.println("進行状況の保存に失敗しました: " + e.getMessage());
         }

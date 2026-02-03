@@ -121,20 +121,20 @@ public class WorldView extends JPanel implements Previewable {
      * アンロックされていないステージは無効化され、グレーアウト表示されます。
      */
     private void updateStageButtons() {
-        updateStageButton(stageButton1, 1);
-        updateStageButton(stageButton2, 2);
-        updateStageButton(stageButton3, 3);
+        updateStageButton(stageButton1, "stage1");
+        updateStageButton(stageButton2, "stage2");
+        updateStageButton(stageButton3, "stage3");
     }
 
     /**
      * 個別のステージボタンの状態を更新します。
      *
      * @param button ステージボタン
-     * @param stageIndex ステージのインデックス（1-based）
+     * @param stageId ステージID（例: "stage1"）
      */
-    private void updateStageButton(JButton button, int stageIndex) {
-        boolean unlocked = worldModel.isStageUnlocked(stageIndex);
-        boolean cleared = worldModel.isStageCleared(stageIndex);
+    private void updateStageButton(JButton button, String stageId) {
+        boolean unlocked = worldModel.isStageUnlocked(stageId);
+        boolean cleared = worldModel.isStageCleared(stageId);
 
         button.setEnabled(unlocked);
 

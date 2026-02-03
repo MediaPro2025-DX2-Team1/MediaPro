@@ -3,6 +3,7 @@ package com.miozune.mediapro.progress;
 import com.miozune.mediapro.progress.events.ProgressPropertyChangeEvent;
 import com.miozune.mediapro.progress.events.StageClearedEvent;
 import com.miozune.mediapro.progress.events.StageUnlockedEvent;
+import com.miozune.mediapro.stage.StageDefinition;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,39 +120,29 @@ public class ProgressModel {
         boolean alreadyCleared = clearedStages.contains(stageId);
         clearedStages.add(stageId);
         fireEvent(new StageClearedEvent(this, stageId, alreadyCleared));
-
-        // 次のステージをアンロック
-        unlockNextStage(stageId);
     }
 
     /**
-     * 指定されたステージの次のステージをアンロックします。
+     * ステージをクリア済みとしてマークし、次のステージをアンロックします。
+     * StageDefinitionの情報を使用して次のステージを自動的にアンロックします。
+     * すでにクリア済みの場合は、アンロック処理のみ実行します。
      *
-     * @param currentStageId 現在のステージID
+     * @param stageDefinition クリアしたステージの定義
      */
-    private void unlockNextStage(String currentStageId) {
-        // stage1 → stage2、stage2 → stage3のようにアンロック
-        String nextStageId = getNextStageId(currentStageId);
+    public void clearStage(StageDefinition stageDefinition) {
+        String stageId = stageDefinition.id();
+        boolean alreadyCleared = clearedStages.contains(stageId);
+        clearedStages.add(stageId);
+        fireEvent(new StageClearedEvent(this, stageId, alreadyCleared));
+
+        // 次のステージをアンロック
+        String nextStageId = stageDefinition.nextStageId();
         if (nextStageId != null) {
             unlockStage(nextStageId);
         }
     }
 
-    /**
-     * 次のステージIDを取得します。
-     *
-     * @param currentStageId 現在のステージID
-     * @return 次のステージID、存在しない場合はnull
-     */
-    private String getNextStageId(String currentStageId) {
-        // "stage1" → "stage2"、"stage2" → "stage3"
-        if (currentStageId.equals("stage1")) {
-            return "stage2";
-        } else if (currentStageId.equals("stage2")) {
-            return "stage3";
-        }
-        return null;
-    }
+
 
     /**
      * ステージをアンロックします。
