@@ -9,7 +9,6 @@ import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.SwingUtilities;
 
 public class StageController {
 
@@ -96,9 +95,11 @@ public class StageController {
         if (!playerWon) {
             model.getPlayer().resetAfterDefeat();
         }
-        SwingUtilities.invokeLater(() -> {
-            view.showBattleResult(playerWon, () -> gameModel.goToWorld());
-        });
+        view.showBattleResult(playerWon, this::onBattleResultOk);
+    }
+
+    private void onBattleResultOk() {
+        gameModel.goToWorld();
     }
 
     private void handleCardClick(CardClickedEvent event) {
