@@ -2,13 +2,7 @@ package com.miozune.mediapro.card;
 
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.util.ImageLoader;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
@@ -148,7 +142,7 @@ public class CardView extends JPanel implements Previewable {
         // カード枠線
         g2d.setColor(CARD_BORDER);
         int borderWidth = Math.max(1, (int) (BORDER_WIDTH * width / (double) DEFAULT_WIDTH));
-        g2d.setStroke(new java.awt.BasicStroke(borderWidth));
+        g2d.setStroke(new BasicStroke(borderWidth));
         g2d.drawRoundRect(x, y, width - 1, height - 1, cornerRadius, cornerRadius);
 
         // 内部のパディング
@@ -306,7 +300,7 @@ public class CardView extends JPanel implements Previewable {
 
         // コスト枠線
         g2d.setColor(Color.WHITE);
-        g2d.setStroke(new java.awt.BasicStroke(Math.max(1, size / 15)));
+        g2d.setStroke(new BasicStroke(Math.max(1, size / 15)));
         g2d.drawOval(x, y, size, size);
 
         // コスト数値

@@ -12,5 +12,8 @@ build
 .project
 .settings/
 
+# Ignore IntelliJ IDEA project files
+.idea/
+
 # Others
 .DS_Store

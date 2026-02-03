@@ -6,11 +6,11 @@ import com.miozune.mediapro.card.events.CardClickedEvent;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
+import com.miozune.mediapro.stage.events.BattleResultOkEvent;
+import com.miozune.mediapro.stage.events.OverlayEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 public class StageController {
 
@@ -44,6 +44,9 @@ public class StageController {
         view.setEnemyClickListener(this::handleEnemyClick);
         view.setBackgroundClickListener(this::handleBackgroundCancel);
 
+        // オーバーレイイベントリスナー登録
+        view.addOverlayListener(this::handleOverlayEvent);
+
         connectUI();
         updateView();
     }
@@ -63,9 +66,13 @@ public class StageController {
 
     /* View のボタンやイベントを Model とつなぐ */
     private void connectUI() {
-        view.getDeckButton().addActionListener(e -> System.out.println("山札確認"));
+        view.getDeckButton().addActionListener(e -> {
+            view.showDrawPile(model.getDrawpile().getCards());
+        });
 
-        view.getDiscardButton().addActionListener(e -> System.out.println("捨札確認"));
+        view.getDiscardButton().addActionListener(e -> {
+            view.showDiscardPile(model.getDiscard().getCards());
+        });
 
         view.getEndTurnButton().addActionListener(e -> {
             targetingCard = null;
@@ -90,17 +97,26 @@ public class StageController {
         view.getDeckButton().setEnabled(false);
         view.getDiscardButton().setEnabled(false);
         view.getEndTurnButton().setEnabled(false);
-        String message = playerWon ? "勝利しました" : "敗北しました";
         if (!playerWon) {
             model.getPlayer().resetAfterDefeat();
         }
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(view, message, "戦闘結果", JOptionPane.INFORMATION_MESSAGE);
+        view.showBattleResult(playerWon);
+    }
+
+    /* オーバーレイイベントのハンドラ */
+    private void handleOverlayEvent(OverlayEvent event) {
+        if (event instanceof BattleResultOkEvent) {
             gameModel.goToWorld();
-        });
+        }
+        // 他のイベントは特に処理不要
     }
 
     private void handleCardClick(CardClickedEvent event) {
+        if (event.isRightClick()) {
+            view.showCardDetail(event.card());
+            return;
+        }
+
         if (!event.isLeftClick()) {
             return;
         }

@@ -3,7 +3,8 @@ package com.miozune.mediapro.stage;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.card.events.CardClickListener;
-import com.miozune.mediapro.card.events.ClickType;
+import com.miozune.mediapro.card.overlay.CardDetailOverlay;
+import com.miozune.mediapro.card.overlay.CardListOverlay;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.enemy.EnemyView;
 import com.miozune.mediapro.hand.HandView;
@@ -11,11 +12,17 @@ import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.player.PlayerView;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.stage.events.BattleResultOkEvent;
+import com.miozune.mediapro.stage.events.OverlayClosedEvent;
+import com.miozune.mediapro.stage.events.OverlayEvent;
+import com.miozune.mediapro.ui.overlay.OverlayLayer;
+import com.miozune.mediapro.ui.overlay.OverlayPanels;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.*;
 import javax.swing.border.Border;
 
@@ -23,6 +30,10 @@ public class StageView extends JPanel implements Previewable {
 
     private static final int HAND_MIN_HEIGHT = CardView.DEFAULT_HEIGHT + 20;
     private static final int SELECTION_BANNER_HEIGHT = 36;
+
+    private final JLayeredPane layeredPane;
+    private final JPanel mainContentPanel;
+    private final OverlayLayer overlayLayer;
 
     private final JPanel topPanel;
     private final JPanel bottomPanel;
@@ -49,12 +60,32 @@ public class StageView extends JPanel implements Previewable {
     private BackgroundClickListener backgroundClickListener;
     private PlayerModel playerModel;
     private PlayerModel.PropertyChangeListener playerListener;
+    private final List<OverlayListener> overlayListeners = new CopyOnWriteArrayList<>();
 
     public StageView() {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(1000, 700));
         setBackground(new Color(30, 30, 30));
-        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+        // JLayeredPaneの初期化
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(1000, 700));
+        add(layeredPane, BorderLayout.CENTER);
+
+        // メインコンテンツパネル
+        mainContentPanel = new JPanel(new BorderLayout());
+        mainContentPanel.setOpaque(false);
+        mainContentPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+        overlayLayer = new OverlayLayer();
+
+        // リサイズ時のレイヤー更新
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateLayerBounds();
+            }
+        });
 
         /* --- 上部：戦闘画面エリア --- */
         topPanel = new JPanel(new BorderLayout());
@@ -138,12 +169,30 @@ public class StageView extends JPanel implements Previewable {
         bottomPanel.add(handContainer, BorderLayout.CENTER);
         bottomPanel.add(actionPanel, BorderLayout.EAST);
 
-        add(topPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        mainContentPanel.add(topPanel, BorderLayout.CENTER);
+        mainContentPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // レイヤー構造の構築
+        layeredPane.add(mainContentPanel, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(overlayLayer, JLayeredPane.PALETTE_LAYER);
 
         setupKeyBindings();
     }
 
+    /** レイヤーのサイズを親に合わせて更新 */
+    private void updateLayerBounds() {
+        int width = getWidth();
+        int height = getHeight();
+        layeredPane.setBounds(0, 0, width, height);
+        mainContentPanel.setBounds(0, 0, width, height);
+        overlayLayer.setBounds(0, 0, width, height);
+    }
+
+    @Override
+    public void doLayout() {
+        super.doLayout();
+        updateLayerBounds();
+    }
 
     public void setActors(PlayerModel player, List<EnemyModel> enemies) {
         if (playerListener != null && playerModel != null) {
@@ -293,10 +342,16 @@ public class StageView extends JPanel implements Previewable {
     private void setupKeyBindings() {
         setFocusable(true);
         ActionMap actionMap = getActionMap();
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "cancelTarget");
-        actionMap.put("cancelTarget", new AbstractAction() {
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "cancelAction");
+        actionMap.put("cancelAction", new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
+                // オーバーレイが表示されていて、ESCで閉じられる場合のみ閉じる
+                if (overlayLayer.isVisible() && overlayLayer.isTopCloseableByEsc()) {
+                    hideOverlay();
+                    return;
+                }
+                // ターゲット選択中ならキャンセル
                 if (selectingTarget && backgroundClickListener != null) {
                     backgroundClickListener.onBackgroundClicked();
                 }
@@ -366,18 +421,106 @@ public class StageView extends JPanel implements Previewable {
     }
 
     public void updateHand(List<CardModel> cards, CardClickListener clickListener) {
-        CardClickListener bridgeListener = null;
-        if (clickListener != null) {
-            bridgeListener = event -> {
-                if (event.clickType() == ClickType.RIGHT) {
-                    handView.showCardDetail(event.card());
-                    return;
-                }
-                clickListener.onCardClicked(event);
-            };
-        }
-        handView.setCardClickListener(bridgeListener);
+        handView.setCardClickListener(clickListener);
         handView.updateHand(cards);
+    }
+
+    /** カードの拡大表示をオーバーレイに表示 */
+    public void showCardDetail(CardModel card) {
+        CardDetailOverlay content = new CardDetailOverlay(card);
+        overlayLayer.push(OverlayPanels.backdrop(content, () -> {
+            hideOverlay();
+            fireOverlayEvent(new OverlayClosedEvent());
+        }));
+    }
+
+    /** カードリストをオーバーレイに表示 */
+    private void showCardList(String title, List<CardModel> cards) {
+        CardListOverlay content = new CardListOverlay(
+            title,
+            cards,
+            () -> {
+                hideOverlay();
+                fireOverlayEvent(new OverlayClosedEvent());
+            },
+            this::showCardDetail
+        );
+        overlayLayer.push(OverlayPanels.backdrop(content, () -> {
+            hideOverlay();
+            fireOverlayEvent(new OverlayClosedEvent());
+        }));
+    }
+
+    /** 山札一覧をオーバーレイに表示 */
+    public void showDrawPile(List<CardModel> drawPileCards) {
+        showCardList("山札一覧", drawPileCards);
+    }
+
+    /** 捨札一覧をオーバーレイに表示 */
+    public void showDiscardPile(List<CardModel> discardCards) {
+        showCardList("捨札一覧", discardCards);
+    }
+
+    /** 勝敗結果をオーバーレイに表示 */
+    public void showBattleResult(boolean isVictory) {
+        clearAllOverlays();
+
+        JPanel resultPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Color bgColor = isVictory ? new Color(30, 60, 30, 240) : new Color(60, 30, 30, 240);
+                g2.setColor(bgColor);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.dispose();
+            }
+        };
+        resultPanel.setOpaque(false);
+        resultPanel.setPreferredSize(new Dimension(400, 200));
+        resultPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+        // 結果メッセージ
+        String message = isVictory ? "勝利しました！" : "敗北しました...";
+        JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
+        messageLabel.setFont(new Font("Meiryo", Font.BOLD, 32));
+        messageLabel.setForeground(Color.WHITE);
+        resultPanel.add(messageLabel, BorderLayout.CENTER);
+
+        // OKボタン
+        JButton okButton = new JButton("OK");
+        okButton.setFont(new Font("Meiryo", Font.BOLD, 18));
+        okButton.setPreferredSize(new Dimension(120, 40));
+        okButton.addActionListener(e -> {
+            hideOverlay();
+            fireOverlayEvent(new BattleResultOkEvent(isVictory));
+        });
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(okButton);
+        resultPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // イベント消費
+        resultPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                e.consume();
+            }
+        });
+
+        overlayLayer.push(OverlayPanels.backdrop(resultPanel, null), false);
+        requestFocusInWindow();
+    }
+
+    /** オーバーレイを1階層閉じる */
+    public void hideOverlay() {
+        overlayLayer.pop();
+    }
+
+    /** 全てのオーバーレイをクリア */
+    private void clearAllOverlays() {
+        overlayLayer.clearAll();
     }
 
     /* Previewableインターフェースの実装 */
@@ -418,5 +561,31 @@ public class StageView extends JPanel implements Previewable {
 
     public interface BackgroundClickListener {
         void onBackgroundClicked();
+    }
+
+    /** オーバーレイイベントのリスナーインターフェース */
+    @FunctionalInterface
+    public interface OverlayListener {
+        void onOverlayEvent(OverlayEvent event);
+    }
+
+    /** オーバーレイリスナーを追加 */
+    public void addOverlayListener(OverlayListener listener) {
+        if (listener != null) {
+            overlayListeners.add(listener);
+        }
+    }
+
+    /** オーバーレイリスナーを削除 */
+    public void removeOverlayListener(OverlayListener listener) {
+        overlayListeners.remove(listener);
+    }
+
+    /** オーバーレイイベントを発行 */
+    private void fireOverlayEvent(OverlayEvent event) {
+        if (event == null) return;
+        for (OverlayListener listener : overlayListeners) {
+            listener.onOverlayEvent(event);
+        }
     }
 }
