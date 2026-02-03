@@ -80,13 +80,7 @@ public class StageController {
 
     /* Model の情報を View に反映 */
     private void updateView() {
-        view.updateHand(model.getHand().getCards(), event -> {
-            if (event.isRightClick()) {
-                view.showCardDetail(event.card());
-                return;
-            }
-            handleCardClick(event);
-        });
+        view.updateHand(model.getHand().getCards(), this::handleCardClick);
     }
 
     private void handleEnemiesChanged(List<EnemyModel> enemies) {
@@ -108,6 +102,11 @@ public class StageController {
     }
 
     private void handleCardClick(CardClickedEvent event) {
+        if (event.isRightClick()) {
+            view.showCardDetail(event.card());
+            return;
+        }
+
         if (!event.isLeftClick()) {
             return;
         }
