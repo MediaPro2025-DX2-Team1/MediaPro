@@ -2,6 +2,7 @@ package com.miozune.mediapro.card.overlay;
 
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.events.ClickType;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -57,7 +58,7 @@ public class CardListOverlay extends JPanel {
                 cardView.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON3 && onDetail != null) {
+                        if (ClickType.fromMouseEvent(e) == ClickType.RIGHT && onDetail != null) {
                             onDetail.accept(card);
                         }
                     }
