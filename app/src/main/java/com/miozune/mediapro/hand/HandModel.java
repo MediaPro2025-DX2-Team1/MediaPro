@@ -40,20 +40,25 @@ public class HandModel {
 
     // カード操作メソッド
     public List<CardModel> getCards() {
-        return this.cards;
+        return List.copyOf(cards);
     }
 
     public void addCard(CardModel card) {
-        List<CardModel> oldcards = new ArrayList<>(this.cards);
-        this.cards.add(card);
-        fireEvent(new HandCardChangedEvent(this, oldcards, new ArrayList<>(this.cards)));
-
+        if (card == null) {
+            return;
+        }
+        List<CardModel> oldcards = List.copyOf(cards);
+        cards.add(card);
+        fireEvent(new HandCardChangedEvent(this, oldcards, List.copyOf(cards)));
     }
 
     public void removeCard(CardModel card) {
-        List<CardModel> oldcards = new ArrayList<>(this.cards);
-        this.cards.remove(card);
-        fireEvent(new HandCardChangedEvent(this, oldcards, new ArrayList<>(this.cards)));
+        if (card == null) {
+            return;
+        }
+        List<CardModel> oldcards = List.copyOf(cards);
+        cards.remove(card);
+        fireEvent(new HandCardChangedEvent(this, oldcards, List.copyOf(cards)));
     }
 
     public static HandModel createDefaultHand() {

@@ -40,19 +40,25 @@ public class DiscardModel {
 
     // カード操作メソッド
     public List<CardModel> getCards() {
-        return this.cards;
+        return List.copyOf(cards);
     }
 
     public void addCard(CardModel card) {
-        List<CardModel> oldCards = new ArrayList<>(this.cards);
-        this.cards.add(card);
-        fireEvent(new DiscardCardChangedEvent(this, oldCards, new ArrayList<>(this.cards)));
+        if (card == null) {
+            return;
+        }
+        List<CardModel> oldCards = List.copyOf(cards);
+        cards.add(card);
+        fireEvent(new DiscardCardChangedEvent(this, oldCards, List.copyOf(cards)));
     }
 
     public void removeCard(CardModel card) {
-        List<CardModel> oldCards = new ArrayList<>(this.cards);
-        this.cards.remove(card);
-        fireEvent(new DiscardCardChangedEvent(this, oldCards, new ArrayList<>(this.cards)));
+        if (card == null) {
+            return;
+        }
+        List<CardModel> oldCards = List.copyOf(cards);
+        cards.remove(card);
+        fireEvent(new DiscardCardChangedEvent(this, oldCards, List.copyOf(cards)));
     }
 
     public static DiscardModel createDefaultDiscard() {
