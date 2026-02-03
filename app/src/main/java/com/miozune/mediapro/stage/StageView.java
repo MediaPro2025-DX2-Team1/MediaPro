@@ -434,11 +434,11 @@ public class StageView extends JPanel implements Previewable {
         }));
     }
 
-    /** 山札一覧をオーバーレイに表示 */
-    public void showDrawPile(List<CardModel> drawPileCards) {
+    /** カードリストをオーバーレイに表示 */
+    private void showCardList(String title, List<CardModel> cards) {
         CardListOverlay content = new CardListOverlay(
-            "山札一覧",
-            drawPileCards,
+            title,
+            cards,
             () -> {
                 hideOverlay();
                 fireOverlayEvent(new OverlayClosedEvent());
@@ -451,21 +451,14 @@ public class StageView extends JPanel implements Previewable {
         }));
     }
 
+    /** 山札一覧をオーバーレイに表示 */
+    public void showDrawPile(List<CardModel> drawPileCards) {
+        showCardList("山札一覧", drawPileCards);
+    }
+
     /** 捨札一覧をオーバーレイに表示 */
     public void showDiscardPile(List<CardModel> discardCards) {
-        CardListOverlay content = new CardListOverlay(
-            "捨札一覧",
-            discardCards,
-            () -> {
-                hideOverlay();
-                fireOverlayEvent(new OverlayClosedEvent());
-            },
-            this::showCardDetail
-        );
-        overlayLayer.push(OverlayPanels.backdrop(content, () -> {
-            hideOverlay();
-            fireOverlayEvent(new OverlayClosedEvent());
-        }));
+        showCardList("捨札一覧", discardCards);
     }
 
     /** 勝敗結果をオーバーレイに表示 */
