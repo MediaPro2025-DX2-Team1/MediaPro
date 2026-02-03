@@ -124,6 +124,10 @@ public class GameModel {
      * @return 作成されたステージ
      */
     public StageModel startStage(String stageId) {
+        if (!progressModel.isUnlocked(stageId)) {
+            throw new IllegalStateException("Stage is locked: " + stageId);
+        }
+
         deckListModel.ensureActiveDeck();
         StageModel stage = world.createStageFor(player, deckListModel.getActiveDeck(), stageId);
 

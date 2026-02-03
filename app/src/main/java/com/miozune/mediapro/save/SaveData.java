@@ -35,7 +35,7 @@ public class SaveData {
      * @return クリア済みステージのIDセット
      */
     public Set<String> getClearedStages() {
-        return clearedStages;
+        return Set.copyOf(clearedStages);
     }
 
     /**
@@ -53,7 +53,7 @@ public class SaveData {
      * @return アンロック済みステージのIDセット
      */
     public Set<String> getUnlockedStages() {
-        return unlockedStages;
+        return Set.copyOf(unlockedStages);
     }
 
     /**
