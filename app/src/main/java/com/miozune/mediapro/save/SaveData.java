@@ -25,8 +25,8 @@ public class SaveData {
      * @param unlockedStages アンロック済みステージのIDセット
      */
     public SaveData(Set<String> clearedStages, Set<String> unlockedStages) {
-        this.clearedStages = new HashSet<>(clearedStages);
-        this.unlockedStages = new HashSet<>(unlockedStages);
+        this.clearedStages = clearedStages != null ? new HashSet<>(clearedStages) : new HashSet<>();
+        this.unlockedStages = unlockedStages != null ? new HashSet<>(unlockedStages) : new HashSet<>();
     }
 
     /**
