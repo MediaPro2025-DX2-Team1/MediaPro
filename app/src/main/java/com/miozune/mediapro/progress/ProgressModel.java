@@ -3,7 +3,6 @@ package com.miozune.mediapro.progress;
 import com.miozune.mediapro.progress.events.ProgressPropertyChangeEvent;
 import com.miozune.mediapro.progress.events.StageClearedEvent;
 import com.miozune.mediapro.progress.events.StageUnlockedEvent;
-import com.miozune.mediapro.stage.StageDefinition;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,8 +110,8 @@ public class ProgressModel {
     }
 
     /**
-     * ステージをクリア済みとしてマークし、次のステージをアンロックします。
-     * すでにクリア済みの場合は、アンロック処理のみ実行します。
+     * ステージをクリア済みとしてマークします。
+     * 次のステージのアンロックは行いません。アンロック処理は呼び出し側で行ってください。
      *
      * @param stageId クリアしたステージのID
      */
@@ -121,28 +120,6 @@ public class ProgressModel {
         clearedStages.add(stageId);
         fireEvent(new StageClearedEvent(this, stageId, alreadyCleared));
     }
-
-    /**
-     * ステージをクリア済みとしてマークし、次のステージをアンロックします。
-     * StageDefinitionの情報を使用して次のステージを自動的にアンロックします。
-     * すでにクリア済みの場合は、アンロック処理のみ実行します。
-     *
-     * @param stageDefinition クリアしたステージの定義
-     */
-    public void clearStage(StageDefinition stageDefinition) {
-        String stageId = stageDefinition.id();
-        boolean alreadyCleared = clearedStages.contains(stageId);
-        clearedStages.add(stageId);
-        fireEvent(new StageClearedEvent(this, stageId, alreadyCleared));
-
-        // 次のステージをアンロック
-        String nextStageId = stageDefinition.nextStageId();
-        if (nextStageId != null) {
-            unlockStage(nextStageId);
-        }
-    }
-
-
 
     /**
      * ステージをアンロックします。

@@ -142,13 +142,21 @@ public class GameModel {
 
     /**
      * ステージクリア時の処理。
-     * 進行状況を更新し、セーブファイルに保存します。
+     * 進行状況を更新し、次のステージをアンロックし、セーブファイルに保存します。
      *
      * @param stageId クリアしたステージID
      */
     private void onStageCleared(String stageId) {
         StageDefinition stageDefinition = world.getDefinitionById(stageId);
-        progressModel.clearStage(stageDefinition);
+
+        // ステージをクリア済みとしてマーク
+        progressModel.clearStage(stageId);
+
+        // 次のステージをアンロック
+        String nextStageId = stageDefinition.nextStageId();
+        if (nextStageId != null) {
+            progressModel.unlockStage(nextStageId);
+        }
 
         // セーブファイルに保存
         try {
