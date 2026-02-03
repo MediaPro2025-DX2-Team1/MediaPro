@@ -4,7 +4,9 @@
 [versions]
 guava = "33.4.6-jre"
 junit = "4.13.2"
+gson = "2.11.0"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { module = "junit:junit", version.ref = "junit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

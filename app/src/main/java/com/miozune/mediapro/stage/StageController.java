@@ -6,6 +6,7 @@ import com.miozune.mediapro.card.events.CardClickedEvent;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
+import com.miozune.mediapro.stage.events.BattleEndedEvent;
 import com.miozune.mediapro.stage.events.BattleResultOkEvent;
 import com.miozune.mediapro.stage.events.OverlayEvent;
 import java.util.HashSet;
@@ -25,8 +26,12 @@ public class StageController {
         this.model = model;
         this.view = view;
 
-        // バトル終了リスナー登録
-        model.setBattleListener(playerWon -> handleBattleEnd(playerWon));
+        // バトル終了イベントリスナー登録
+        model.addPropertyChangeListener(event -> {
+            if (event instanceof BattleEndedEvent battleEvent) {
+                handleBattleEnd(battleEvent.playerWon());
+            }
+        });
 
         model.getHand().addPropertyChangeListener(event -> {
             if (event instanceof HandCardChangedEvent handEvent) {

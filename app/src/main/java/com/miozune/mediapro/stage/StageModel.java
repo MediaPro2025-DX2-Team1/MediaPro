@@ -11,6 +11,8 @@ import com.miozune.mediapro.enemy.EnemyType;
 import com.miozune.mediapro.enemy.behavior.EnemyActionContext;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
+import com.miozune.mediapro.stage.events.BattleEndedEvent;
+import com.miozune.mediapro.stage.events.StagePropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,15 +33,24 @@ public class StageModel {
 
     private boolean isBattleOver = false;// 戦闘終了フラグ
 
-    public interface BattleListener { // 終了結果を外へ通知するためのリスナー
-        void onBattleEnd(boolean playerWon);
+    /**
+     * プロパティ変更イベントのリスナーインターフェース。
+     */
+    @FunctionalInterface
+    public interface PropertyChangeListener {
+        /**
+         * プロパティが変更された際に呼び出されます。
+         *
+         * @param event プロパティ変更イベント
+         */
+        void onPropertyChanged(StagePropertyChangeEvent event);
     }
 
     public interface EnemyListChangeListener {
         void onEnemiesChanged(List<EnemyModel> enemies);
     }
 
-    private BattleListener battleListener;
+    private final List<PropertyChangeListener> listeners = new CopyOnWriteArrayList<>();
     private final List<EnemyListChangeListener> enemyListListeners = new CopyOnWriteArrayList<>();
 
     /* コンストラクタ */
@@ -70,9 +81,35 @@ public class StageModel {
         startPlayerTurn();
     }
 
-    /* 外部から終了フラグを登録 */
-    public void setBattleListener(BattleListener listener) {
-        this.battleListener = listener;
+    /**
+     * プロパティ変更リスナーを追加します。
+     *
+     * @param listener リスナー
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (listener != null) {
+            listeners.add(listener);
+        }
+    }
+
+    /**
+     * プロパティ変更リスナーを削除します。
+     *
+     * @param listener リスナー
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * イベントを発火します。
+     *
+     * @param event イベント
+     */
+    private void fireEvent(StagePropertyChangeEvent event) {
+        for (PropertyChangeListener listener : listeners) {
+            listener.onPropertyChanged(event);
+        }
     }
 
     public void addEnemyListChangeListener(EnemyListChangeListener listener) {
@@ -232,10 +269,7 @@ public class StageModel {
     /* バトル終了処理 */
     private void endBattle(boolean playerWon) {
         isBattleOver = true;
-
-        if (battleListener != null) {
-            battleListener.onBattleEnd(playerWon);
-        }
+        fireEvent(new BattleEndedEvent(this, playerWon));
     }
 
     /* 状態管理の簡単なメソッド群 */
