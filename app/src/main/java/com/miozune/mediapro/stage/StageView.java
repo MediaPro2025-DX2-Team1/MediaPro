@@ -428,7 +428,10 @@ public class StageView extends JPanel implements Previewable {
     /** カードの拡大表示をオーバーレイに表示 */
     public void showCardDetail(CardModel card) {
         CardDetailOverlay content = new CardDetailOverlay(card);
-        overlayLayer.push(OverlayPanels.backdrop(content, this::hideOverlay));
+        overlayLayer.push(OverlayPanels.backdrop(content, () -> {
+            hideOverlay();
+            fireOverlayEvent(new OverlayClosedEvent());
+        }));
     }
 
     /** 山札一覧をオーバーレイに表示 */
