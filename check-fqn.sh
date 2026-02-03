@@ -47,7 +47,7 @@ for file in $java_files; do
         if echo "$line_content" | grep -qE '^\s*(import|package)\s'; then
             continue
         fi
-        if echo "$line_content" | grep -qE '^\s*(//|/\*)'; then
+        if echo "$line_content" | grep -qE '^\s*(//|/\*|\*)'; then
             continue
         fi
         
