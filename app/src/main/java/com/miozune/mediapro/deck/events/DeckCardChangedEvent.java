@@ -1,6 +1,6 @@
 package com.miozune.mediapro.deck.events;
 
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
+import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 
 public record DeckCardChangedEvent(

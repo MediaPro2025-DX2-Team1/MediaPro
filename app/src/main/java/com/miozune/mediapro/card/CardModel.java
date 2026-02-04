@@ -1,7 +1,6 @@
 package com.miozune.mediapro.card;
 
 import com.miozune.mediapro.action.CardAction;
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 
 /**
  * バトル中に使用される具体的なカードインスタンス。

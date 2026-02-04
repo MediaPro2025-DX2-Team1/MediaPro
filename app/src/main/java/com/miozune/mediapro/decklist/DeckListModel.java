@@ -1,7 +1,7 @@
 package com.miozune.mediapro.decklist;
 
+import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.card.CardRegistry;
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.decklist.events.DeckListChangedEvent;
 import com.miozune.mediapro.decklist.events.DeckListPropertyChangeEvent;
