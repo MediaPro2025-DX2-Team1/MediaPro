@@ -1,4 +1,4 @@
-package com.miozune.mediapro.effect.action;
+package com.miozune.mediapro.action;
 
 /**
  * 筋力を付与（永続）。

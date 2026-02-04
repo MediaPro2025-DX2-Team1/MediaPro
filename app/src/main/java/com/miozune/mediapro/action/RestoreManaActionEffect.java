@@ -1,4 +1,4 @@
-package com.miozune.mediapro.effect.action;
+package com.miozune.mediapro.action;
 
 import com.miozune.mediapro.player.PlayerModel;
 
