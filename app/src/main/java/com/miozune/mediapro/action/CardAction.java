@@ -1,7 +1,5 @@
-package com.miozune.mediapro.effect;
+package com.miozune.mediapro.action;
 
-import com.miozune.mediapro.effect.action.ActionContext;
-import com.miozune.mediapro.effect.action.ActionEffect;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

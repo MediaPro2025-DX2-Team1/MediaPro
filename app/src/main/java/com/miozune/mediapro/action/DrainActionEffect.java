@@ -1,15 +1,17 @@
-package com.miozune.mediapro.effect.action;
+package com.miozune.mediapro.action;
 
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
- * 敵単体にダメージ。
+ * 単体攻撃し、撃破時に自分を回復。
  */
-public final class DamageSingleEnemyActionEffect implements ActionEffect {
+public final class DrainActionEffect implements ActionEffect {
     private final int baseDamage;
+    private final int healAmount;
 
-    public DamageSingleEnemyActionEffect(int baseDamage) {
+    public DrainActionEffect(int baseDamage, int healAmount) {
         this.baseDamage = Math.max(0, baseDamage);
+        this.healAmount = Math.max(0, healAmount);
     }
 
     @Override
@@ -18,8 +20,14 @@ public final class DamageSingleEnemyActionEffect implements ActionEffect {
         if (target == null) {
             return false;
         }
+
         int attackDamage = context.player().applyOutgoingDamageModifiers(baseDamage);
+        int beforeHp = target.getHp();
         target.receiveDamage(attackDamage);
+
+        if (beforeHp > 0 && target.isDead()) {
+            context.player().heal(healAmount);
+        }
         return true;
     }
 }

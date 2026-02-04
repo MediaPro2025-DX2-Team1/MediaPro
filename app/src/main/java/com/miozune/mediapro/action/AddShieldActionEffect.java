@@ -1,4 +1,4 @@
-package com.miozune.mediapro.effect.action;
+package com.miozune.mediapro.action;
 
 /**
  * シールドを得る。

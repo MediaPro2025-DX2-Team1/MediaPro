@@ -1,4 +1,4 @@
-package com.miozune.mediapro.effect.action;
+package com.miozune.mediapro.action;
 
 /**
  * カード効果の最小単位。
