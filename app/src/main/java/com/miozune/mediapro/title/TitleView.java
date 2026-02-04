@@ -1,14 +1,19 @@
 package com.miozune.mediapro.title;
 
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.util.ImageLoader;
+import com.miozune.mediapro.util.ImageUtils;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 public class TitleView extends JPanel implements Previewable {
 
     private JButton startButton;
+    private final BufferedImage backgroundImage;
 
     public TitleView() {
+        backgroundImage = ImageLoader.loadBackgroundImage("title_bg.png");
         setupPanel();
         initComponents();
         layoutComponents();
@@ -37,6 +42,7 @@ public class TitleView extends JPanel implements Previewable {
         JLabel titleLabel = new JLabel("TITLE NAME");
         titleLabel.setFont(new Font("Serif", Font.BOLD, 56));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setOpaque(false);
 
         setLayout(new BorderLayout());
         setBackground(new Color(240, 240, 240));
@@ -44,7 +50,7 @@ public class TitleView extends JPanel implements Previewable {
         add(titleLabel, BorderLayout.CENTER);
 
         JPanel buttonpanel = new JPanel(new GridBagLayout());
-        buttonpanel.setBackground(new Color(240, 240, 240));
+        buttonpanel.setOpaque(false);
         buttonpanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 60, 0));
         buttonpanel.add(startButton);
 
@@ -63,5 +69,11 @@ public class TitleView extends JPanel implements Previewable {
     @Override
     public void setupPreview() {
         startButton.addActionListener(e -> System.out.println("Start clicked"));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
     }
 }

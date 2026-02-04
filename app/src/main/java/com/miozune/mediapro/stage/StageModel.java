@@ -2,6 +2,7 @@ package com.miozune.mediapro.stage;
 
 import com.miozune.mediapro.action.ActionContext;
 import com.miozune.mediapro.card.CardModel;
+import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
 import com.miozune.mediapro.enemy.EnemyFactory;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StageModel {
+    private final String stageId;
     private final PlayerModel player;
     private final List<EnemyInstance> enemies;
     private final DrawPileModel drawpile;
@@ -55,6 +57,7 @@ public class StageModel {
 
     /* コンストラクタ */
     public StageModel(
+            String stageId,
             PlayerModel player,
             List<EnemyInstance> enemyInstances,
             DrawPileModel drawpile,
@@ -62,6 +65,7 @@ public class StageModel {
             DiscardModel discard,
             EnemyFactory enemyFactory) {
 
+        this.stageId = stageId;
         this.player = player;
         this.enemies = new ArrayList<>(enemyInstances);
         this.drawpile = drawpile;
@@ -335,5 +339,33 @@ public class StageModel {
         for (EnemyListChangeListener enemyListener : enemyListListeners) {
             enemyListener.onEnemiesChanged(snapshot);
         }
+    }
+
+    /**
+     * ステージIDを取得します。
+     *
+     * @return ステージID（例: "stage1", "stage2", "stage3"）
+     */
+    public String getStageId() {
+        return stageId;
+    }
+
+    /**
+     * プレビュー用のデフォルトStageModelを作成します。
+     *
+     * @return デフォルトのStageModel
+     */
+    public static StageModel createDefault() {
+        PlayerModel player = PlayerModel.createDefaultPlayer();
+        List<EnemyInstance> enemies = List.of(
+                new EnemyInstance(EnemyModel.createDefault(), null));
+        DeckModel deck = new DeckModel("Preview Deck");
+        DrawPileModel drawpile = new DrawPileModel(deck);
+        HandModel hand = new HandModel();
+        player.setHand(hand);
+        DiscardModel discard = new DiscardModel();
+        EnemyFactory factory = new EnemyFactory();
+
+        return new StageModel("stage1", player, enemies, drawpile, hand, discard, factory);
     }
 }

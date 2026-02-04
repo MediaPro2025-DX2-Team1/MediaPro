@@ -17,8 +17,11 @@ import com.miozune.mediapro.stage.events.OverlayClosedEvent;
 import com.miozune.mediapro.stage.events.OverlayEvent;
 import com.miozune.mediapro.ui.overlay.OverlayLayer;
 import com.miozune.mediapro.ui.overlay.OverlayPanels;
+import com.miozune.mediapro.util.ImageLoader;
+import com.miozune.mediapro.util.ImageUtils;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,9 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 public class StageView extends JPanel implements Previewable {
+
+    private final StageModel stageModel;
+    private final BufferedImage backgroundImage;
 
     private static final int HAND_MIN_HEIGHT = CardView.DEFAULT_HEIGHT + 20;
     private static final int SELECTION_BANNER_HEIGHT = 36;
@@ -63,6 +69,13 @@ public class StageView extends JPanel implements Previewable {
     private final List<OverlayListener> overlayListeners = new CopyOnWriteArrayList<>();
 
     public StageView() {
+        this(StageModel.createDefault());
+    }
+
+    public StageView(StageModel stageModel) {
+        this.stageModel = stageModel;
+        this.backgroundImage = ImageLoader.loadBackgroundImage(stageModel.getStageId() + ".png");
+
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(1000, 700));
         setBackground(new Color(30, 30, 30));
@@ -73,7 +86,14 @@ public class StageView extends JPanel implements Previewable {
         add(layeredPane, BorderLayout.CENTER);
 
         // メインコンテンツパネル
-        mainContentPanel = new JPanel(new BorderLayout());
+        mainContentPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageUtils.drawBackgroundImage(
+                        g, backgroundImage, getWidth(), getHeight());
+            }
+        };
         mainContentPanel.setOpaque(false);
         mainContentPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
@@ -132,9 +152,8 @@ public class StageView extends JPanel implements Previewable {
         // 左側：手札
         handView = new HandView();
         handWrapper = new JPanel(new BorderLayout());
-        handWrapper.setBackground(new Color(45, 45, 45));
+        handWrapper.setOpaque(false);
         handWrapper.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        handWrapper.setOpaque(true);
         handWrapper.setMinimumSize(new Dimension(0, HAND_MIN_HEIGHT));
         handWrapper.setPreferredSize(new Dimension(0, HAND_MIN_HEIGHT));
         handWrapper.add(handView, BorderLayout.CENTER);
@@ -177,6 +196,9 @@ public class StageView extends JPanel implements Previewable {
         layeredPane.add(overlayLayer, JLayeredPane.PALETTE_LAYER);
 
         setupKeyBindings();
+
+        // Modelからアクターを設定
+        setActors(stageModel.getPlayer(), stageModel.getEnemies());
     }
 
     /** レイヤーのサイズを親に合わせて更新 */
@@ -194,7 +216,7 @@ public class StageView extends JPanel implements Previewable {
         updateLayerBounds();
     }
 
-    public void setActors(PlayerModel player, List<EnemyModel> enemies) {
+    private void setActors(PlayerModel player, List<EnemyModel> enemies) {
         if (playerListener != null && playerModel != null) {
             playerModel.removePropertyChangeListener(playerListener);
         }

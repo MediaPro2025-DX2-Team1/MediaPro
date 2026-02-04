@@ -52,7 +52,7 @@ public class StatusListView extends JPanel {
             if (shield.isPermanent()) {
                 detail = String.format("+%d / ∞", shield.amount());
             } else {
-                detail = String.format("+%d / 1ターン", shield.amount());
+                detail = String.format("+%d / あと1", shield.amount());
             }
             background = new Color(40, 90, 150, 200);
             border = new Color(70, 130, 190);
@@ -62,8 +62,8 @@ public class StatusListView extends JPanel {
             background = new Color(140, 90, 30, 200);
             border = new Color(180, 130, 60);
         } else if (effect instanceof WeaknessStatus weakness) {
-            title = "虚弱";
-            detail = String.format("+%d被ダメ / %dターン", weakness.bonusDamage(), weakness.remainingTurns());
+            title = "弱体化";
+            detail = String.format("+%d被ダメ / あと%d", weakness.bonusDamage(), weakness.remainingTurns());
             background = new Color(110, 60, 120, 200);
             border = new Color(150, 100, 170);
         } else if (effect != null) {

@@ -19,6 +19,9 @@ public final class ImageLoader {
     /** カード画像のベースパス */
     public static final String CARDS_PATH = "/images/cards/";
 
+    /** 背景画像のベースパス */
+    public static final String BACKGROUNDS_PATH = "/images/backgrounds/";
+
     private ImageLoader() {}
 
     /**
@@ -62,6 +65,20 @@ public final class ImageLoader {
             return null;
         }
         return loadImage(CARDS_PATH + fileName);
+    }
+
+    /**
+     * 背景画像を読み込む。
+     * "/images/backgrounds/" をベースパスとして、指定されたファイル名の画像を読み込む。
+     *
+     * @param fileName 背景画像のファイル名（例: "title_bg.png"）
+     * @return 読み込んだ画像、読み込みに失敗した場合はnull
+     */
+    public static BufferedImage loadBackgroundImage(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
+        }
+        return loadImage(BACKGROUNDS_PATH + fileName);
     }
 
     /**
