@@ -44,8 +44,6 @@ public class StageController {
 
         model.addEnemyListChangeListener(this::handleEnemiesChanged);
 
-        // プレイヤー/敵ビューをセット
-        view.setActors(model.getPlayer(), model.getEnemies());
         view.setEnemyClickListener(this::handleEnemyClick);
         view.setBackgroundClickListener(this::handleBackgroundCancel);
 

@@ -3,13 +3,17 @@ package com.miozune.mediapro.world;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.progress.ProgressModel;
 import com.miozune.mediapro.stage.StageFactory;
+import com.miozune.mediapro.util.ImageLoader;
+import com.miozune.mediapro.util.ImageUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,6 +23,7 @@ import javax.swing.SwingConstants;
 public class WorldView extends JPanel implements Previewable {
 
     private final WorldModel worldModel;
+    private final BufferedImage backgroundImage;
     private JButton stageButton1;
     private JButton stageButton2;
     private JButton stageButton3;
@@ -30,6 +35,7 @@ public class WorldView extends JPanel implements Previewable {
 
     public WorldView(WorldModel worldModel) {
         this.worldModel = worldModel;
+        this.backgroundImage = ImageLoader.loadBackgroundImage("title_bg.png");
         setupPanel();
         initComponents();
         layoutComponents();
@@ -40,7 +46,6 @@ public class WorldView extends JPanel implements Previewable {
     private void setupPanel() {
         setPreferredSize(new Dimension(600, 400));
         setOpaque(true);
-        setBackground(new Color(240, 240, 240));
     }
 
     private void initComponents() {
@@ -67,7 +72,6 @@ public class WorldView extends JPanel implements Previewable {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         setLayout(new BorderLayout());
-        setBackground(new Color(240, 240, 240));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);
@@ -75,7 +79,7 @@ public class WorldView extends JPanel implements Previewable {
         titlePanel.add(titleLabel);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setBackground(new Color(240, 240, 240));
+        buttonPanel.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 20, 10, 20); // ボタン間の余白
@@ -163,5 +167,11 @@ public class WorldView extends JPanel implements Previewable {
         stageButton1.addActionListener(e -> System.out.println("[Preview] Stage 1 clicked"));
         stageButton2.addActionListener(e -> System.out.println("[Preview] Stage 2 clicked"));
         stageButton3.addActionListener(e -> System.out.println("[Preview] Stage 3 clicked"));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
     }
 }

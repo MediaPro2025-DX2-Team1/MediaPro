@@ -38,7 +38,7 @@ public class StageFactory {
 
         player.setMana(player.getMaxMana());
 
-        StageModel model = new StageModel(player, enemies, drawPile, hand, discard, enemyFactory);
+        StageModel model = new StageModel(definition.id(), player, enemies, drawPile, hand, discard, enemyFactory);
         int initialDraw = Math.max(GameConfig.HAND_SIZE - 1, 0);
         model.drawToHand(initialDraw);
         model.startBattle();
