@@ -124,7 +124,9 @@ public class HandView extends JPanel implements Previewable {
         cardListPanel.removeAll();
         cardComponentList.clear();
 
-        for (CardModel cardModel : cards) {
+        int cardCount = cards.size();
+        for (int i = 0; i < cardCount; i++) {
+            CardModel cardModel = cards.get(i);
             CardView cardView = new CardView(cardModel);
 
             // 1. ラッパーパネルの作成
@@ -141,12 +143,17 @@ public class HandView extends JPanel implements Previewable {
             cardView.setBounds(0, HOVER_OFFSET, cardSize.width, cardSize.height);
             wrapper.add(cardView);
 
-            // 3. マウスリスナーの追加（ホバー動作 ＋ クリック動作）
+            // 3. 元のインデックスを保持（Z-order制御用）
+            final int originalIndex = i;
+
+            // 4. マウスリスナーの追加（ホバー動作 ＋ クリック動作）
             cardView.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     cardView.setLocation(0, 0);
+                    // ホバー時は最前面に移動
+                    cardListPanel.setComponentZOrder(wrapper, 0);
                     wrapper.repaint();
                 }
 
@@ -154,6 +161,8 @@ public class HandView extends JPanel implements Previewable {
                 public void mouseExited(MouseEvent e) {
                     setCursor(Cursor.getDefaultCursor());
                     cardView.setLocation(0, HOVER_OFFSET);
+                    // ホバー解除時は元のZ-orderに戻す
+                    cardListPanel.setComponentZOrder(wrapper, cardCount - 1 - originalIndex);
                     wrapper.repaint();
                 }
 
