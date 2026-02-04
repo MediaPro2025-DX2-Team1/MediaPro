@@ -1,6 +1,5 @@
 package com.miozune.mediapro.card;
 
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
 import com.miozune.mediapro.preview.Previewable;
 import java.awt.BorderLayout;
 import java.awt.Color;

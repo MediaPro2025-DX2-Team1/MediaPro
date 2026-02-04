@@ -1,8 +1,7 @@
-package com.miozune.mediapro.cardrecipe;
+package com.miozune.mediapro.card;
 
 import com.miozune.mediapro.action.CardAction;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
-import com.miozune.mediapro.card.CardTargetType;
 
 /**
  * カードのデータを保持するイミュータブルなレコード。

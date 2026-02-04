@@ -1,7 +1,7 @@
 package com.miozune.mediapro.drawpile;
 
 import com.miozune.mediapro.card.CardModel;
-import com.miozune.mediapro.cardrecipe.CardRecipeModel;
+import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.drawpile.events.DrawPileCardDrawnEvent;
 import com.miozune.mediapro.drawpile.events.DrawPilePropertyChangeEvent;
