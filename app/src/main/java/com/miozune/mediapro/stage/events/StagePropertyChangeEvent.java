@@ -6,7 +6,7 @@ import com.miozune.mediapro.stage.StageModel;
  * StageModelのプロパティ変更イベントの基底インターフェース。
  */
 public sealed interface StagePropertyChangeEvent
-        permits BattleEndedEvent {
+        permits BattleEndedEvent, EffectTriggeredEvent, EnemyAttackedPlayerEvent {
 
     /**
      * イベントの発生元となったStageModelを取得します。

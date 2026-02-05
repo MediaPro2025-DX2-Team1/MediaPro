@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
@@ -19,6 +20,8 @@ public final class ApplyWeaknessActionEffect implements ActionEffect {
             return false;
         }
         target.addWeakness(turns);
+        context.stage().triggerEffect(EffectType.DEBUFF, target);
+
         return true;
     }
 }

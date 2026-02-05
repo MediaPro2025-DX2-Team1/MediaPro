@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
@@ -21,6 +22,7 @@ public final class DamageAllEnemiesActionEffect implements ActionEffect {
         for (EnemyModel enemy : context.enemies()) {
             if (enemy != null && !enemy.isDead()) {
                 enemy.receiveDamage(attackDamage);
+                context.stage().triggerEffect(EffectType.PLAYER_ATTACK, enemy);
             }
         }
         return true;

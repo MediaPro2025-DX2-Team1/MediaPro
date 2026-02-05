@@ -3,11 +3,13 @@ package com.miozune.mediapro.stage;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardTargetType;
 import com.miozune.mediapro.card.events.CardClickedEvent;
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.game.GameModel;
 import com.miozune.mediapro.hand.events.HandCardChangedEvent;
 import com.miozune.mediapro.stage.events.BattleEndedEvent;
 import com.miozune.mediapro.stage.events.BattleResultOkEvent;
+import com.miozune.mediapro.stage.events.EnemyAttackedPlayerEvent;
 import com.miozune.mediapro.stage.events.OverlayEvent;
 import java.util.HashSet;
 import java.util.List;
@@ -28,8 +30,14 @@ public class StageController {
 
         // バトル終了イベントリスナー登録
         model.addPropertyChangeListener(event -> {
-            if (event instanceof BattleEndedEvent battleEvent) {
-                handleBattleEnd(battleEvent.playerWon());
+            switch (event) {
+                case BattleEndedEvent battleEvent -> handleBattleEnd(battleEvent.playerWon());
+                case EnemyAttackedPlayerEvent attackEvent ->
+                        // 敵の攻撃時にエフェクトをトリガー
+                        model.triggerEffect(EffectType.ENEMY_ATTACK, attackEvent.stage().getPlayer());
+                default -> {
+                    // 他のイベントは無視
+                }
             }
         });
 

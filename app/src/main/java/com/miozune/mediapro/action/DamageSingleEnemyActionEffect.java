@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
@@ -20,6 +21,8 @@ public final class DamageSingleEnemyActionEffect implements ActionEffect {
         }
         int attackDamage = context.player().applyOutgoingDamageModifiers(baseDamage);
         target.receiveDamage(attackDamage);
+        context.stage().triggerEffect(EffectType.PLAYER_ATTACK, target);
+
         return true;
     }
 }

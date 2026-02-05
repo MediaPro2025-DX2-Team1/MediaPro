@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
@@ -23,6 +24,8 @@ public final class MultiHitSingleEnemyActionEffect implements ActionEffect {
         for (int i = 0; i < hits; i++) {
             int attackDamage = context.player().applyOutgoingDamageModifiers(baseDamage);
             target.receiveDamage(attackDamage);
+            context.stage().triggerEffect(EffectType.PLAYER_ATTACK, target);
+
             if (target.isDead()) {
                 break;
             }

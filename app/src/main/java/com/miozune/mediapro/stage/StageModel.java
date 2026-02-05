@@ -1,10 +1,12 @@
 package com.miozune.mediapro.stage;
 
 import com.miozune.mediapro.action.ActionContext;
+import com.miozune.mediapro.actor.AbstractActorModel;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.discard.DiscardModel;
 import com.miozune.mediapro.drawpile.DrawPileModel;
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyFactory;
 import com.miozune.mediapro.enemy.EnemyFactory.EnemyInstance;
 import com.miozune.mediapro.enemy.EnemyModel;
@@ -14,6 +16,8 @@ import com.miozune.mediapro.game.GameConfig;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.stage.events.BattleEndedEvent;
+import com.miozune.mediapro.stage.events.EffectTriggeredEvent;
+import com.miozune.mediapro.stage.events.EnemyAttackedPlayerEvent;
 import com.miozune.mediapro.stage.events.StagePropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +119,16 @@ public class StageModel {
         for (PropertyChangeListener listener : listeners) {
             listener.onPropertyChanged(event);
         }
+    }
+
+    /**
+     * ビジュアルエフェクトをトリガーします。
+     *
+     * @param effectType エフェクトの種類
+     * @param target エフェクトの対象（座標解決に使用）。nullの場合はデフォルト位置
+     */
+    public void triggerEffect(EffectType effectType, AbstractActorModel<?> target) {
+        fireEvent(new EffectTriggeredEvent(this, effectType, target));
     }
 
     public void addEnemyListChangeListener(EnemyListChangeListener listener) {
@@ -352,6 +366,7 @@ public class StageModel {
         }
         int actual = attacker.applyOutgoingDamageModifiers(baseDamage);
         player.receiveDamage(actual);
+        fireEvent(new EnemyAttackedPlayerEvent(this, attacker, actual));
         updateBattleState();
     }
 

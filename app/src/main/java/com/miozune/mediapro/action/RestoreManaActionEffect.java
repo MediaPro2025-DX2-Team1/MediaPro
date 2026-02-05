@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.player.PlayerModel;
 
 /**
@@ -19,6 +20,7 @@ public final class RestoreManaActionEffect implements ActionEffect {
         }
         PlayerModel player = context.player();
         player.addMana(amount);
+        context.stage().triggerEffect(EffectType.HEAL, player);
         return true;
     }
 }

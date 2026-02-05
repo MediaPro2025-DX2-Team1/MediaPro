@@ -1,5 +1,7 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
+
 /**
  * 筋力を付与（永続）。
  */
@@ -16,6 +18,8 @@ public final class ApplyStrengthActionEffect implements ActionEffect {
             return true;
         }
         context.player().addStrength(bonus);
+        context.stage().triggerEffect(EffectType.BUFF, context.player());
+
         return true;
     }
 }

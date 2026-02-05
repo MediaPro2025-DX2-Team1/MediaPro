@@ -1,10 +1,13 @@
 package com.miozune.mediapro.stage;
 
+import com.miozune.mediapro.actor.AbstractActorModel;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.card.events.CardClickListener;
 import com.miozune.mediapro.card.overlay.CardDetailOverlay;
 import com.miozune.mediapro.card.overlay.CardListOverlay;
+import com.miozune.mediapro.effect.EffectLayer;
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.enemy.EnemyView;
 import com.miozune.mediapro.hand.HandView;
@@ -13,6 +16,7 @@ import com.miozune.mediapro.player.PlayerView;
 import com.miozune.mediapro.player.events.PlayerManaChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.stage.events.BattleResultOkEvent;
+import com.miozune.mediapro.stage.events.EffectTriggeredEvent;
 import com.miozune.mediapro.stage.events.OverlayClosedEvent;
 import com.miozune.mediapro.stage.events.OverlayEvent;
 import com.miozune.mediapro.ui.overlay.OverlayLayer;
@@ -40,6 +44,7 @@ public class StageView extends JPanel implements Previewable {
     private final JLayeredPane layeredPane;
     private final JPanel mainContentPanel;
     private final OverlayLayer overlayLayer;
+    private final EffectLayer effectLayer;
 
     private final JPanel topPanel;
     private final JPanel bottomPanel;
@@ -99,6 +104,7 @@ public class StageView extends JPanel implements Previewable {
         mainContentPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         overlayLayer = new OverlayLayer();
+        effectLayer = new EffectLayer();
 
         // リサイズ時のレイヤー更新
         addComponentListener(new ComponentAdapter() {
@@ -195,8 +201,10 @@ public class StageView extends JPanel implements Previewable {
         // レイヤー構造の構築
         layeredPane.add(mainContentPanel, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(overlayLayer, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(effectLayer, JLayeredPane.MODAL_LAYER);
 
         setupKeyBindings();
+        setupStageModelListener();
 
         // Modelからアクターを設定
         setActors(stageModel.getPlayer(), stageModel.getEnemies());
@@ -209,6 +217,7 @@ public class StageView extends JPanel implements Previewable {
         layeredPane.setBounds(0, 0, width, height);
         mainContentPanel.setBounds(0, 0, width, height);
         overlayLayer.setBounds(0, 0, width, height);
+        effectLayer.setBounds(0, 0, width, height);
     }
 
     @Override
@@ -314,6 +323,59 @@ public class StageView extends JPanel implements Previewable {
             }
         };
         playerModel.addPropertyChangeListener(playerListener);
+    }
+
+    /**
+     * StageModelのイベントリスナーをセットアップ。
+     * エフェクトトリガーイベントを購読してEffectLayerで再生する。
+     */
+    private void setupStageModelListener() {
+        stageModel.addPropertyChangeListener(event -> {
+            if (event instanceof EffectTriggeredEvent effectEvent) {
+                Point position = resolveEffectPosition(effectEvent.effectType(), effectEvent.target());
+                effectLayer.playEffect(effectEvent.effectType(), position);
+            }
+        });
+    }
+
+    /**
+     * エフェクトの再生位置を解決。
+     * ターゲットがnullの場合はエフェクトタイプに応じたデフォルト位置を返す。
+     */
+    private Point resolveEffectPosition(EffectType effectType, AbstractActorModel<?> target) {
+
+        // ターゲットが指定されている場合
+        if (target != null) {
+            if (target == playerModel && playerView != null) {
+                // プレイヤーの中心座標
+                return getComponentCenter(playerView);
+            } else if (target instanceof EnemyModel enemyModel) {
+                EnemyView enemyView = enemyViewMap.get(enemyModel);
+                if (enemyView != null) {
+                    // 敵の中心座標
+                    return getComponentCenter(enemyView);
+                }
+            }
+        }
+
+        // デフォルト位置（エフェクトタイプごと）
+        return switch (effectType) {
+            case PLAYER_ATTACK, HEAL, SHIELD ->
+                playerView != null ? getComponentCenter(playerView) : new Point(200, 500);
+            case ENEMY_ATTACK, BUFF, DEBUFF ->
+                new Point(getWidth() / 2, getHeight() / 3);
+        };
+    }
+
+    /**
+     * コンポーネントの画面上での中心座標を取得。
+     */
+    private Point getComponentCenter(Component component) {
+        Point location = component.getLocationOnScreen();
+        Point thisLocation = getLocationOnScreen();
+        int centerX = location.x - thisLocation.x + component.getWidth() / 2;
+        int centerY = location.y - thisLocation.y + component.getHeight() / 2;
+        return new Point(centerX, centerY);
     }
 
     private void updateManaDisplay(int mana) {

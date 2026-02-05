@@ -1,5 +1,6 @@
 package com.miozune.mediapro.enemy.behavior;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.enemy.EnemyType;
 import com.miozune.mediapro.player.PlayerModel;
@@ -38,14 +39,17 @@ public class EnemyActionContext {
 
     public void addShieldToSelf(int amount) {
         self.addShield(amount, true); // 敵のシールドは永続
+        stage.triggerEffect(EffectType.BUFF, self);
     }
 
     public void addStrengthToSelf(int bonus) {
         self.addStrength(bonus);
+        stage.triggerEffect(EffectType.BUFF, self);
     }
 
     public void applyWeaknessToPlayer(int turns) {
         stage.getPlayer().addWeakness(turns);
+        stage.triggerEffect(EffectType.DEBUFF, stage.getPlayer());
     }
 
     public void summon(EnemyType type) {
