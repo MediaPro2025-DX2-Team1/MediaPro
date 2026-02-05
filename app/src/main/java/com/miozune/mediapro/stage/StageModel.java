@@ -145,6 +145,32 @@ public class StageModel {
         updateBattleState();
     }
 
+    /**
+     * ターン開始時専用のドロー処理（捨て札再利用あり）。
+     * 山札が足りない場合、捨て札をシャッフルして山札に戻してからドローを続行します。
+     *
+     * @param count ドローする枚数
+     */
+    public void drawToHandWithRefresh(int count) {
+        if (isBattleOver) {
+            return;
+        }
+
+        for (int i = 0; i < count; i++) {
+            // 山札が空で、捨て札にカードがある場合は再構築
+            if (drawpile.getRemainingCount() == 0 && !discard.getCards().isEmpty()) {
+                var discardCards = discard.removeAllCards();
+                drawpile.addCardsFromDiscard(discardCards);
+            }
+
+            var card = drawpile.drawCard();
+            if (card != null) {
+                hand.addCard(card);
+            }
+        }
+        updateBattleState();
+    }
+
     /* 状態チェック：バトル終了判定 */
     private void updateBattleState() {
         if (isBattleOver)
@@ -204,7 +230,20 @@ public class StageModel {
     private void startPlayerTurn() {
         player.onTurnStartStatuses();
         player.setMana(player.getMaxMana());
-        drawToHand(1);
+
+        // 手札枚数に応じたドロー枚数を計算
+        int currentHandSize = hand.getCards().size();
+        int drawCount;
+        if (currentHandSize <= 5) {
+            // 5枚以下の場合、5枚になるまでドロー
+            drawCount = 5 - currentHandSize;
+        } else {
+            // 6枚以上の場合、1枚だけドロー
+            drawCount = 1;
+        }
+
+        // 捨て札再利用ありのドロー処理
+        drawToHandWithRefresh(drawCount);
         // TODO: ターン開始時の効果をここに集約する
     }
 

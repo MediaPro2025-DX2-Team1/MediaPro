@@ -5,6 +5,7 @@ import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.drawpile.events.DrawPileCardDrawnEvent;
 import com.miozune.mediapro.drawpile.events.DrawPilePropertyChangeEvent;
+import com.miozune.mediapro.drawpile.events.DrawPileRefreshedFromDiscardEvent;
 import com.miozune.mediapro.drawpile.events.DrawPileShuffledEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +64,21 @@ public class DrawPileModel {
     public void shuffle() {
         Collections.shuffle(cards);
         fireEvent(new DrawPileShuffledEvent(this, cards.size()));
+    }
+
+    /**
+     * 捨て札から山札を再構築します。
+     * 捨て札のカードを山札に追加し、シャッフルして、イベントを発行します。
+     *
+     * @param discardCards 捨て札から取り出されたカードのリスト
+     */
+    public void addCardsFromDiscard(List<CardModel> discardCards) {
+        if (discardCards == null || discardCards.isEmpty()) {
+            return;
+        }
+        cards.addAll(discardCards);
+        shuffle();
+        fireEvent(new DrawPileRefreshedFromDiscardEvent(this, cards.size()));
     }
 
     /* 山札からカードを1枚引く */

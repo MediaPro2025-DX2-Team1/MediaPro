@@ -61,6 +61,20 @@ public class DiscardModel {
         fireEvent(new DiscardCardChangedEvent(this, oldCards, List.copyOf(cards)));
     }
 
+    /**
+     * 捨て札から全カードを取り出して返します。
+     * 捨て札は空になります。山札の再構築に使用します。
+     *
+     * @return 取り出された全カードのリスト
+     */
+    public List<CardModel> removeAllCards() {
+        List<CardModel> oldCards = List.copyOf(cards);
+        List<CardModel> removed = new ArrayList<>(cards);
+        cards.clear();
+        fireEvent(new DiscardCardChangedEvent(this, oldCards, List.copyOf(cards)));
+        return removed;
+    }
+
     public static DiscardModel createDefaultDiscard() {
         DiscardModel model = new DiscardModel();
         for(int i = 0; i < 14; i++) {
