@@ -9,7 +9,6 @@ import com.miozune.mediapro.status.StatusListView;
 import com.miozune.mediapro.util.ImageLoader;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import javax.swing.JPanel;
@@ -47,20 +46,12 @@ public class EnemyView extends JPanel implements Previewable {
      */
     public EnemyView(EnemyModel model) {
         this.model = Objects.requireNonNull(model);
-        this.statusView = new ActorStatusView(STYLE);
         this.statusListView = new StatusListView();
+        this.statusView = new ActorStatusView(STYLE, statusListView);
         setLayout(new BorderLayout());
         setOpaque(false);
-        setPreferredSize(new Dimension(320, 360));
-        setMinimumSize(new Dimension(320, 360));
-        setMaximumSize(new Dimension(320, 360));
-
-        JPanel bottom = new JPanel(new BorderLayout());
-        bottom.setOpaque(false);
-        bottom.add(statusListView, BorderLayout.EAST);
 
         add(statusView, BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH);
 
         setupModelListener();
         updateAllDisplays();
@@ -101,6 +92,15 @@ public class EnemyView extends JPanel implements Previewable {
 
     public EnemyModel getModel() {
         return model;
+    }
+
+    /**
+     * 背景のハイライト状態を更新する（ターゲット選択時の表示変更用）。
+     *
+     * @param highlighted trueの場合、背景を青っぽくハイライト
+     */
+    public void updateBackgroundHighlight(boolean highlighted) {
+        statusView.updateBackgroundHighlight(highlighted);
     }
 
     // --- Previewable 実装 ---

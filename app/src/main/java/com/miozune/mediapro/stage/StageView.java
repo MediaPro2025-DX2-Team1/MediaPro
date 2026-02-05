@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 public class StageView extends JPanel implements Previewable {
 
@@ -60,7 +59,8 @@ public class StageView extends JPanel implements Previewable {
     private final JButton endTurnButton;
 
     private PlayerView playerView;
-    private final Map<EnemyModel, JPanel> enemyPanels = new HashMap<>();
+    private final Map<EnemyModel, EnemyView> enemyViewMap = new HashMap<>();
+    private final Map<EnemyModel, JPanel> enemyPanelWrappers = new HashMap<>();
     private boolean selectingTarget;
     private EnemyClickListener enemyClickListener;
     private BackgroundClickListener backgroundClickListener;
@@ -226,7 +226,7 @@ public class StageView extends JPanel implements Previewable {
         }
         playerView = new PlayerView(player);
         playerContainer.removeAll();
-        playerContainer.add(playerView, BorderLayout.NORTH);
+        playerContainer.add(playerView, BorderLayout.SOUTH);
         setupPlayerListener();
         updateManaDisplay(player.getMana());
 
@@ -244,7 +244,8 @@ public class StageView extends JPanel implements Previewable {
 
     private void updateEnemies(List<EnemyModel> enemies) {
         enemyGrid.removeAll();
-        enemyPanels.clear();
+        enemyViewMap.clear();
+        enemyPanelWrappers.clear();
         if (enemies == null || enemies.isEmpty()) {
             enemyGrid.revalidate();
             enemyGrid.repaint();
@@ -254,22 +255,34 @@ public class StageView extends JPanel implements Previewable {
             if (enemy == null) {
                 continue;
             }
-            JPanel panel = createEnemyPanel(enemy);
-            enemyPanels.put(enemy, panel);
-            enemyGrid.add(panel);
+            JPanel wrapper = createEnemyPanel(enemy);
+            enemyPanelWrappers.put(enemy, wrapper);
+            enemyGrid.add(wrapper);
         }
         enemyGrid.revalidate();
         enemyGrid.repaint();
     }
 
     private JPanel createEnemyPanel(EnemyModel enemy) {
+        EnemyView view = new EnemyView(enemy);
+        enemyViewMap.put(enemy, view);
+
+        // 敵を下揃えにするためのラッパーパネル
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setOpaque(false);
-        wrapper.setBorder(createEnemyBorder(false));
-        EnemyView view = new EnemyView(enemy);
-        wrapper.add(view, BorderLayout.CENTER);
+        wrapper.add(view, BorderLayout.SOUTH);
 
         wrapper.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!selectingTarget || backgroundClickListener == null) {
+                    return;
+                }
+                backgroundClickListener.onBackgroundClicked();
+            }
+        });
+
+        view.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 handleEnemyHover(enemy, true);
@@ -311,15 +324,15 @@ public class StageView extends JPanel implements Previewable {
     }
 
     private void handleEnemyHover(EnemyModel enemy, boolean entered) {
-        JPanel panel = enemyPanels.get(enemy);
-        if (panel == null) {
+        EnemyView view = enemyViewMap.get(enemy);
+        if (view == null) {
             return;
         }
         if (!selectingTarget) {
-            panel.setBorder(createEnemyBorder(false));
+            view.updateBackgroundHighlight(false);
             return;
         }
-        panel.setBorder(createEnemyBorder(entered));
+        view.updateBackgroundHighlight(entered);
     }
 
     private void updateSelectionUiState() {
@@ -327,9 +340,9 @@ public class StageView extends JPanel implements Previewable {
             ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
             : Cursor.getDefaultCursor();
         enemyGrid.setCursor(cursor);
-        enemyPanels.values().forEach(panel -> {
-            panel.setCursor(cursor);
-            panel.setBorder(createEnemyBorder(false));
+        enemyViewMap.values().forEach(view -> {
+            view.setCursor(cursor);
+            view.updateBackgroundHighlight(false);
         });
         if (selectingTarget) {
             selectionBanner.setOpaque(true);
@@ -341,14 +354,6 @@ public class StageView extends JPanel implements Previewable {
             selectionBanner.setBackground(new Color(0, 0, 0, 0));
             selectionLabel.setText("");
         }
-    }
-
-    private Border createEnemyBorder(boolean highlighted) {
-        Color color = highlighted ? new Color(110, 150, 220) : new Color(80, 80, 80);
-        return BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(color, 2, true),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        );
     }
 
     public void enterTargetSelection() {

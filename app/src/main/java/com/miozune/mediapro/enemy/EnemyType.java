@@ -2,12 +2,12 @@ package com.miozune.mediapro.enemy;
 
 /** 敵の種類を表す識別子。 */
 public enum EnemyType {
-    SLIME(1.0),
-    ZOMBIE(1.0),
-    DEVIL(1.0),
-    GOBLIN(1.0),
-    GOBLIN_LEADER(1.5),
-    DRAGON(2.0);
+    SLIME(0.6),
+    ZOMBIE(0.9),
+    DEVIL(0.9),
+    GOBLIN(0.7),
+    GOBLIN_LEADER(1.7),
+    DRAGON(2.3);
 
     private final double scale;
 

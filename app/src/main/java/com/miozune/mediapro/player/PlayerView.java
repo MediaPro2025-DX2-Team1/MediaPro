@@ -9,7 +9,6 @@ import com.miozune.mediapro.status.StatusListView;
 import com.miozune.mediapro.util.ImageLoader;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import javax.swing.JPanel;
@@ -48,20 +47,12 @@ public class PlayerView extends JPanel implements Previewable {
      */
     public PlayerView(PlayerModel model) {
         this.model = Objects.requireNonNull(model);
-        this.statusView = new ActorStatusView(STYLE);
         this.statusListView = new StatusListView();
+        this.statusView = new ActorStatusView(STYLE, statusListView);
         setLayout(new BorderLayout());
         setOpaque(false);
-        setPreferredSize(new Dimension(320, 360));
-        setMinimumSize(new Dimension(320, 360));
-        setMaximumSize(new Dimension(320, 360));
-
-        JPanel bottom = new JPanel(new BorderLayout());
-        bottom.setOpaque(false);
-        bottom.add(statusListView, BorderLayout.EAST);
 
         add(statusView, BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH);
 
         setupModelListener();
         updateAllDisplays();

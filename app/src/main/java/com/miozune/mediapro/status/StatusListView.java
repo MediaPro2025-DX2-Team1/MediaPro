@@ -15,12 +15,12 @@ import javax.swing.JPanel;
  */
 public class StatusListView extends JPanel {
 
-    private static final Dimension BADGE_SIZE = new Dimension(140, 46);
-    private static final Dimension LIST_SIZE = new Dimension(420, 52);
+    private static final Dimension BADGE_SIZE = new Dimension(90, 46);
+    private static final Dimension LIST_SIZE = new Dimension(290, 52);
 
     public StatusListView() {
         setOpaque(false);
-        setLayout(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        setLayout(new FlowLayout(FlowLayout.LEFT, 8, 0));
         setPreferredSize(LIST_SIZE);
         setMinimumSize(LIST_SIZE);
         setMaximumSize(LIST_SIZE);
