@@ -37,8 +37,8 @@ public final class CardRegistry {
             "スラッシュ",
             1,
             "slash.jpg",
-            "敵1体に5ダメージを与える。",
-            new DamageSingleEnemyActionEffect(5),
+            "敵1体に6ダメージを与える。",
+            new DamageSingleEnemyActionEffect(6),
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
