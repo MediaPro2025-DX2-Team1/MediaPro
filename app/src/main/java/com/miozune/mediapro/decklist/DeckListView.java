@@ -8,11 +8,16 @@ import com.miozune.mediapro.card.CardTargetType;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.util.ButtonStyler;
+import com.miozune.mediapro.util.ImageLoader;
+import com.miozune.mediapro.util.ImageUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -27,9 +32,19 @@ import javax.swing.ListSelectionModel;
 
 public class DeckListView extends JPanel implements Previewable {
 
+    private final BufferedImage backgroundImage;
     private final DefaultListModel<DeckModel> deckListModel = new DefaultListModel<>();
     private final JList<DeckModel> deckList = new JList<>(deckListModel);
-    private final JPanel cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
+    private final JPanel cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12)) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setColor(getBackground());
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            g2d.dispose();
+            super.paintComponent(g);
+        }
+    };
 
     private final JButton addDeckButton = new JButton("デッキ作成");
     private final JButton deleteDeckButton = new JButton("デッキ削除");
@@ -37,39 +52,87 @@ public class DeckListView extends JPanel implements Previewable {
     private final JButton backButton = new JButton("戻る");
 
     public DeckListView() {
+        this.backgroundImage = ImageLoader.loadBackgroundImage("deck.png");
         setLayout(new BorderLayout(12, 12));
         setBackground(new Color(25, 25, 25));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         deckList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        deckList.setOpaque(false);
+        deckList.setBackground(new Color(40, 40, 40, 190));
         deckList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            JLabel label = new JLabel(value.getName());
-            label.setOpaque(true);
+            JLabel label = new JLabel(value.getName()) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setColor(getBackground());
+                    g2d.fillRect(0, 0, getWidth(), getHeight());
+                    g2d.dispose();
+                    super.paintComponent(g);
+                }
+            };
+            label.setOpaque(false);
             label.setFont(new Font("SansSerif", Font.BOLD, 16));
             label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-            label.setBackground(isSelected ? new Color(70, 130, 180) : new Color(40, 40, 40));
+            label.setBackground(isSelected ? new Color(70, 130, 180, 190) : new Color(40, 40, 40, 190));
             label.setForeground(isSelected ? Color.WHITE : Color.LIGHT_GRAY);
             return label;
         });
 
-        JScrollPane listScroll = new JScrollPane(deckList);
+        JScrollPane listScroll = new JScrollPane(deckList) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(getBackground());
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        listScroll.setOpaque(false);
+        listScroll.setBackground(new Color(40, 40, 40, 190));
+        listScroll.getViewport().setOpaque(false);
+        listScroll.getViewport().setBackground(new Color(40, 40, 40, 190));
         listScroll.setPreferredSize(new Dimension(220, 0));
         listScroll.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60)));
 
-        cardsPanel.setBackground(new Color(35, 35, 35));
+        cardsPanel.setOpaque(false);
+        cardsPanel.setBackground(new Color(35, 35, 35, 190));
 
-        JPanel center = new JPanel(new BorderLayout());
-        center.setBackground(new Color(35, 35, 35));
+        JPanel center = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(getBackground());
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        center.setOpaque(false);
+        center.setBackground(new Color(35, 35, 35, 190));
         center.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60)));
 
         JScrollPane cardsScroll = new JScrollPane(cardsPanel);
+        cardsScroll.setOpaque(false);
         cardsScroll.setBorder(BorderFactory.createEmptyBorder());
-        cardsScroll.getViewport().setBackground(new Color(35, 35, 35));
+        cardsScroll.getViewport().setOpaque(false);
+        cardsScroll.getViewport().setBackground(new Color(35, 35, 35, 190));
 
         center.add(cardsScroll, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        buttonPanel.setBackground(new Color(25, 25, 25));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(getBackground());
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBackground(new Color(25, 25, 25, 190));
         for (JButton btn : new JButton[] { addDeckButton, deleteDeckButton, editDeckButton, backButton }) {
             btn.setFont(new Font("SansSerif", Font.BOLD, 14));
             ButtonStyler.applyStyle(btn);
@@ -164,5 +227,11 @@ public class DeckListView extends JPanel implements Previewable {
         List<DeckModel> decks = List.of(fireDeck, frostDeck);
         setDecks(decks, fireDeck);
         showDeckCards(fireDeck);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
     }
 }

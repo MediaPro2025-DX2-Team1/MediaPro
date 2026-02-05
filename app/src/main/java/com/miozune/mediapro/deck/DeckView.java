@@ -3,21 +3,28 @@ package com.miozune.mediapro.deck;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 import com.miozune.mediapro.action.HealSelfActionEffect;
 import com.miozune.mediapro.card.CardBadgeView;
+import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.card.CardTargetType;
+import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.util.ButtonStyler;
+import com.miozune.mediapro.util.ImageLoader;
+import com.miozune.mediapro.util.ImageUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -27,13 +34,19 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 
 public class DeckView extends JPanel implements Previewable {
+    // ボーダー定数
+    private static final Border NORMAL_BORDER = BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2);
+    private static final Border HOVER_BORDER = BorderFactory.createLineBorder(new Color(200, 160, 60), 2);
+
     private final DeckModel model;
+    private final BufferedImage backgroundImage;
     private DeckModel.PropertyChangeListener propertyChangeListener;
 
     private Consumer<CardRecipeModel> deckCardClickHandler;
@@ -54,6 +67,7 @@ public class DeckView extends JPanel implements Previewable {
     // Modelを受け取るコンストラクタ
     public DeckView(DeckModel model) {
         this.model = model;
+        this.backgroundImage = ImageLoader.loadBackgroundImage("deck.png");
         setupPanel();
         initComponents();
         layoutComponents();
@@ -67,16 +81,42 @@ public class DeckView extends JPanel implements Previewable {
         setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
+    }
+
     private void initComponents() {
         nameLabel = new JLabel();
         nameLabel.setForeground(Color.WHITE);
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
-        cardsPanel.setBackground(new Color(45, 45, 45));
+        cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(getBackground());
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        cardsPanel.setOpaque(false);
+        cardsPanel.setBackground(new Color(45, 45, 45, 190));
 
-        availableCardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
-        availableCardsPanel.setBackground(new Color(45, 45, 45));
+        availableCardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(getBackground());
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        };
+        availableCardsPanel.setOpaque(false);
+        availableCardsPanel.setBackground(new Color(45, 45, 45, 190));
 
         backButton = new JButton("戻る");
 
@@ -109,8 +149,9 @@ public class DeckView extends JPanel implements Previewable {
 
     private JScrollPane createScrollPane(JPanel content) {
         JScrollPane scrollPane = new JScrollPane(content);
-        scrollPane.setBackground(new Color(45, 45, 45));
-        scrollPane.getViewport().setBackground(new Color(45, 45, 45));
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getViewport().setBackground(new Color(45, 45, 45, 190));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setPreferredSize(new Dimension(0, 260));
@@ -168,27 +209,24 @@ public class DeckView extends JPanel implements Previewable {
     private void updateAvailableCardList() {
         availableCardsPanel.removeAll();
         for (CardRecipeModel card : availableCards) {
-            availableCardsPanel.add(createHoverableBadge(card, 1, availableCardClickHandler));
+            availableCardsPanel.add(createHoverableCard(card, availableCardClickHandler));
         }
         availableCardsPanel.revalidate();
         availableCardsPanel.repaint();
     }
 
-    private CardBadgeView createHoverableBadge(CardRecipeModel card, int count, Consumer<CardRecipeModel> clickHandler) {
-        CardBadgeView badge = new CardBadgeView(card, count);
-        badge.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        Border normalBorder = BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2); // 厚みを保った透明枠
-        Border hoverBorder = BorderFactory.createLineBorder(new Color(200, 160, 60), 2);
-        badge.setBorder(normalBorder);
-        badge.addMouseListener(new MouseAdapter() {
+    private void addHoverAndClickBehavior(JComponent component, CardRecipeModel card, Consumer<CardRecipeModel> clickHandler) {
+        component.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        component.setBorder(NORMAL_BORDER);
+        component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                badge.setBorder(hoverBorder);
+                component.setBorder(HOVER_BORDER);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                badge.setBorder(normalBorder);
+                component.setBorder(NORMAL_BORDER);
             }
 
             @Override
@@ -198,7 +236,18 @@ public class DeckView extends JPanel implements Previewable {
                 }
             }
         });
+    }
+
+    private CardBadgeView createHoverableBadge(CardRecipeModel card, int count, Consumer<CardRecipeModel> clickHandler) {
+        CardBadgeView badge = new CardBadgeView(card, count);
+        addHoverAndClickBehavior(badge, card, clickHandler);
         return badge;
+    }
+
+    private CardView createHoverableCard(CardRecipeModel card, Consumer<CardRecipeModel> clickHandler) {
+        CardView cardView = new CardView(new CardModel(card));
+        addHoverAndClickBehavior(cardView, card, clickHandler);
+        return cardView;
     }
 
     public JButton getBackButton() {
