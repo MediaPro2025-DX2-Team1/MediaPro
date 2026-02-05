@@ -37,10 +37,6 @@ public class DeckListView extends JPanel implements Previewable {
     private final JButton backButton = new JButton("戻る");
 
     public DeckListView() {
-        ButtonStyler.applyStyle(addDeckButton);
-        ButtonStyler.applyStyle(deleteDeckButton);
-        ButtonStyler.applyStyle(editDeckButton);
-        ButtonStyler.applyStyle(backButton);
         setLayout(new BorderLayout(12, 12));
         setBackground(new Color(25, 25, 25));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -76,7 +72,7 @@ public class DeckListView extends JPanel implements Previewable {
         buttonPanel.setBackground(new Color(25, 25, 25));
         for (JButton btn : new JButton[] { addDeckButton, deleteDeckButton, editDeckButton, backButton }) {
             btn.setFont(new Font("SansSerif", Font.BOLD, 14));
-            btn.setFocusPainted(false);
+            ButtonStyler.applyStyle(btn);
             buttonPanel.add(btn);
         }
 
