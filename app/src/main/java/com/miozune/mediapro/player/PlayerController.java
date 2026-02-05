@@ -1,5 +1,6 @@
 package com.miozune.mediapro.player;
 
+import com.miozune.mediapro.util.ButtonStyler;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -64,16 +65,20 @@ public class PlayerController {
 
         // HP操作ボタン
         JButton damageBtn = new JButton("-10 HP");
+        ButtonStyler.applyStyle(damageBtn);
         damageBtn.addActionListener(e -> model.receiveDamage(10));
 
         JButton healBtn = new JButton("+20 HP");
+        ButtonStyler.applyStyle(healBtn);
         healBtn.addActionListener(e -> model.heal(20));
 
         // マナ操作ボタン
         JButton addManaBtn = new JButton("+1 Mana");
+        ButtonStyler.applyStyle(addManaBtn);
         addManaBtn.addActionListener(e -> model.addMana(1));
 
         JButton consumeManaBtn = new JButton("-2 Mana");
+        ButtonStyler.applyStyle(consumeManaBtn);
         consumeManaBtn.addActionListener(e -> {
             if (!model.consumeMana(2)) {
                 System.out.println("マナ不足！");
@@ -81,10 +86,12 @@ public class PlayerController {
         });
 
         JButton resetManaBtn = new JButton("Reset Mana");
+        ButtonStyler.applyStyle(resetManaBtn);
         resetManaBtn.addActionListener(e -> model.resetMana());
 
         // 名前変更ボタン
         JButton changeNameBtn = new JButton("Change Name");
+        ButtonStyler.applyStyle(changeNameBtn);
         changeNameBtn.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog(view, "新しい名前:", model.getName());
             if (newName != null && !newName.trim().isEmpty()) {

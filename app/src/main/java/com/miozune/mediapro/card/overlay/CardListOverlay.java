@@ -3,6 +3,7 @@ package com.miozune.mediapro.card.overlay;
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.card.events.ClickType;
+import com.miozune.mediapro.util.ButtonStyler;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -40,6 +41,7 @@ public class CardListOverlay extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         JButton closeButton = new JButton("× 閉じる");
         closeButton.setFont(new Font("Meiryo", Font.BOLD, 14));
+        ButtonStyler.applyStyle(closeButton);
         closeButton.addActionListener(e -> {
             if (onClose != null) {
                 onClose.run();

@@ -7,6 +7,7 @@ import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.card.CardTargetType;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.util.ButtonStyler;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -71,7 +72,7 @@ public class DeckListView extends JPanel implements Previewable {
         buttonPanel.setBackground(new Color(25, 25, 25));
         for (JButton btn : new JButton[] { addDeckButton, deleteDeckButton, editDeckButton, backButton }) {
             btn.setFont(new Font("SansSerif", Font.BOLD, 14));
-            btn.setFocusPainted(false);
+            ButtonStyler.applyStyle(btn);
             buttonPanel.add(btn);
         }
 

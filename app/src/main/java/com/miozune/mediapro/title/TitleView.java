@@ -1,6 +1,7 @@
 package com.miozune.mediapro.title;
 
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.util.ButtonStyler;
 import com.miozune.mediapro.util.ImageLoader;
 import com.miozune.mediapro.util.ImageUtils;
 import java.awt.*;
@@ -27,15 +28,11 @@ public class TitleView extends JPanel implements Previewable {
 
     private void initComponents() {
         startButton = new JButton("START");
-        startButton.setFont(new Font("Arial", Font.BOLD, 32));
-        startButton.setPreferredSize(new Dimension(180, 60));
-        startButton.setForeground(Color.BLACK);
-        startButton.setBackground(Color.WHITE);
-        startButton.setOpaque(true);
-        startButton.setBorderPainted(true);
-        startButton.setContentAreaFilled(true);
-        startButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        startButton.setFocusPainted(false);
+        startButton.setFont(new Font("Serif", Font.BOLD, 32));
+        startButton.setPreferredSize(new Dimension(240, 90));
+
+        // カスタムボタンスタイルを適用
+        ButtonStyler.applyStyle(startButton);
     }
 
     private void layoutComponents() {

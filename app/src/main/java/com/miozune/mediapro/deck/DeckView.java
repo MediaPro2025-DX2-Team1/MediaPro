@@ -9,6 +9,7 @@ import com.miozune.mediapro.card.CardTargetType;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.util.ButtonStyler;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -81,7 +82,7 @@ public class DeckView extends JPanel implements Previewable {
 
         Font btnFont = new Font("SansSerif", Font.BOLD, 16);
         backButton.setFont(btnFont);
-        backButton.setFocusPainted(false);
+        ButtonStyler.applyStyle(backButton);
     }
 
     private void layoutComponents() {

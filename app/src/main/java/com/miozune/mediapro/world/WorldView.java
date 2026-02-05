@@ -3,6 +3,7 @@ package com.miozune.mediapro.world;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.progress.ProgressModel;
 import com.miozune.mediapro.stage.StageFactory;
+import com.miozune.mediapro.util.ButtonStyler;
 import com.miozune.mediapro.util.ImageLoader;
 import com.miozune.mediapro.util.ImageUtils;
 import java.awt.BorderLayout;
@@ -51,19 +52,23 @@ public class WorldView extends JPanel implements Previewable {
     private void initComponents() {
         stageButton1 = new JButton("Stage 1");
         stageButton1.setPreferredSize(new Dimension(200, 60));
-        stageButton1.setFont(new Font("Arial", Font.BOLD, 24));
+        stageButton1.setFont(new Font("Serif", Font.BOLD, 24));
+        ButtonStyler.applyStyle(stageButton1);
 
         stageButton2 = new JButton("Stage 2");
         stageButton2.setPreferredSize(new Dimension(200, 60));
-        stageButton2.setFont(new Font("Arial", Font.BOLD, 24));
+        stageButton2.setFont(new Font("Serif", Font.BOLD, 24));
+        ButtonStyler.applyStyle(stageButton2);
 
         stageButton3 = new JButton("Stage 3");
         stageButton3.setPreferredSize(new Dimension(200, 60));
-        stageButton3.setFont(new Font("Arial", Font.BOLD, 24));
+        stageButton3.setFont(new Font("Serif", Font.BOLD, 24));
+        ButtonStyler.applyStyle(stageButton3);
 
         deckListButton = new JButton("Decks");
         deckListButton.setPreferredSize(new Dimension(200, 40));
-        deckListButton.setFont(new Font("Arial", Font.BOLD, 18));
+        deckListButton.setFont(new Font("Serif", Font.BOLD, 18));
+        ButtonStyler.applyStyle(deckListButton);
     }
 
     private void layoutComponents() {
@@ -75,7 +80,7 @@ public class WorldView extends JPanel implements Previewable {
 
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(200, 0, 10, 0));
         titlePanel.add(titleLabel);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());

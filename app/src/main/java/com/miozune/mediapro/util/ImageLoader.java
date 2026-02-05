@@ -28,6 +28,9 @@ public final class ImageLoader {
     /** エンティティ画像のベースパス */
     public static final String ENTITIES_PATH = "/images/entities/";
 
+    /** ボタン画像のベースパス */
+    public static final String BUTTONS_PATH = "/images/buttons/";
+
     private ImageLoader() {}
 
     /**
@@ -99,6 +102,20 @@ public final class ImageLoader {
             return null;
         }
         return loadImage(ENTITIES_PATH + fileName);
+    }
+
+    /**
+     * ボタン画像を読み込む。
+     * "/images/buttons/" をベースパスとして、指定されたファイル名の画像を読み込む。
+     *
+     * @param fileName ボタン画像のファイル名（例: "stone.png"）
+     * @return 読み込んだ画像、読み込みに失敗した場合はnull
+     */
+    public static BufferedImage loadButtonImage(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
+        }
+        return loadImage(BUTTONS_PATH + fileName);
     }
 
     /**
