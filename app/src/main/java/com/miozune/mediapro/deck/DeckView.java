@@ -1,6 +1,5 @@
 package com.miozune.mediapro.deck;
 
-import com.miozune.mediapro.action.CardAction;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 import com.miozune.mediapro.action.HealSelfActionEffect;
 import com.miozune.mediapro.card.CardBadgeView;
@@ -237,14 +236,14 @@ public class DeckView extends JPanel implements Previewable {
             3,
             "fireball.png",
             "火の玉を投げる",
-            CardAction.of(new DamageSingleEnemyActionEffect(10)),
+            new DamageSingleEnemyActionEffect(10),
             CardTargetType.SINGLE_ENEMY);
         CardRecipeModel dummyCard2 = new CardRecipeModel(
             "ヒール",
             2,
             "heal.png",
             "HPを回復する",
-            CardAction.of(new HealSelfActionEffect(6)),
+            new HealSelfActionEffect(6),
             CardTargetType.SELF);
         model.addCard(dummyCard1);
         model.addCard(dummyCard1);

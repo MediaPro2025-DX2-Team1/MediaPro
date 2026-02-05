@@ -1,6 +1,7 @@
 package com.miozune.mediapro.card;
 
-import com.miozune.mediapro.action.CardAction;
+import com.miozune.mediapro.action.ActionEffect;
+import com.miozune.mediapro.action.CompositeActionEffect;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 
 /**
@@ -11,7 +12,7 @@ import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
  * @param cost        コスト
  * @param imageName   画像ファイル名（例: "card_001.jpg"）
  * @param description 説明文
- * @param cardAction  複合効果
+ * @param cardAction  カード効果
  * @param targetType  必要なターゲットの種別
  */
 public record CardRecipeModel(
@@ -19,7 +20,7 @@ public record CardRecipeModel(
     int cost,
     String imageName,
     String description,
-     CardAction cardAction,
+     ActionEffect cardAction,
      CardTargetType targetType) {
 
     /**
@@ -34,7 +35,7 @@ public record CardRecipeModel(
                 3,
                 "sample.jpg",
                 "これはサンプルカードの説明文です。カードの効果や特徴などを記載します。",
-            CardAction.of(new DamageSingleEnemyActionEffect(5)),
+            CompositeActionEffect.of(new DamageSingleEnemyActionEffect(5)),
             CardTargetType.SINGLE_ENEMY);
     }
 }
