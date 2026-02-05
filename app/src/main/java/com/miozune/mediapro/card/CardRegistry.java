@@ -37,7 +37,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "スラッシュ",
             1,
-            "slash.jpg",
+            "slash.png",
             "敵1体に6ダメージを与える。",
             new DamageSingleEnemyActionEffect(6),
             CardTargetType.SINGLE_ENEMY));
@@ -45,7 +45,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "ブロック",
             1,
-            "block.jpg",
+            "block.png",
             "自分は5シールドを得る。",
             new AddShieldActionEffect(5),
             CardTargetType.SELF));
@@ -53,7 +53,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "鎧砕き",
             2,
-            "armor_break.jpg",
+            "armor_break.png",
             "敵1体に8ダメージ。弱体2ターンを与える。",
             CompositeActionEffect.of(
                 new DamageSingleEnemyActionEffect(8),
@@ -63,7 +63,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "チャージ",
             1,
-            "supply.jpg",
+            "charge.png",
             "山札からカードを2枚引く。",
             new DrawCardsActionEffect(2),
             CardTargetType.NONE));
@@ -71,7 +71,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "リカバリー",
             1,
-            "recovery.jpg",
+            "recovery.png",
             "自分のHPを3回復する。",
             new HealSelfActionEffect(3),
             CardTargetType.SELF));
@@ -79,7 +79,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "激昂",
             1,
-            "rage.jpg",
+            "rage.png",
             "自分は筋力2を得る。",
             new ApplyStrengthActionEffect(2),
             CardTargetType.SELF));
@@ -87,7 +87,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "ツインスラッシュ",
             1,
-            "twin_slash.jpg",
+            "twin_slash.png",
             "敵1体に5ダメージを2回与える。",
             new MultiHitSingleEnemyActionEffect(5, 2),
             CardTargetType.SINGLE_ENEMY));
@@ -95,7 +95,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "薙ぎ払い",
             1,
-            "cleave.jpg",
+            "cleave.png",
             "すべての敵に4ダメージを与える。",
             new DamageAllEnemiesActionEffect(4),
             CardTargetType.ALL_ENEMIES));
@@ -103,7 +103,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "諸刃の剣",
             1,
-            "double_edge.jpg",
+            "double_edge.png",
             "自分は2ダメージを受ける。敵1体に12ダメージを与える。",
             CompositeActionEffect.of(
                 new SelfDamageActionEffect(2),
@@ -113,7 +113,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "渾身の一刀",
             2,
-            "all_out_strike.jpg",
+            "all_out_strike.png",
             "手札をすべて捨てる。敵1体に捨てた枚数×7ダメージを与える。",
             new AllOutStrikeActionEffect(7),
             CardTargetType.SINGLE_ENEMY));
@@ -121,7 +121,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "火事場の馬鹿力",
             2,
-            "desperation.jpg",
+            "desperation.png",
             "自分は4ダメージを受ける。すべての敵に20ダメージを与える。",
             CompositeActionEffect.of(
                 new SelfDamageActionEffect(4),
@@ -131,7 +131,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "ソード＆チャージ",
             1,
-            "feint.jpg",
+            "sword_charge.png",
             "敵1体に6ダメージを与える。山札からカードを1枚引く。",
             CompositeActionEffect.of(
                 new DamageSingleEnemyActionEffect(6),
@@ -141,7 +141,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "シールド＆チャージ",
             1,
-            "salvage.jpg",
+            "shield_charge.png",
             "自分は7シールドを得る。山札からカードを1枚引く。",
             CompositeActionEffect.of(
                 new AddShieldActionEffect(7),
@@ -152,7 +152,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "旋風刃",
             X,
-            "whirlwind_blade.jpg",
+            "whirlwind_blade.png",
             "エナジーをすべて消費する。すべての敵に5ダメージをX回与える。",
             new WhirlwindBladeActionEffect()));
         */
@@ -160,7 +160,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "ドレイン",
             1,
-            "drain.jpg",
+            "drain.png",
             "敵1体に6ダメージを与える。この攻撃で敵を倒した場合、自分のHPを2回復する。",
             new DrainActionEffect(6, 2),
             CardTargetType.SINGLE_ENEMY));
@@ -168,7 +168,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "精神統一",
             0,
-            "meditation.jpg",
+            "meditation.png",
             "エナジーを1回復する。",
             new RestoreManaActionEffect(1),
             CardTargetType.SELF));
@@ -176,7 +176,7 @@ public final class CardRegistry {
         register(new CardRecipeModel(
             "威嚇",
             2,
-            "intimidate.jpg",
+            "intimidate.png",
             "自分は12シールドを得る。すべての敵に弱体3ターンを与える。",
             CompositeActionEffect.of(
                 new AddShieldActionEffect(12),

@@ -22,18 +22,6 @@ public class CardView extends JPanel implements Previewable {
     /** カードのアスペクト比（幅:高さ = 5:7） */
     private static final double ASPECT_RATIO = 5.0 / 7.0;
 
-    /** カードの角の丸み */
-    private static final int CORNER_RADIUS = 12;
-
-    /** カードの枠線の太さ */
-    private static final int BORDER_WIDTH = 2;
-
-    /** カードの背景色 */
-    private static final Color CARD_BACKGROUND = new Color(250, 245, 235);
-
-    /** カードの枠線色 */
-    private static final Color CARD_BORDER = new Color(60, 60, 60);
-
     /** コスト表示の背景色 */
     private static final Color COST_BACKGROUND = new Color(65, 105, 225);
 
@@ -125,6 +113,7 @@ public class CardView extends JPanel implements Previewable {
 
     /**
      * カードを描画する。
+     * 新形式：外枠込み画像を全面表示し、その上にテキストをオーバーレイ。
      *
      * @param g2d Graphics2Dオブジェクト
      * @param x X座標
@@ -133,93 +122,55 @@ public class CardView extends JPanel implements Previewable {
      * @param height カードの高さ
      */
     private void drawCard(Graphics2D g2d, int x, int y, int width, int height) {
-        int cornerRadius = (int) (CORNER_RADIUS * width / (double) DEFAULT_WIDTH);
+        // 背景画像を全面描画（外枠込み）
+        drawCardImage(g2d, x, y, width, height);
 
-        // カード背景
-        g2d.setColor(CARD_BACKGROUND);
-        g2d.fillRoundRect(x, y, width, height, cornerRadius, cornerRadius);
+        // 左右のパディング
+        int textPadding = width / 13;
+        int textX = x + textPadding;
+        int textWidth = width - textPadding * 2;
 
-        // カード枠線
-        g2d.setColor(CARD_BORDER);
-        int borderWidth = Math.max(1, (int) (BORDER_WIDTH * width / (double) DEFAULT_WIDTH));
-        g2d.setStroke(new BasicStroke(borderWidth));
-        g2d.drawRoundRect(x, y, width - 1, height - 1, cornerRadius, cornerRadius);
+        // カード名の位置（カード上端からの割合で直接指定）
+        int nameY = y + (int) (height * 0.04);
+        drawCardName(g2d, textX, nameY, textWidth, width);
 
-        // 内部のパディング
-        int padding = width / 12;
-        int innerX = x + padding;
-        int innerWidth = width - padding * 2;
-
-        // 画像エリアの高さ（カード高さの約45%）
-        int imageAreaY = y + padding;
-        int imageAreaHeight = (int) (height * 0.45);
-
-        // 画像を描画
-        drawCardImage(g2d, innerX, imageAreaY, innerWidth, imageAreaHeight);
-
-        // カード名を描画
-        int nameY = imageAreaY + imageAreaHeight + padding / 2;
-        int nameHeight = (int) (height * 0.12);
-        drawCardName(g2d, innerX, nameY, innerWidth, nameHeight, width);
-
-        // 説明文を描画
-        int descY = nameY + nameHeight + padding / 4;
-        int descHeight = y + height - descY - padding;
-        drawDescription(g2d, innerX, descY, innerWidth, descHeight, width);
+        // 説明文の位置（カード上端からの割合で直接指定）
+        int descY = y + (int) (height * 0.75);
+        int descBottomY = y + (int) (height * 0.95); // 説明文の下端（下に5%余白）
+        int descHeight = descBottomY - descY;
+        drawDescription(g2d, textX, descY, textWidth, descHeight, width);
 
         // コストを描画（左上）
-        drawCost(g2d, x, y, width);
+        drawCost(g2d, x, y, width, height);
     }
 
     /**
-     * カード画像を描画する。
+     * カード画像を全面描画する（外枠込み画像）。
      */
     private void drawCardImage(Graphics2D g2d, int x, int y, int width, int height) {
-        // 画像エリアの背景
-        g2d.setColor(new Color(220, 220, 220));
-        g2d.fillRect(x, y, width, height);
-
         if (cardImage != null) {
-            // 画像をアスペクト比を維持してフィット
-            double imgAspect = (double) cardImage.getWidth() / cardImage.getHeight();
-            double areaAspect = (double) width / height;
-
-            int drawWidth, drawHeight, drawX, drawY;
-            if (imgAspect > areaAspect) {
-                drawWidth = width;
-                drawHeight = (int) (width / imgAspect);
-                drawX = x;
-                drawY = y + (height - drawHeight) / 2;
-            } else {
-                drawHeight = height;
-                drawWidth = (int) (height * imgAspect);
-                drawX = x + (width - drawWidth) / 2;
-                drawY = y;
-            }
-
-            g2d.drawImage(cardImage, drawX, drawY, drawWidth, drawHeight, null);
+            // 画像を全面にフィット描画
+            g2d.drawImage(cardImage, x, y, width, height, null);
         } else {
-            // 画像がない場合はプレースホルダーを表示
-            g2d.setColor(new Color(180, 180, 180));
-            g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, Math.max(10, width / 8)));
+            // 画像がない場合はフォールバック表示
+            g2d.setColor(new Color(200, 200, 200));
+            g2d.fillRect(x, y, width, height);
+
+            g2d.setColor(new Color(100, 100, 100));
+            g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, Math.max(12, width / 10)));
             String placeholder = "No Image";
             FontMetrics fm = g2d.getFontMetrics();
             int textX = x + (width - fm.stringWidth(placeholder)) / 2;
             int textY = y + (height + fm.getAscent()) / 2;
             g2d.drawString(placeholder, textX, textY);
         }
-
-        // 画像エリアの枠線
-        g2d.setColor(CARD_BORDER);
-        g2d.drawRect(x, y, width, height);
     }
 
     /**
-     * カード名を描画する。
+     * カード名を描画する（画像上にオーバーレイ、視認性向上のため縁取り付き）。
      */
-    private void drawCardName(Graphics2D g2d, int x, int y, int width, int height, int cardWidth) {
-        g2d.setColor(Color.BLACK);
-        int fontSize = Math.max(10, cardWidth / 10);
+    private void drawCardName(Graphics2D g2d, int x, int y, int width, int cardWidth) {
+        int fontSize = Math.max(10, cardWidth / 13);
         g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
 
         FontMetrics fm = g2d.getFontMetrics();
@@ -233,17 +184,18 @@ public class CardView extends JPanel implements Previewable {
             name = name + "...";
         }
 
+        // 本体テキスト
         int textX = x + (width - fm.stringWidth(name)) / 2;
-        int textY = y + (height + fm.getAscent()) / 2 - fm.getDescent() / 2;
-        g2d.drawString(name, textX, textY);
+        int textY = y + fm.getAscent();
+        drawTextWithOutline(g2d, name, textX, textY, Math.max(1, fontSize / 14));
     }
 
     /**
-     * 説明文を描画する。
+     * 説明文を描画する（画像上にオーバーレイ）。
      */
     private void drawDescription(Graphics2D g2d, int x, int y, int width, int height, int cardWidth) {
-        g2d.setColor(new Color(60, 60, 60));
-        int fontSize = Math.max(8, cardWidth / 14);
+        g2d.setColor(Color.BLACK);
+        int fontSize = Math.max(8, cardWidth / 16);
         g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
 
         FontMetrics fm = g2d.getFontMetrics();
@@ -252,7 +204,7 @@ public class CardView extends JPanel implements Previewable {
         // 複数行に分割して描画
         int lineHeight = fm.getHeight();
         int currentY = y + fm.getAscent();
-        int maxLines = height / lineHeight;
+        int maxLines = Math.max(1, height / lineHeight);
 
         String[] words = desc.split("");
         StringBuilder line = new StringBuilder();
@@ -262,7 +214,7 @@ public class CardView extends JPanel implements Previewable {
             String testLine = line.toString() + word;
             if (fm.stringWidth(testLine) > width && line.length() > 0) {
                 // 現在の行を描画
-                if (lineCount >= maxLines - 1 && words.length > 0) {
+                if (lineCount >= maxLines - 1) {
                     // 最後の行で残りがある場合は省略
                     String finalLine = line.toString();
                     while (finalLine.length() > 0 && fm.stringWidth(finalLine + "...") > width) {
@@ -287,12 +239,30 @@ public class CardView extends JPanel implements Previewable {
     }
 
     /**
-     * コストを描画する。
+     * テキストを縁取り付きで描画する。
      */
-    private void drawCost(Graphics2D g2d, int cardX, int cardY, int cardWidth) {
-        int size = cardWidth / 4;
-        int x = cardX + cardWidth / 20;
-        int y = cardY + cardWidth / 20;
+    private void drawTextWithOutline(Graphics2D g2d, String text, int x, int y, int outlineWidth) {
+        // 白い縁取り
+        g2d.setColor(Color.WHITE);
+        for (int dx = -outlineWidth; dx <= outlineWidth; dx++) {
+            for (int dy = -outlineWidth; dy <= outlineWidth; dy++) {
+                if (dx != 0 || dy != 0) {
+                    g2d.drawString(text, x + dx, y + dy);
+                }
+            }
+        }
+        // 本体テキスト（黒）
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(text, x, y);
+    }
+
+    /**
+     * コストを描画する（左上の円形バッジ）。
+     */
+    private void drawCost(Graphics2D g2d, int cardX, int cardY, int cardWidth, int cardHeight) {
+        int size = cardWidth / 8;
+        int x = cardX + cardWidth / 25;
+        int y = cardY + cardHeight / 25;
 
         // コスト背景（円）
         g2d.setColor(COST_BACKGROUND);
@@ -300,12 +270,12 @@ public class CardView extends JPanel implements Previewable {
 
         // コスト枠線
         g2d.setColor(Color.WHITE);
-        g2d.setStroke(new BasicStroke(Math.max(1, size / 15)));
+        g2d.setStroke(new BasicStroke(Math.max(1, size / 12)));
         g2d.drawOval(x, y, size, size);
 
         // コスト数値
         g2d.setColor(COST_TEXT_COLOR);
-        int fontSize = Math.max(10, size * 2 / 3);
+        int fontSize = Math.max(12, size * 2 / 3);
         g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
 
         String costStr = String.valueOf(cardModel.cost());
