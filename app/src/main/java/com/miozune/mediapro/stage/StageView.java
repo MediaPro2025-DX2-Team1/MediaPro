@@ -17,6 +17,7 @@ import com.miozune.mediapro.stage.events.OverlayClosedEvent;
 import com.miozune.mediapro.stage.events.OverlayEvent;
 import com.miozune.mediapro.ui.overlay.OverlayLayer;
 import com.miozune.mediapro.ui.overlay.OverlayPanels;
+import com.miozune.mediapro.util.ButtonStyler;
 import com.miozune.mediapro.util.ImageLoader;
 import com.miozune.mediapro.util.ImageUtils;
 import java.awt.*;
@@ -176,7 +177,7 @@ public class StageView extends JPanel implements Previewable {
         Font btnFont = new Font("SansSerif", Font.BOLD, 16);
         for (JButton btn : new JButton[] { deckButton, discardButton, endTurnButton }) {
             btn.setFont(btnFont);
-            btn.setFocusPainted(false);
+            ButtonStyler.applyStyle(btn);
             actionPanel.add(btn);
         }
 
@@ -519,6 +520,7 @@ public class StageView extends JPanel implements Previewable {
         JButton okButton = new JButton("OK");
         okButton.setFont(new Font("Meiryo", Font.BOLD, 18));
         okButton.setPreferredSize(new Dimension(120, 40));
+        ButtonStyler.applyStyle(okButton);
         okButton.addActionListener(e -> {
             hideOverlay();
             fireOverlayEvent(new BattleResultOkEvent(isVictory));
