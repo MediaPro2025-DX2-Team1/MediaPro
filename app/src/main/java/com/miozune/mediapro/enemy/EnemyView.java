@@ -70,6 +70,9 @@ public class EnemyView extends JPanel implements Previewable {
         modelListener = event -> {
             if (event instanceof EnemyHpChangedEvent hpChanged) {
                 statusView.updateHp(hpChanged.newHp(), model.getMaxHp());
+                if (hpChanged.newHp() <= 0) {
+                    statusView.updateImage(null, 1.0);
+                }
                 return;
             }
             if (event instanceof EnemyNameChangedEvent nameChanged) {
