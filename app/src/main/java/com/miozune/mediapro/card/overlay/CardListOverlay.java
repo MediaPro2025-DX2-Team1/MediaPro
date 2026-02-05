@@ -4,6 +4,7 @@ import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardView;
 import com.miozune.mediapro.card.events.ClickType;
 import com.miozune.mediapro.util.ButtonStyler;
+import com.miozune.mediapro.util.ScrollablePanel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -68,11 +69,12 @@ public class CardListOverlay extends JPanel {
                 cardGrid.add(cardView);
             }
         }
-        JPanel gridWrapper = new JPanel(new BorderLayout());
+        JPanel gridWrapper = new ScrollablePanel(new BorderLayout());
         gridWrapper.setOpaque(false);
         gridWrapper.add(cardGrid, BorderLayout.NORTH);
 
         JScrollPane scrollPane = new JScrollPane(gridWrapper);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(null);
@@ -80,5 +82,25 @@ public class CardListOverlay extends JPanel {
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         add(contentPanel, BorderLayout.CENTER);
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension original = super.getPreferredSize();
+        Container parent = getParent();
+        if (parent != null && parent.getWidth() > 0 && parent.getHeight() > 0) {
+            int maxW = (int) (parent.getWidth() * 0.9);
+            int maxH = (int) (parent.getHeight() * 0.9);
+            return new Dimension(
+                Math.min(original.width, maxW),
+                Math.min(original.height, maxH)
+            );
+        }
+        return original;
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 }
