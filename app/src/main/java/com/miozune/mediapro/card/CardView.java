@@ -194,6 +194,7 @@ public class CardView extends JPanel implements Previewable {
      * 説明文を描画する（画像上にオーバーレイ）。
      */
     private void drawDescription(Graphics2D g2d, int x, int y, int width, int height, int cardWidth) {
+        g2d.setColor(Color.BLACK);
         int fontSize = Math.max(8, cardWidth / 16);
         g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
 
@@ -208,7 +209,6 @@ public class CardView extends JPanel implements Previewable {
         String[] words = desc.split("");
         StringBuilder line = new StringBuilder();
         int lineCount = 0;
-        int outlineWidth = Math.max(1, fontSize / 14);
 
         for (String word : words) {
             String testLine = line.toString() + word;
@@ -223,7 +223,6 @@ public class CardView extends JPanel implements Previewable {
                     g2d.drawString(finalLine + "...", x, currentY);
                     return;
                 }
-                // drawTextWithOutline(g2d, line.toString(), x, currentY, outlineWidth);
                 g2d.drawString(line.toString(), x, currentY);
                 currentY += lineHeight;
                 lineCount++;
@@ -235,7 +234,6 @@ public class CardView extends JPanel implements Previewable {
 
         // 残りのテキストを描画
         if (line.length() > 0 && lineCount < maxLines) {
-            // drawTextWithOutline(g2d, line.toString(), x, currentY, outlineWidth);
             g2d.drawString(line.toString(), x, currentY);
         }
     }
