@@ -47,3 +47,7 @@ spotless {
         endWithNewline()
     }
 }
+
+tasks.named("compileJava") {
+    dependsOn("spotlessApply")
+}

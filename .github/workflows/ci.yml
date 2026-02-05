@@ -21,7 +21,9 @@ jobs:
           distribution: "temurin"
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
-      - name: Build with Gradle Wrapper
+      - name: Check spotless
+        run: ./gradlew spotlessCheck
+      - name: Build
         run: ./gradlew build
       - name: Check for Fully Qualified Names
         run: |
