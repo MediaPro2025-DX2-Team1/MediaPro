@@ -2,6 +2,7 @@ package com.miozune.mediapro.action;
 
 import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.discard.DiscardModel;
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.hand.HandModel;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public final class AllOutStrikeActionEffect implements ActionEffect {
 
         int attackDamage = context.player().applyOutgoingDamageModifiers(totalDamage);
         target.receiveDamage(attackDamage);
+        context.stage().triggerEffect(EffectType.PLAYER_ATTACK, target);
         return true;
     }
 }

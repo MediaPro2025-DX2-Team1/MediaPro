@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
@@ -23,6 +24,7 @@ public final class ApplyWeaknessToAllEnemiesActionEffect implements ActionEffect
         for (EnemyModel enemy : context.enemies()) {
             if (enemy != null && !enemy.isDead()) {
                 enemy.addWeakness(turns);
+                context.stage().triggerEffect(EffectType.DEBUFF, enemy);
             }
         }
         return true;

@@ -1,5 +1,6 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
 import com.miozune.mediapro.enemy.EnemyModel;
 
 /**
@@ -24,9 +25,11 @@ public final class DrainActionEffect implements ActionEffect {
         int attackDamage = context.player().applyOutgoingDamageModifiers(baseDamage);
         int beforeHp = target.getHp();
         target.receiveDamage(attackDamage);
+        context.stage().triggerEffect(EffectType.PLAYER_ATTACK, target);
 
         if (beforeHp > 0 && target.isDead()) {
             context.player().heal(healAmount);
+            context.stage().triggerEffect(EffectType.HEAL, context.player());
         }
         return true;
     }

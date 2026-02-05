@@ -1,5 +1,7 @@
 package com.miozune.mediapro.action;
 
+import com.miozune.mediapro.effect.EffectType;
+
 /**
  * シールドを得る。
  */
@@ -16,6 +18,8 @@ public final class AddShieldActionEffect implements ActionEffect {
             return true;
         }
         context.player().addShield(amount);
+        context.stage().triggerEffect(EffectType.SHIELD, context.player());
+
         return true;
     }
 }
