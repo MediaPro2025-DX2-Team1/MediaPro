@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  */
 public final class CardBadgeView extends JPanel implements Previewable {
 
-    private static final Color BADGE_BACKGROUND = new Color(0, 0, 0, 200);
+    private static final Color BADGE_BACKGROUND = new Color(0, 0, 0, 120);
     private static final Color BADGE_FOREGROUND = Color.WHITE;
     private static final Font BADGE_FONT = new Font("SansSerif", Font.BOLD, 14);
 
