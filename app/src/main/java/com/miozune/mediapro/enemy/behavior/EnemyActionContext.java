@@ -39,7 +39,7 @@ public class EnemyActionContext {
 
     public void addShieldToSelf(int amount) {
         self.addShield(amount, true); // 敵のシールドは永続
-        stage.triggerEffect(EffectType.BUFF, self);
+        stage.triggerEffect(EffectType.SHIELD, self);
     }
 
     public void addStrengthToSelf(int bonus) {
