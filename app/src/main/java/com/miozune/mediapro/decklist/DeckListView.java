@@ -1,7 +1,6 @@
 package com.miozune.mediapro.decklist;
 
 import com.miozune.mediapro.action.AddShieldActionEffect;
-import com.miozune.mediapro.action.CardAction;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 import com.miozune.mediapro.card.CardBadgeView;
 import com.miozune.mediapro.card.CardRecipeModel;
@@ -137,7 +136,7 @@ public class DeckListView extends JPanel implements Previewable {
             2,
             "blaze.png",
             "炎の一撃",
-            CardAction.of(new DamageSingleEnemyActionEffect(8)),
+            new DamageSingleEnemyActionEffect(8),
             CardTargetType.SINGLE_ENEMY);
         fireDeck.addCard(blaze);
         fireDeck.addCard(blaze);
@@ -148,14 +147,14 @@ public class DeckListView extends JPanel implements Previewable {
             1,
             "ice.png",
             "冷気の矢",
-            CardAction.of(new DamageSingleEnemyActionEffect(4)),
+            new DamageSingleEnemyActionEffect(4),
             CardTargetType.SINGLE_ENEMY);
         CardRecipeModel barrier = new CardRecipeModel(
             "Barrier",
             1,
             "barrier.png",
             "氷の防壁",
-            CardAction.of(new AddShieldActionEffect(3)),
+            new AddShieldActionEffect(3),
             CardTargetType.SELF);
         frostDeck.addCard(iceShard);
         frostDeck.addCard(iceShard);

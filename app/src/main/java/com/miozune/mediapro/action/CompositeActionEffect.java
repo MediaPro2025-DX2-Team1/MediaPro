@@ -5,28 +5,26 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * カードが持つ複合効果。
+ * 複数の {@link ActionEffect} を組み合わせた複合効果。
+ * Composite Patternの実装で、単一効果と同じように扱える。
  */
-public final class CardAction {
+public final class CompositeActionEffect implements ActionEffect {
     private final List<ActionEffect> actions;
 
-    public CardAction(List<ActionEffect> actions) {
+    public CompositeActionEffect(List<ActionEffect> actions) {
         this.actions = List.copyOf(actions);
     }
 
-    public static CardAction of(ActionEffect... effects) {
+    public static CompositeActionEffect of(ActionEffect... effects) {
         List<ActionEffect> list = new ArrayList<>();
         if (effects != null) {
             Collections.addAll(list, effects);
         }
-        return new CardAction(list);
+        return new CompositeActionEffect(list);
     }
 
-    public List<ActionEffect> actions() {
-        return actions;
-    }
-
-    public boolean execute(ActionContext context) {
+    @Override
+    public boolean apply(ActionContext context) {
         boolean success = true;
         for (ActionEffect effect : actions) {
             boolean result = effect.apply(context);

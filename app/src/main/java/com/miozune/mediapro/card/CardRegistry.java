@@ -4,7 +4,7 @@ import com.miozune.mediapro.action.AddShieldActionEffect;
 import com.miozune.mediapro.action.AllOutStrikeActionEffect;
 import com.miozune.mediapro.action.ApplyStrengthActionEffect;
 import com.miozune.mediapro.action.ApplyWeaknessActionEffect;
-import com.miozune.mediapro.action.CardAction;
+import com.miozune.mediapro.action.CompositeActionEffect;
 import com.miozune.mediapro.action.DamageAllEnemiesActionEffect;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 import com.miozune.mediapro.action.DrainActionEffect;
@@ -39,7 +39,7 @@ public final class CardRegistry {
             1,
             "slash.jpg",
             "敵1体に5ダメージを与える。",
-            CardAction.of(new DamageSingleEnemyActionEffect(5)),
+            new DamageSingleEnemyActionEffect(5),
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
@@ -47,7 +47,7 @@ public final class CardRegistry {
             1,
             "block.jpg",
             "自分は5シールドを得る。",
-            CardAction.of(new AddShieldActionEffect(5)),
+            new AddShieldActionEffect(5),
             CardTargetType.SELF));
 
         register(new CardRecipeModel(
@@ -55,7 +55,7 @@ public final class CardRegistry {
             2,
             "armor_break.jpg",
             "敵1体に8ダメージ。弱体2ターンを与える。",
-            CardAction.of(
+            CompositeActionEffect.of(
                 new DamageSingleEnemyActionEffect(8),
                 new ApplyWeaknessActionEffect(2)),
             CardTargetType.SINGLE_ENEMY));
@@ -65,7 +65,7 @@ public final class CardRegistry {
             1,
             "supply.jpg",
             "山札からカードを2枚引く。",
-            CardAction.of(new DrawCardsActionEffect(2)),
+            new DrawCardsActionEffect(2),
             CardTargetType.NONE));
 
         register(new CardRecipeModel(
@@ -73,7 +73,7 @@ public final class CardRegistry {
             1,
             "recovery.jpg",
             "自分のHPを3回復する。",
-            CardAction.of(new HealSelfActionEffect(3)),
+            new HealSelfActionEffect(3),
             CardTargetType.SELF));
 
         register(new CardRecipeModel(
@@ -81,7 +81,7 @@ public final class CardRegistry {
             1,
             "rage.jpg",
             "自分は筋力2を得る。",
-            CardAction.of(new ApplyStrengthActionEffect(2)),
+            new ApplyStrengthActionEffect(2),
             CardTargetType.SELF));
 
         register(new CardRecipeModel(
@@ -89,7 +89,7 @@ public final class CardRegistry {
             1,
             "twin_slash.jpg",
             "敵1体に5ダメージを2回与える。",
-            CardAction.of(new MultiHitSingleEnemyActionEffect(5, 2)),
+            new MultiHitSingleEnemyActionEffect(5, 2),
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
@@ -97,7 +97,7 @@ public final class CardRegistry {
             1,
             "cleave.jpg",
             "すべての敵に4ダメージを与える。",
-            CardAction.of(new DamageAllEnemiesActionEffect(4)),
+            new DamageAllEnemiesActionEffect(4),
             CardTargetType.ALL_ENEMIES));
 
         register(new CardRecipeModel(
@@ -105,7 +105,7 @@ public final class CardRegistry {
             1,
             "double_edge.jpg",
             "自分は2ダメージを受ける。敵1体に12ダメージを与える。",
-            CardAction.of(
+            CompositeActionEffect.of(
                 new SelfDamageActionEffect(2),
                 new DamageSingleEnemyActionEffect(12)),
             CardTargetType.SINGLE_ENEMY));
@@ -115,8 +115,7 @@ public final class CardRegistry {
             2,
             "all_out_strike.jpg",
             "手札をすべて捨てる。敵1体に捨てた枚数×7ダメージを与える。",
-            CardAction.of(
-                new AllOutStrikeActionEffect(7)),
+            new AllOutStrikeActionEffect(7),
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
@@ -124,7 +123,7 @@ public final class CardRegistry {
             2,
             "desperation.jpg",
             "自分は4ダメージを受ける。すべての敵に20ダメージを与える。",
-            CardAction.of(
+            CompositeActionEffect.of(
                 new SelfDamageActionEffect(4),
                 new DamageAllEnemiesActionEffect(20)),
             CardTargetType.ALL_ENEMIES));
@@ -134,7 +133,7 @@ public final class CardRegistry {
             1,
             "feint.jpg",
             "敵1体に6ダメージを与える。山札からカードを1枚引く。",
-            CardAction.of(
+            CompositeActionEffect.of(
                 new DamageSingleEnemyActionEffect(6),
                 new DrawCardsActionEffect(1)),
             CardTargetType.SINGLE_ENEMY));
@@ -144,7 +143,7 @@ public final class CardRegistry {
             1,
             "salvage.jpg",
             "自分は7シールドを得る。山札からカードを1枚引く。",
-            CardAction.of(
+            CompositeActionEffect.of(
                 new AddShieldActionEffect(7),
                 new DrawCardsActionEffect(1)),
             CardTargetType.NONE));
@@ -155,8 +154,7 @@ public final class CardRegistry {
             X,
             "whirlwind_blade.jpg",
             "エナジーをすべて消費する。すべての敵に5ダメージをX回与える。",
-            CardAction.of(
-                new WhirlwindBladeActionEffect())));
+            new WhirlwindBladeActionEffect()));
         */
 
         register(new CardRecipeModel(
@@ -164,8 +162,7 @@ public final class CardRegistry {
             1,
             "drain.jpg",
             "敵1体に6ダメージを与える。この攻撃で敵を倒した場合、自分のHPを2回復する。",
-            CardAction.of(
-                new DrainActionEffect(6, 2)),
+            new DrainActionEffect(6, 2),
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
@@ -173,8 +170,7 @@ public final class CardRegistry {
             0,
             "meditation.jpg",
             "エナジーを1回復する。",
-            CardAction.of(
-                new RestoreManaActionEffect(1)),
+            new RestoreManaActionEffect(1),
             CardTargetType.SELF));
 
         register(new CardRecipeModel(
@@ -182,7 +178,7 @@ public final class CardRegistry {
             2,
             "intimidate.jpg",
             "自分は12シールドを得る。すべての敵に弱体3ターンを与える。",
-            CardAction.of(
+            CompositeActionEffect.of(
                 new AddShieldActionEffect(12),
                 new ApplyWeaknessActionEffect(3)),
             CardTargetType.ALL_ENEMIES));

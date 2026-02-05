@@ -1,6 +1,6 @@
 package com.miozune.mediapro.card;
 
-import com.miozune.mediapro.action.CardAction;
+import com.miozune.mediapro.action.ActionEffect;
 
 /**
  * バトル中に使用される具体的なカードインスタンス。
@@ -38,7 +38,7 @@ public final class CardModel {
         return recipe.targetType();
     }
 
-    public CardAction action() {
+    public ActionEffect action() {
         return recipe.cardAction();
     }
 
