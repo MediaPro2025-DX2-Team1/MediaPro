@@ -114,20 +114,26 @@ public final class DeckListModel {
         CardRecipeModel slash = registry.find("スラッシュ");
         CardRecipeModel block = registry.find("ブロック");
         CardRecipeModel armorBreak = registry.find("鎧砕き");
+        CardRecipeModel twinSlash = registry.find("ツインスラッシュ");
+        CardRecipeModel doubleEdgedSword = registry.find("諸刃の剣");
+        CardRecipeModel recovery = registry.find("リカバリー");
+        if (slash == null) throw new IllegalStateException("Default card 'スラッシュ' not found in CardRegistry");
+        if (block == null) throw new IllegalStateException("Default card 'ブロック' not found in CardRegistry");
+        if (armorBreak == null) throw new IllegalStateException("Default card '鎧砕き' not found in CardRegistry");
+        if (twinSlash == null) throw new IllegalStateException("Default card 'ツインスラッシュ' not found in CardRegistry");
+        if (doubleEdgedSword == null) throw new IllegalStateException("Default card '諸刃の剣' not found in CardRegistry");
+        if (recovery == null) throw new IllegalStateException("Default card 'リカバリー' not found in CardRegistry");
 
-        if (slash != null) {
-            for (int i = 0; i < 4; i++) {
-                deck.addCard(slash);
-            }
+        for (int i = 0; i < 3; i++) {
+            deck.addCard(slash);
         }
-        if (block != null) {
-            for (int i = 0; i < 5; i++) {
-                deck.addCard(block);
-            }
+        for (int i = 0; i < 5; i++) {
+            deck.addCard(block);
         }
-        if (armorBreak != null) {
-            deck.addCard(armorBreak);
-        }
+        deck.addCard(armorBreak);
+        deck.addCard(twinSlash);
+        deck.addCard(doubleEdgedSword);
+        deck.addCard(recovery);
         return deck;
     }
 }
