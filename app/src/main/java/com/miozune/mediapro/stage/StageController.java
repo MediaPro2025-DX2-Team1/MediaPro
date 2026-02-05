@@ -134,6 +134,12 @@ public class StageController {
         if (model.isBattleOver() || model.getTurn() != StageModel.Turn.PLAYER) {
             return;
         }
+
+        // マナ不足チェック: カード使用前に確認し、不足していれば何もしない
+        if (model.getPlayer().getMana() < event.card().cost()) {
+            return;
+        }
+
         CardTargetType targetType = event.card().targetType();
 
         // 選択不要のカードは即時実行して終了
