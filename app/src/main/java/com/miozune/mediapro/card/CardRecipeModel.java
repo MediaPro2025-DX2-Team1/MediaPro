@@ -1,7 +1,6 @@
 package com.miozune.mediapro.card;
 
 import com.miozune.mediapro.action.ActionEffect;
-import com.miozune.mediapro.action.CompositeActionEffect;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 
 /**
@@ -35,7 +34,7 @@ public record CardRecipeModel(
                 3,
                 "sample.jpg",
                 "これはサンプルカードの説明文です。カードの効果や特徴などを記載します。",
-            CompositeActionEffect.of(new DamageSingleEnemyActionEffect(5)),
+            new DamageSingleEnemyActionEffect(5),
             CardTargetType.SINGLE_ENEMY);
     }
 }
