@@ -47,6 +47,14 @@ public class EnemyModel extends AbstractActorModel<EnemyPropertyChangeEvent> {
         return enemyType;
     }
 
+    @Override
+    public void setHp(int hp) {
+        super.setHp(hp);
+        if (getHp() <= 0) {
+            clearStatusEffects();
+        }
+    }
+
     // --- イベント生成フック ---
 
     @Override
