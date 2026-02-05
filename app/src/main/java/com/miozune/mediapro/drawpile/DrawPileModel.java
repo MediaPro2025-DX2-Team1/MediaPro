@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DrawPileModel {
     private final List<CardModel> cards = new ArrayList<>();
@@ -86,7 +87,8 @@ public class DrawPileModel {
         if (cards.isEmpty()) {
             return null;
         }
-        CardModel card = cards.remove(cards.size() - 1);
+        int index = ThreadLocalRandom.current().nextInt(cards.size());
+        CardModel card = cards.remove(index);
         fireEvent(new DrawPileCardDrawnEvent(this, cards.size()));
         return card;
     }
