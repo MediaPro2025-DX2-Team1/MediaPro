@@ -371,8 +371,11 @@ public class StageView extends JPanel implements Previewable {
      * コンポーネントの画面上での中心座標を取得。
      */
     private Point getComponentCenter(Component component) {
+        if (component == null || !component.isShowing() || !this.isShowing()) {
+            return new Point(getWidth() / 2, getHeight() / 2);
+        }
         Point location = component.getLocationOnScreen();
-        Point thisLocation = getLocationOnScreen();
+        Point thisLocation = this.getLocationOnScreen();
         int centerX = location.x - thisLocation.x + component.getWidth() / 2;
         int centerY = location.y - thisLocation.y + component.getHeight() / 2;
         return new Point(centerX, centerY);
