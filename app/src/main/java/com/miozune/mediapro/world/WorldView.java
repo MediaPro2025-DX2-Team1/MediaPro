@@ -13,9 +13,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -72,8 +74,11 @@ public class WorldView extends JPanel implements Previewable {
     }
 
     private void layoutComponents() {
-        JLabel titleLabel = new JLabel("STAGE SELECT");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 56));
+        JLabel titleLabel;
+        BufferedImage titleImage = ImageLoader.loadUiImage("stage_select.png");
+        Image resizedImage = titleImage.getScaledInstance(
+                titleImage.getWidth() / 3, titleImage.getHeight() / 3, Image.SCALE_SMOOTH);
+        titleLabel = new JLabel(new ImageIcon(resizedImage));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         setLayout(new BorderLayout());
