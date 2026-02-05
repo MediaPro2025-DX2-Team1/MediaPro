@@ -6,9 +6,10 @@ import com.miozune.mediapro.player.events.PlayerNameChangedEvent;
 import com.miozune.mediapro.player.events.PlayerStatusesChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.status.StatusListView;
+import com.miozune.mediapro.util.ImageLoader;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 import javax.swing.JPanel;
 
@@ -18,7 +19,7 @@ import javax.swing.JPanel;
 public class PlayerView extends JPanel implements Previewable {
 
     private static final ActorStatusView.Style STYLE = new ActorStatusView.Style(
-        new Color(245, 245, 245),
+        new Color(245, 245, 245, 200),
         new Color(100, 100, 100),
         Color.BLACK,
         new Color(50, 50, 50),
@@ -46,23 +47,21 @@ public class PlayerView extends JPanel implements Previewable {
      */
     public PlayerView(PlayerModel model) {
         this.model = Objects.requireNonNull(model);
-        this.statusView = new ActorStatusView(STYLE);
         this.statusListView = new StatusListView();
+        this.statusView = new ActorStatusView(STYLE, statusListView);
         setLayout(new BorderLayout());
         setOpaque(false);
-        setPreferredSize(new Dimension(420, 230));
-        setMinimumSize(new Dimension(420, 230));
-        setMaximumSize(new Dimension(420, 230));
-
-        JPanel bottom = new JPanel(new BorderLayout());
-        bottom.setOpaque(false);
-        bottom.add(statusListView, BorderLayout.EAST);
 
         add(statusView, BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH);
 
         setupModelListener();
         updateAllDisplays();
+        loadAndDisplayImage();
+    }
+
+    private void loadAndDisplayImage() {
+        BufferedImage image = ImageLoader.loadEntityImage("player.png");
+        statusView.updateImage(image, 1.0);
     }
 
     private static Color resolveHpColor(int hp, int maxHp) {
@@ -129,5 +128,6 @@ public class PlayerView extends JPanel implements Previewable {
         model.addStrength(3);
         model.addWeakness(2);
         updateAllDisplays();
+        loadAndDisplayImage();
     }
 }

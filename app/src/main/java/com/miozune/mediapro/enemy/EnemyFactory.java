@@ -16,7 +16,7 @@ public class EnemyFactory {
     public EnemyInstance create(StageDefinition.EnemyDefinition definition) {
         Objects.requireNonNull(definition, "definition");
         EnemyBehavior behavior = createBehavior(definition.type());
-        EnemyModel model = new EnemyModel(definition.name(), definition.hp(), definition.maxHp());
+        EnemyModel model = new EnemyModel(definition.type(), definition.name(), definition.hp(), definition.maxHp());
         return new EnemyInstance(model, behavior);
     }
 

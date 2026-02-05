@@ -6,9 +6,10 @@ import com.miozune.mediapro.enemy.events.EnemyNameChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyStatusesChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.status.StatusListView;
+import com.miozune.mediapro.util.ImageLoader;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 import javax.swing.JPanel;
 
@@ -18,7 +19,7 @@ import javax.swing.JPanel;
 public class EnemyView extends JPanel implements Previewable {
 
     private static final ActorStatusView.Style STYLE = new ActorStatusView.Style(
-        new Color(32, 32, 36),
+        new Color(32, 32, 36, 200),
         new Color(90, 90, 100),
         Color.WHITE,
         Color.LIGHT_GRAY,
@@ -45,23 +46,24 @@ public class EnemyView extends JPanel implements Previewable {
      */
     public EnemyView(EnemyModel model) {
         this.model = Objects.requireNonNull(model);
-        this.statusView = new ActorStatusView(STYLE);
         this.statusListView = new StatusListView();
+        this.statusView = new ActorStatusView(STYLE, statusListView);
         setLayout(new BorderLayout());
         setOpaque(false);
-        setPreferredSize(new Dimension(420, 230));
-        setMinimumSize(new Dimension(420, 230));
-        setMaximumSize(new Dimension(420, 230));
-
-        JPanel bottom = new JPanel(new BorderLayout());
-        bottom.setOpaque(false);
-        bottom.add(statusListView, BorderLayout.EAST);
 
         add(statusView, BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH);
 
         setupModelListener();
         updateAllDisplays();
+        loadAndDisplayImage();
+    }
+
+    private void loadAndDisplayImage() {
+        EnemyType type = model.getEnemyType();
+        String fileName = type.getImageFileName();
+        BufferedImage image = ImageLoader.loadEntityImage(fileName);
+        double scale = type.getScale();
+        statusView.updateImage(image, scale);
     }
 
     private void setupModelListener() {
@@ -92,6 +94,15 @@ public class EnemyView extends JPanel implements Previewable {
         return model;
     }
 
+    /**
+     * 背景のハイライト状態を更新する（ターゲット選択時の表示変更用）。
+     *
+     * @param highlighted trueの場合、背景を青っぽくハイライト
+     */
+    public void updateBackgroundHighlight(boolean highlighted) {
+        statusView.updateBackgroundHighlight(highlighted);
+    }
+
     // --- Previewable 実装 ---
 
     @Override
@@ -106,5 +117,6 @@ public class EnemyView extends JPanel implements Previewable {
         model.setHp(60);
         model.addWeakness(2);
         updateAllDisplays();
+        loadAndDisplayImage();
     }
 }
