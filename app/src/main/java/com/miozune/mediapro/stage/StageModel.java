@@ -10,6 +10,7 @@ import com.miozune.mediapro.enemy.EnemyFactory.EnemyInstance;
 import com.miozune.mediapro.enemy.EnemyModel;
 import com.miozune.mediapro.enemy.EnemyType;
 import com.miozune.mediapro.enemy.behavior.EnemyActionContext;
+import com.miozune.mediapro.game.GameConfig;
 import com.miozune.mediapro.hand.HandModel;
 import com.miozune.mediapro.player.PlayerModel;
 import com.miozune.mediapro.stage.events.BattleEndedEvent;
@@ -234,9 +235,9 @@ public class StageModel {
         // 手札枚数に応じたドロー枚数を計算
         int currentHandSize = hand.getCards().size();
         int drawCount;
-        if (currentHandSize <= 5) {
+        if (currentHandSize <= GameConfig.HAND_SIZE) {
             // 5枚以下の場合、5枚になるまでドロー
-            drawCount = 5 - currentHandSize;
+            drawCount = GameConfig.HAND_SIZE - currentHandSize;
         } else {
             // 6枚以上の場合、1枚だけドロー
             drawCount = 1;
