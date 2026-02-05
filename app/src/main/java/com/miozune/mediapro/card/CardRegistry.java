@@ -4,6 +4,7 @@ import com.miozune.mediapro.action.AddShieldActionEffect;
 import com.miozune.mediapro.action.AllOutStrikeActionEffect;
 import com.miozune.mediapro.action.ApplyStrengthActionEffect;
 import com.miozune.mediapro.action.ApplyWeaknessActionEffect;
+import com.miozune.mediapro.action.ApplyWeaknessToAllEnemiesActionEffect;
 import com.miozune.mediapro.action.CompositeActionEffect;
 import com.miozune.mediapro.action.DamageAllEnemiesActionEffect;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
@@ -180,7 +181,7 @@ public final class CardRegistry {
             "自分は12シールドを得る。すべての敵に弱体3ターンを与える。",
             CompositeActionEffect.of(
                 new AddShieldActionEffect(12),
-                new ApplyWeaknessActionEffect(3)),
+                new ApplyWeaknessToAllEnemiesActionEffect(3)),
             CardTargetType.ALL_ENEMIES));
     }
 
