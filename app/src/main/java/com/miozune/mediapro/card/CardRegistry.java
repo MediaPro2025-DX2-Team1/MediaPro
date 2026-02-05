@@ -33,7 +33,6 @@ public final class CardRegistry {
     }
 
     private CardRegistry() {
-        // TODO: 画像ファイル名はダミー。実画像が揃い次第差し替え。
         register(new CardRecipeModel(
             "スラッシュ",
             1,
@@ -61,7 +60,7 @@ public final class CardRegistry {
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
-            "補給",
+            "チャージ",
             1,
             "supply.jpg",
             "山札からカードを2枚引く。",
@@ -93,7 +92,7 @@ public final class CardRegistry {
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
-            "なぎ払い",
+            "薙ぎ払い",
             1,
             "cleave.jpg",
             "すべての敵に4ダメージを与える。",
@@ -130,7 +129,7 @@ public final class CardRegistry {
             CardTargetType.ALL_ENEMIES));
 
         register(new CardRecipeModel(
-            "牽制",
+            "ソード＆チャージ",
             1,
             "feint.jpg",
             "敵1体に6ダメージを与える。山札からカードを1枚引く。",
@@ -140,7 +139,7 @@ public final class CardRegistry {
             CardTargetType.SINGLE_ENEMY));
 
         register(new CardRecipeModel(
-            "サルベージ",
+            "シールド＆チャージ",
             1,
             "salvage.jpg",
             "自分は7シールドを得る。山札からカードを1枚引く。",

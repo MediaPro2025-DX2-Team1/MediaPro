@@ -49,12 +49,12 @@ public class TitleView extends JPanel implements Previewable {
 
         add(titleLabel, BorderLayout.CENTER);
 
-        JPanel buttonpanel = new JPanel(new GridBagLayout());
-        buttonpanel.setOpaque(false);
-        buttonpanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 60, 0));
-        buttonpanel.add(startButton);
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 60, 0));
+        buttonPanel.add(startButton);
 
-        add(buttonpanel, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     public JButton getStartButton() {

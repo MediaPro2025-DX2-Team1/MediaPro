@@ -1,5 +1,8 @@
 package com.miozune.mediapro.util;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +24,9 @@ public final class ImageLoader {
 
     /** 背景画像のベースパス */
     public static final String BACKGROUNDS_PATH = "/images/backgrounds/";
+
+    /** エンティティ画像のベースパス */
+    public static final String ENTITIES_PATH = "/images/entities/";
 
     private ImageLoader() {}
 
@@ -79,6 +85,67 @@ public final class ImageLoader {
             return null;
         }
         return loadImage(BACKGROUNDS_PATH + fileName);
+    }
+
+    /**
+     * エンティティ画像を読み込む。
+     * "/images/entities/" をベースパスとして、指定されたファイル名の画像を読み込む。
+     *
+     * @param fileName エンティティ画像のファイル名（例: "player.png"）
+     * @return 読み込んだ画像、読み込みに失敗した場合はnull
+     */
+    public static BufferedImage loadEntityImage(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
+        }
+        return loadImage(ENTITIES_PATH + fileName);
+    }
+
+    /**
+     * 画像を指定されたサイズにスケーリングする。
+     * アスペクト比を保持し、指定されたサイズに収まるようにスケーリングする。
+     *
+     * @param original 元の画像
+     * @param maxWidth 最大幅
+     * @param maxHeight 最大高さ
+     * @return スケーリングされた画像、元の画像がnullの場合はnull
+     */
+    public static BufferedImage getScaledImage(BufferedImage original, int maxWidth, int maxHeight) {
+        if (original == null) {
+            return null;
+        }
+
+        int originalWidth = original.getWidth();
+        int originalHeight = original.getHeight();
+
+        // アスペクト比を保持して計算
+        double widthRatio = (double) maxWidth / originalWidth;
+        double heightRatio = (double) maxHeight / originalHeight;
+        double ratio = Math.min(widthRatio, heightRatio);
+
+        int scaledWidth = (int) (originalWidth * ratio);
+        int scaledHeight = (int) (originalHeight * ratio);
+
+        // 既に同じサイズの場合はそのまま返す
+        if (scaledWidth == originalWidth && scaledHeight == originalHeight) {
+            return original;
+        }
+
+        Image scaledImage = original.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+        BufferedImage bufferedScaled = new BufferedImage(
+            scaledWidth,
+            scaledHeight,
+            BufferedImage.TYPE_INT_ARGB
+        );
+
+        Graphics2D g2d = bufferedScaled.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.drawImage(scaledImage, 0, 0, null);
+        g2d.dispose();
+
+        return bufferedScaled;
     }
 
     /**

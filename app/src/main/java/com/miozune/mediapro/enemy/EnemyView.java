@@ -6,9 +6,11 @@ import com.miozune.mediapro.enemy.events.EnemyNameChangedEvent;
 import com.miozune.mediapro.enemy.events.EnemyStatusesChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
 import com.miozune.mediapro.status.StatusListView;
+import com.miozune.mediapro.util.ImageLoader;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 import javax.swing.JPanel;
 
@@ -18,7 +20,7 @@ import javax.swing.JPanel;
 public class EnemyView extends JPanel implements Previewable {
 
     private static final ActorStatusView.Style STYLE = new ActorStatusView.Style(
-        new Color(32, 32, 36),
+        new Color(32, 32, 36, 200),
         new Color(90, 90, 100),
         Color.WHITE,
         Color.LIGHT_GRAY,
@@ -49,9 +51,9 @@ public class EnemyView extends JPanel implements Previewable {
         this.statusListView = new StatusListView();
         setLayout(new BorderLayout());
         setOpaque(false);
-        setPreferredSize(new Dimension(420, 230));
-        setMinimumSize(new Dimension(420, 230));
-        setMaximumSize(new Dimension(420, 230));
+        setPreferredSize(new Dimension(320, 360));
+        setMinimumSize(new Dimension(320, 360));
+        setMaximumSize(new Dimension(320, 360));
 
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.setOpaque(false);
@@ -62,6 +64,15 @@ public class EnemyView extends JPanel implements Previewable {
 
         setupModelListener();
         updateAllDisplays();
+        loadAndDisplayImage();
+    }
+
+    private void loadAndDisplayImage() {
+        EnemyType type = model.getEnemyType();
+        String fileName = type.getImageFileName();
+        BufferedImage image = ImageLoader.loadEntityImage(fileName);
+        double scale = type.getScale();
+        statusView.updateImage(image, scale);
     }
 
     private void setupModelListener() {
@@ -106,5 +117,6 @@ public class EnemyView extends JPanel implements Previewable {
         model.setHp(60);
         model.addWeakness(2);
         updateAllDisplays();
+        loadAndDisplayImage();
     }
 }
