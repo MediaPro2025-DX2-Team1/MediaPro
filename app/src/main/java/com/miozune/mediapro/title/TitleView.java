@@ -36,8 +36,11 @@ public class TitleView extends JPanel implements Previewable {
     }
 
     private void layoutComponents() {
-        JLabel titleLabel = new JLabel("TITLE NAME");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 56));
+        JLabel titleLabel;
+        BufferedImage titleImage = ImageLoader.loadUiImage("title.png");
+        Image resizedImage = titleImage.getScaledInstance(
+                titleImage.getWidth() / 2, titleImage.getHeight() / 2, Image.SCALE_SMOOTH);
+        titleLabel = new JLabel(new ImageIcon(resizedImage));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setOpaque(false);
 

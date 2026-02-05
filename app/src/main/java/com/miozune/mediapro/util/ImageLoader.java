@@ -31,6 +31,9 @@ public final class ImageLoader {
     /** ボタン画像のベースパス */
     public static final String BUTTONS_PATH = "/images/buttons/";
 
+    /** UI画像のベースパス */
+    public static final String UI_PATH = "/images/ui/";
+
     private ImageLoader() {}
 
     /**
@@ -88,6 +91,20 @@ public final class ImageLoader {
             return null;
         }
         return loadImage(BACKGROUNDS_PATH + fileName);
+    }
+
+    /**
+     * UI画像を読み込む。
+     * "/images/ui/" をベースパスとして、指定されたファイル名の画像を読み込む。
+     *
+     * @param fileName UI画像のファイル名（例: "title.png"）
+     * @return 読み込んだ画像
+     */
+    public static BufferedImage loadUiImage(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
+        }
+        return loadImage(UI_PATH + fileName);
     }
 
     /**
