@@ -3,10 +3,14 @@ package com.miozune.mediapro.decklist;
 import com.miozune.mediapro.action.AddShieldActionEffect;
 import com.miozune.mediapro.action.DamageSingleEnemyActionEffect;
 import com.miozune.mediapro.card.CardBadgeView;
+import com.miozune.mediapro.card.CardModel;
 import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.card.CardTargetType;
+import com.miozune.mediapro.card.overlay.CardDetailOverlay;
 import com.miozune.mediapro.deck.DeckModel;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.ui.overlay.OverlayLayer;
+import com.miozune.mediapro.ui.overlay.OverlayPanels;
 import com.miozune.mediapro.util.ButtonStyler;
 import com.miozune.mediapro.util.ImageLoader;
 import com.miozune.mediapro.util.ImageUtils;
@@ -17,18 +21,29 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 public class DeckListView extends JPanel implements Previewable {
 
@@ -51,11 +66,44 @@ public class DeckListView extends JPanel implements Previewable {
     private final JButton editDeckButton = new JButton("編集");
     private final JButton backButton = new JButton("戻る");
 
+    private final JLayeredPane layeredPane;
+    private final JPanel mainContentPanel;
+    private final OverlayLayer overlayLayer;
+
     public DeckListView() {
         this.backgroundImage = ImageLoader.loadBackgroundImage("deck.png");
-        setLayout(new BorderLayout(12, 12));
+
+        setLayout(new BorderLayout());
         setBackground(new Color(25, 25, 25));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        layeredPane = new JLayeredPane();
+        add(layeredPane, BorderLayout.CENTER);
+
+        mainContentPanel = new JPanel(new BorderLayout(12, 12)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
+            }
+        };
+        mainContentPanel.setOpaque(false);
+        mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        overlayLayer = new OverlayLayer();
+
+        layeredPane.add(mainContentPanel, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(overlayLayer, JLayeredPane.PALETTE_LAYER);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int w = getWidth();
+                int h = getHeight();
+                layeredPane.setBounds(0, 0, w, h);
+                mainContentPanel.setBounds(0, 0, w, h);
+                overlayLayer.setBounds(0, 0, w, h);
+            }
+        });
 
         deckList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         deckList.setOpaque(false);
@@ -139,9 +187,11 @@ public class DeckListView extends JPanel implements Previewable {
             buttonPanel.add(btn);
         }
 
-        add(listScroll, BorderLayout.WEST);
-        add(center, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        mainContentPanel.add(listScroll, BorderLayout.WEST);
+        mainContentPanel.add(center, BorderLayout.CENTER);
+        mainContentPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        setupKeyBindings();
     }
 
     public void setDecks(List<DeckModel> decks, DeckModel selected) {
@@ -160,11 +210,30 @@ public class DeckListView extends JPanel implements Previewable {
                     .thenComparing(CardRecipeModel::name));
             for (CardRecipeModel recipe : recipes) {
                 int count = deck.getCount(recipe);
-                cardsPanel.add(new CardBadgeView(recipe, count));
+                CardBadgeView badge = new CardBadgeView(recipe, count);
+                badge.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (SwingUtilities.isRightMouseButton(e)) {
+                            showCardDetail(recipe);
+                        }
+                    }
+                });
+                cardsPanel.add(badge);
             }
         }
         cardsPanel.revalidate();
         cardsPanel.repaint();
+    }
+
+    public void showCardDetail(CardRecipeModel recipe) {
+        CardModel cardModel = new CardModel(recipe);
+        CardDetailOverlay content = new CardDetailOverlay(cardModel);
+        overlayLayer.push(OverlayPanels.backdrop(content, this::hideOverlay));
+    }
+
+    public void hideOverlay() {
+        overlayLayer.pop();
     }
 
     public JList<DeckModel> getDeckList() {
@@ -185,6 +254,21 @@ public class DeckListView extends JPanel implements Previewable {
 
     public JButton getBackButton() {
         return backButton;
+    }
+
+    private void setupKeyBindings() {
+        setFocusable(true);
+        ActionMap actionMap = getActionMap();
+        InputMap inputMap = getInputMap(WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "cancelAction");
+        actionMap.put("cancelAction", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (overlayLayer.isVisible() && overlayLayer.isTopCloseableByEsc()) {
+                    hideOverlay();
+                }
+            }
+        });
     }
 
     @Override
@@ -227,11 +311,5 @@ public class DeckListView extends JPanel implements Previewable {
         List<DeckModel> decks = List.of(fireDeck, frostDeck);
         setDecks(decks, fireDeck);
         showDeckCards(fireDeck);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
     }
 }

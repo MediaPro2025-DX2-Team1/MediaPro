@@ -8,9 +8,12 @@ import com.miozune.mediapro.card.CardRecipeModel;
 import com.miozune.mediapro.card.CardRegistry;
 import com.miozune.mediapro.card.CardTargetType;
 import com.miozune.mediapro.card.CardView;
+import com.miozune.mediapro.card.overlay.CardDetailOverlay;
 import com.miozune.mediapro.deck.events.DeckCardChangedEvent;
 import com.miozune.mediapro.deck.events.DeckNameChangedEvent;
 import com.miozune.mediapro.preview.Previewable;
+import com.miozune.mediapro.ui.overlay.OverlayLayer;
+import com.miozune.mediapro.ui.overlay.OverlayPanels;
 import com.miozune.mediapro.util.ButtonStyler;
 import com.miozune.mediapro.util.ImageLoader;
 import com.miozune.mediapro.util.ImageUtils;
@@ -22,6 +25,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -30,14 +34,21 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.OverlayLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 public class DeckView extends JPanel implements Previewable {
@@ -59,6 +70,10 @@ public class DeckView extends JPanel implements Previewable {
     private JPanel availableCardsPanel;
     private JButton backButton;
 
+    private final JLayeredPane layeredPane;
+    private final JPanel mainContentPanel;
+    private final OverlayLayer overlayLayer;
+
     // コンストラクタ（Previewable要件）
     public DeckView() {
         this(new DeckModel("デフォルトデッキ"));
@@ -68,23 +83,40 @@ public class DeckView extends JPanel implements Previewable {
     public DeckView(DeckModel model) {
         this.model = model;
         this.backgroundImage = ImageLoader.loadBackgroundImage("deck.png");
+
+        layeredPane = new JLayeredPane();
+        overlayLayer = new OverlayLayer();
+        mainContentPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
+            }
+        };
+
         setupPanel();
         initComponents();
         layoutComponents();
         setupModelListener();
+        setupKeyBindings();
         updateAllDisplays();
     }
 
     private void setupPanel() {
         setLayout(new BorderLayout());
         setBackground(new Color(30, 30, 30));
-        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-    }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        ImageUtils.drawBackgroundImage(g, backgroundImage, getWidth(), getHeight());
+        add(layeredPane, BorderLayout.CENTER);
+
+        // OverlayLayout を使用してレイヤーを重ねる
+        layeredPane.setLayout(new OverlayLayout(layeredPane));
+
+        mainContentPanel.setOpaque(false);
+        mainContentPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+        // レイヤーへの追加（OverlayLayoutでは追加順序も重要だが、JLayeredPaneの機能も併用可能）
+        layeredPane.add(mainContentPanel, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(overlayLayer, JLayeredPane.PALETTE_LAYER);
     }
 
     private void initComponents() {
@@ -133,7 +165,7 @@ public class DeckView extends JPanel implements Previewable {
         headerButtons.setOpaque(false);
         headerButtons.add(backButton);
         header.add(headerButtons, BorderLayout.EAST);
-        add(header, BorderLayout.NORTH);
+        mainContentPanel.add(header, BorderLayout.NORTH);
         JScrollPane deckScrollPane = createScrollPane(cardsPanel);
         JScrollPane availableScrollPane = createScrollPane(availableCardsPanel);
 
@@ -144,7 +176,7 @@ public class DeckView extends JPanel implements Previewable {
         center.add(Box.createVerticalStrut(16));
         center.add(createSectionPanel("所持カード一覧", availableScrollPane));
 
-        add(center, BorderLayout.CENTER);
+        mainContentPanel.add(center, BorderLayout.CENTER);
     }
 
     private JScrollPane createScrollPane(JPanel content) {
@@ -231,11 +263,25 @@ public class DeckView extends JPanel implements Previewable {
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    showCardDetail(card);
+                    return;
+                }
                 if (clickHandler != null) {
                     clickHandler.accept(card);
                 }
             }
         });
+    }
+
+    public void showCardDetail(CardRecipeModel recipe) {
+        CardModel cardModel = new CardModel(recipe);
+        CardDetailOverlay content = new CardDetailOverlay(cardModel);
+        overlayLayer.push(OverlayPanels.backdrop(content, this::hideOverlay));
+    }
+
+    public void hideOverlay() {
+        overlayLayer.pop();
     }
 
     private CardBadgeView createHoverableBadge(CardRecipeModel card, int count, Consumer<CardRecipeModel> clickHandler) {
@@ -271,6 +317,21 @@ public class DeckView extends JPanel implements Previewable {
         }
         availableCards.sort(Comparator.comparingInt(CardRecipeModel::cost).thenComparing(CardRecipeModel::name));
         updateAvailableCardList();
+    }
+
+    private void setupKeyBindings() {
+        setFocusable(true);
+        ActionMap actionMap = getActionMap();
+        InputMap inputMap = getInputMap(WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "cancelAction");
+        actionMap.put("cancelAction", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (overlayLayer.isVisible() && overlayLayer.isTopCloseableByEsc()) {
+                    hideOverlay();
+                }
+            }
+        });
     }
 
     @Override
