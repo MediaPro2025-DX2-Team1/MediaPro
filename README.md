@@ -20,6 +20,13 @@
 ./gradlew build
 ```
 
+### 単一ビルド
+
+```bash
+./gradlew shadowJar
+java -jar app/build/libs/app-all.jar
+```
+
 ## プレビューについて
 
 作成したコンポーネントを、ゲーム自体を立ち上げることなく見ることができる機能です。
